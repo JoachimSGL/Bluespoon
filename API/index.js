@@ -252,6 +252,36 @@ app.post('/ajoutCommande',jsonParser, function (req, res) {
   
 });
 
+app.post('/ajoutNotation',jsonParser, function (req, res) {
+  idRestaurant = req.body.idRestaurant;
+  commentairesNotation = req.body.commentairesNotation;
+  id = req.body.id;
+  note = req.body.note;
+  let values = [[id,idRestaurant,note,commentairesNotation]];
+  var rechsql = "insert into notation(idUtilisateur,idRestaurant,note,commentairesNotation) values(?)";
+
+  db.query(rechsql,values, function (err, result, fields) { 
+    if (err) {throw err;}else{
+      res.send(JSON.stringify('done'));
+     }
+})
+});
+
+app.post('/ajoutNotationPlat',jsonParser, function (req, res) {
+  idPlat = req.body.idPlat;
+  commentairesNotation = req.body.commentairesNotation;
+  id = req.body.id;
+  note = req.body.note;
+  let values = [[id,idPlat,note,commentairesNotation]];
+  var rechsql = "insert into notationPlat(idUtilisateur,idPlat,note,commentairesNotation) values(?)";
+
+  db.query(rechsql,values, function (err, result, fields) { 
+    if (err) {throw err;}else{
+      res.send(JSON.stringify('done'));
+     }
+})
+});
+
 
 
 

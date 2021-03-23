@@ -1,12 +1,10 @@
 import { StyleSheet, View, TouchableOpacity, Text, Image,ScrollView,SafeAreaView, StatusBar  } from "react-native";
 import React from 'react';
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
-import { Overlay,ListItem, Avatar } from 'react-native-elements';
+import { Overlay,ListItem } from 'react-native-elements';
 import Icon from "react-native-vector-icons/Ionicons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import utf8 from 'utf8';
-import base64 from 'base-64';
 class Recherche extends React.Component {
     constructor(props) {
         super(props);
@@ -68,11 +66,12 @@ class Recherche extends React.Component {
         let compteur=0;
         let bool = true;
         for(let i = 0 ; i < json.length; i++){
-          if(compteur<5){
+          if(compteur<4){
             arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat});
             compteur++;
             bool = true;
           }else{
+            arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat});
             arr.push(arrCinq);
             arrCinq = [];
             compteur=0;
@@ -104,20 +103,24 @@ class Recherche extends React.Component {
         }
       }).then(response => response.json())
       .then((json) => {
+        console.log(json);
         let arr = [];
         let arrCinq = [];
         let compteur=0;
         let bool = true;
         for(let i = 0 ; i < json.length; i++){
-          if(compteur<5){
+          if(compteur<4){
           arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat});
             compteur++;
             bool = true;
           }else{
+            arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat});
             arr.push(arrCinq);
+            arrCinq=[];
             compteur=0;
             bool = false;
           }
+          compteur++;
         }
         if(bool){
           arr.push(arrCinq);
