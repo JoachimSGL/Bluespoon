@@ -1,0 +1,43 @@
+create table utilisateurs
+(
+ id int primary key not null auto_increment,
+ nom varchar(100) not null,
+ prenom varchar(100) not null,
+ email varchar(100) not null
+ 
+)
+
+create table restaurant
+(
+	id int primary key not null auto_increment,
+    nom varchar(100) not null,
+    adresse varchar(255) not null
+    
+)
+
+
+
+create table plats
+(
+ idPlat int primary key not null auto_increment,
+ idRestaurant int not null,
+ nom varchar(255) not null,
+ commentaires varchar(2000) null,
+ FOREIGN KEY (idRestaurant) REFERENCES restaurant(id)
+)
+
+
+
+create table commandes
+(
+ idCommande int primary key not null auto_increment,
+ idPlat int not null,
+ idRestaurant int not null,
+ idUtilisateur int not null,
+ FOREIGN KEY (idRestaurant) REFERENCES restaurant(id),
+FOREIGN KEY (idUtilisateur) REFERENCES utilisateurs(id),
+FOREIGN KEY (idPlat) REFERENCES plats(idPlat)
+
+)
+
+

@@ -1,0 +1,25 @@
+.container {
+    flex: 1;
+    background-color: "rgba(191,209,249,1)";
+  }
+  .containerInput {
+    border-bottom-width: 1;
+    border-color: "#D9D5DC";
+    background-color: "transparent";
+    flex-direction: "row";
+    padding-left: 16;
+    border-radius: 100;
+    background-color: "rgba(196,224,233,1)";
+    margin-top: '1%';
+  }
+  .rect{
+    top: '20%';
+    left: 0px;
+    width: 493px;
+    height: 451px;
+    position: absolute;
+    background-color: rgba(214,237,222,1);
+    flex-direction: column;
+    display: flex;
+    border-radius: 100;
+  }

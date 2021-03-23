@@ -1,0 +1,82 @@
+
+.containerA{
+    background-color: rgba(157,204,227,1);
+  height: 100%;
+  width: 100%;
+}
+.autreContainer{
+    display: flex;
+  width: 30%;
+  height: 20%;
+  flex-direction: column;
+}
+.rectA{
+    width: 100%;
+    height: 10%;
+    background-color: rgba(168,245,230,1);
+    flex-direction: row;
+    display: flex;
+}
+.rectAMargin{
+  width: 100%;
+    height: 10%;
+    background-color: rgba(168,245,230,1);
+    flex-direction: row;
+    display: flex;
+    margin-top: 2%;
+}
+.inputDiv{
+    height: 50%;
+    flex-direction: row;
+    display: flex;
+    flex: 1 1 0%;
+    margin-right: 5%;
+    margin-left: 5%;
+    margin-top: 6%;
+}
+.Span{
+    font-family: Roboto;
+  font-size: 16px;
+  line-height: 16px;
+  padding-top: 16px;
+  padding-bottom: 8px;
+  color: #000;
+  opacity: 0.5;
+  align-self: flex-start;
+}
+.Input{
+    font-family: Roboto;
+  color: #000;
+  padding-right: 5px;
+  font-size: 16px;
+  align-self: stretch;
+  flex: 1 1 0%;
+  line-height: 16px;
+  padding-top: 14px;
+  padding-bottom: 8px;
+  padding-left: 30px;
+  border: none;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+}
+.Button{
+    display: flex;
+  background-color: #007AFF;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  border-radius: 5px;
+  padding-left: 16px;
+  padding-right: 16px;
+
+  font-family: Roboto;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 500;
+}
+.qr{
+  height: 100%;
+    flex-direction: row;
+    display: flex;
+}
