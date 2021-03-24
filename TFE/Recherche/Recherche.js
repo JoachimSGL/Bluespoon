@@ -24,7 +24,16 @@ class Recherche extends React.Component {
             idPlat:0,
             listBoissons : [[{name:'Pas de boissons disponible',subtitle:'default',prix:0,idPlat:0 }]],
             list : [[{name:'Pas de plats diponible',subtitle:'default',prix:0,idPlat:0 }]],
-            listCommande:[]
+            listCommande:[],
+
+
+
+
+            listNote:[[{name:'Pas de notes associées',subtitle:'default',note:0,idNotation:0 }]],
+            notes:false,
+            visibleNote:false,
+            placeNote:0
+
           };
     }
     onPress(){
@@ -37,7 +46,6 @@ class Recherche extends React.Component {
             let data = JSON.parse(userData);
             
             if(data!=null){
-              console.log(data);
               this.setState({id:data});
             }else{
               this.setState({id:0});
@@ -103,7 +111,6 @@ class Recherche extends React.Component {
         }
       }).then(response => response.json())
       .then((json) => {
-        console.log(json);
         let arr = [];
         let arrCinq = [];
         let compteur=0;
@@ -178,9 +185,26 @@ class Recherche extends React.Component {
             }
 
         }
+        changePlaceNote=(bool)=>{
+          if(bool){
+            
+              if(this.state.listNote.length-1>this.state.placeNote){
+                this.setState({placeNote : this.state.placeNote+1});
+              }
+            }else{
+              if(this.state.placeNote>0){
+                this.setState({placeNote : this.state.placeNote-1})
+              }
+            }
+
+        }
         toggleOverlay=()=>{
             this.setState({visible : !this.state.visible});
         }
+        toggleOverlayNote=()=>{
+          this.setState({visibleNote : !this.state.visibleNote});
+          this.setState({notes : !this.state.notes});
+      }
         food=()=>{
           this.setState({panier : 0});
           this.setState({nom : this.state.list[0][0].name});
@@ -220,6 +244,9 @@ class Recherche extends React.Component {
           this.setState({idPlat : this.state.listBoissons[this.state.place][val].idPlat});
           this.toggleOverlay();
       }
+      changerNote=(val)=>{
+        console.log(val);
+      }
         Passercommande=()=>{
           if(this.state.listCommande.length==0 ){
             this.setState({panier:3});
@@ -242,7 +269,7 @@ class Recherche extends React.Component {
             }).then(response => response.json())
             .then((json) => {
               numCommande=json;
-              this.props.navigation.navigate('Splitter',{numCommande:numCommande});
+              this.props.navigation.navigate('Splitter',{numCommande:numCommande,idRestaurant : this.state.idRestaurant});
             });
           }
           
@@ -251,6 +278,10 @@ class Recherche extends React.Component {
           let com = this.state.listCommande;
           com.splice(key,1);
           this.setState({listCommande : com});
+        }
+        note(){
+          this.setState({notes:true});
+          this.setState({visibleNote:true});
         }
   render() {
     
@@ -288,7 +319,7 @@ class Recherche extends React.Component {
 
 {this.state.panier == 0 &&
             <Overlay isVisible={this.state.visible} onBackdropPress={this.toggleOverlay}  >
-                <Text>                                        Menu:                                          </Text>
+                <Text>Menu:                                                               page : {this.state.place+1}/{this.state.list.length}</Text>
                
                 {
                     this.state.list[this.state.place].map((l, i) => (
@@ -366,7 +397,12 @@ class Recherche extends React.Component {
                                                         {this.state.prix} €
                                                         </Text>
                                                     </TouchableOpacity>
+                                                    
                                                     </View>
+                                                    <TouchableOpacity style={[styles.containerButtonNote, this.props.style]} onPress={()=>this.note()}>
+                                                    <Text style={styles.captionNote}>Notes</Text>
+                                                    </TouchableOpacity>
+
                                                 </View>
                                     </View>
 
@@ -389,7 +425,7 @@ class Recherche extends React.Component {
 
 {this.state.panier == 2 &&
             <Overlay isVisible={this.state.visible} onBackdropPress={this.toggleOverlay}  >
-                <Text>                                        Menu:                                          </Text>
+                <Text>Menu:                                                               page : {this.state.place+1}/{this.state.listBoissons.length}</Text>
                
                 {
                     this.state.listBoissons[this.state.placeBoissons].map((l, i) => (
@@ -468,6 +504,9 @@ class Recherche extends React.Component {
                                                         </Text>
                                                     </TouchableOpacity>
                                                     </View>
+                                                    <TouchableOpacity style={[styles.containerButtonNote, this.props.style]} onPress={()=>this.note()}>
+                                                    <Text style={styles.captionNote}>Notes</Text>
+                                                    </TouchableOpacity>
                                                 </View>
                                     </View>
 
@@ -487,7 +526,55 @@ class Recherche extends React.Component {
         </View >
 
         }
-
+{this.state.notes &&
+            <Overlay isVisible={this.state.visibleNote} onBackdropPress={this.toggleOverlayNote}  >
+                <Text>Notes:                                                               page : {this.state.placeNote+1}/{this.state.listNote.length}</Text>
+               
+                {
+                    this.state.listNote[this.state.placeNote].map((l, i) => (
+                      
+                    <ListItem key={i} bottomDivider onPress={() => this.changerNote(i)} >
+                        <ListItem.Content>
+                        <ListItem.Title>{l.name}: {}</ListItem.Title>
+                        <ListItem.Subtitle>{l.subtitle}</ListItem.Subtitle>
+                        </ListItem.Content>
+                    </ListItem>
+                    
+                    ))
+                }
+                <View style={[styles.containerStepper, this.props.style]}>
+                    <TouchableOpacity
+                      style={[
+                        styles.leftStepper,
+                        {
+                          backgroundColor: "rgba(0, 122, 255,0.1)"
+                        }
+                      ]}
+                      onPress={()=>this.changePlaceNote(false)}
+                    >
+                      <MaterialCommunityIconsIcon
+                        name="arrow-left"
+                        style={styles.leftIcon}
+                      ></MaterialCommunityIconsIcon>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.rightStepper,
+                        {
+                          backgroundColor: "rgba(0, 122, 255,0.1)"
+                        }
+                      ]}
+                      
+                      onPress={()=>this.changePlaceNote(true)}
+                    >
+                      <MaterialCommunityIconsIcon
+                        name="arrow-right"
+                        style={styles.rightIcon}
+                      ></MaterialCommunityIconsIcon>
+                    </TouchableOpacity>
+                  </View>
+            </Overlay>
+  }
 
 
 
@@ -766,6 +853,31 @@ const styles = StyleSheet.create({
       },
       captionMauve: {
         color: "#fff",
+        fontSize: 19
+      },
+      containerButtonNote: {
+        backgroundColor: "#FDF427",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "row",
+        borderRadius: 15,
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 1
+        },
+        shadowOpacity: 0.35,
+        shadowRadius: 5,
+        elevation: 2,
+        minWidth: 88,
+        paddingLeft: 16,
+        paddingRight: 16,
+        height: '15%',
+        width: '50%',
+        marginLeft:'0%'
+      },
+      captionNote: {
+        color: "#000",
         fontSize: 19
       },
       containerButtonOverlay: {

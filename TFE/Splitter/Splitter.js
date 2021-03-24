@@ -13,7 +13,8 @@ class Splitter extends React.Component {
             id:0,
             type :0,
             split:true,
-            numCommande : (this.props.route.params==undefined ? 2 : this.props.route.params.numCommande)
+            numCommande : (this.props.route.params==undefined ? 2 : this.props.route.params.numCommande),
+            idRestaurant : (this.props.route.params==undefined ? 1 : this.props.route.params.idRestaurant)
 
           };
     }
@@ -218,7 +219,7 @@ addition=()=>{
           autre.push(<View style={[styles.actionBody,{backgroundColor: this.props.actionBody || undefined}]} key={this.state.cle}><TouchableOpacity style={styles.actionButton1}><Text style={styles.actionText1}>{json[i]['nomPlat']}</Text></TouchableOpacity><TouchableOpacity style={styles.actionButton2}><Text style={styles.actionText2}>{json[i]['prix']}€</Text></TouchableOpacity></View>);
           this.setState({ cle: this.state.cle+1 });
         }
-          test.push(<View style={[styles.containerAddition, this.props.style]} key='1'><View style={styles.bodyContent}><Text style={styles.titleGoesHere}>Addition</Text><Text style={styles.subtitleStyle}>{json[0]['prenom']}  {json[0]['nom']}</Text></View>{autre}<View style={styles.body}><Text style={styles.bodyText}>total: {prix}€</Text></View><TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.props.navigation.navigate('Notation')} ><Text style={styles.payement}>Payer</Text></TouchableOpacity></View>);
+          test.push(<View style={[styles.containerAddition, this.props.style]} key='1'><View style={styles.bodyContent}><Text style={styles.titleGoesHere}>Addition</Text><Text style={styles.subtitleStyle}>{json[0]['prenom']}  {json[0]['nom']}</Text></View>{autre}<View style={styles.body}><Text style={styles.bodyText}>total: {prix}€</Text></View><TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.props.navigation.navigate('Notation',{id :this.state.id,numCommande: this.state.numCommande,idRestaurant:this.state.idRestaurant})} ><Text style={styles.payement}>Payer</Text></TouchableOpacity></View>);
         this.setState({ chaine: test });
         this.setState({type:0});
         

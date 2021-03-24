@@ -8,26 +8,26 @@ class Notation extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            id: 1,
-            numCommande:9,
-            idRestaurant:1,
+            id: (this.props.route.params==undefined ? 1 : this.props.route.params.id),
+            numCommande:(this.props.route.params==undefined ? 1 : this.props.route.params.numCommande),
+            idRestaurant:(this.props.route.params==undefined ? 1 : this.props.route.params.idRestaurant),
 
 
             nom:'',
             note:4,
             idPlat:0,
             place : 0,
-            idPlat:1,
             type:0,
             commentairesNotation:'',
             visible:false,
-            list:[{name:'Quick',subtitle:'',idPlat:0 , idRestaurant:1}],
-            listPlat:[[{name:'Pas de plats diponible',subtitle:'',idRestaurant:0,idPlat:0 }]],
+            list:[{name:'Quick',subtitle:'', idRestaurant:1}],
+            listPlat:[[{name:'Pas de plats diponible',subtitle:'',idPlat:0 }]],
             showPlat:1
           };
           this.ratingCompleted =this.ratingCompleted.bind(this); 
           this.commentaires =this.commentaires.bind(this); 
     }
+    // idPlat attention
     componentDidMount(){
       fetch('http://192.168.0.8:3001/commande?id='+this.state.id+'&&numCommande='+this.state.numCommande, {
         method: 'GET',
@@ -143,6 +143,7 @@ class Notation extends React.Component {
     changerPlat(val){
 
       this.setState({nom:this.state.listPlat[this.state.place][val].name});
+      this.setState({idPlat:this.state.listPlat[this.state.place][val].id});
       this.toggleOverlay();
     }
     changerRestaurant(){
@@ -160,6 +161,10 @@ class Notation extends React.Component {
           }
         }
 
+    }
+    toggleAndClear(){
+      this.toggleOverlay();
+      this.setState({type:0});
     }
     
   render() {
@@ -237,7 +242,7 @@ class Notation extends React.Component {
                
                 
                 <View>
-                <TouchableOpacity style={[styles.containerButtonOverlay, this.props.style]} onPress={()=>this.toggleOverlay()}>
+                <TouchableOpacity style={[styles.containerButtonOverlay, this.props.style]} onPress={()=>this.toggleAndClear()}>
                 <Text style={styles.caption}>Notation</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.containerButtonOverlay, this.props.style]} onPress={()=>this.props.navigation.navigate('Home') }>
