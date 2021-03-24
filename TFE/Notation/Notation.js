@@ -165,9 +165,11 @@ class Notation extends React.Component {
     toggleAndClear(){
       this.toggleOverlay();
       this.setState({type:0});
+      this.setState({commentairesNotation:''});
+      this.setState({nom:this.state.list[0].name});
     }
     
-  render() {
+  render() { 
     
 
     return (

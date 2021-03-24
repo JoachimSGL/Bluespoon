@@ -131,6 +131,17 @@ app.get('/personnes', function (req, res) {
 })
 });
 
+app.get('/notation', function (req, res) {
+  let idRestaurant = req.query['idRestaurant'];
+  let values = [[idRestaurant]];
+  var rechsql = 'select * from notationPlat join restaurant on notationplat.idRestaurant=restaurant.id join utilisateurs on notationplat.idUtilisateur=utilisateurs.id where idRestaurant = ?';
+  db.query(rechsql,values, function (err, result, fields) {
+    if (err) {throw err;}else{
+      res.send(JSON.stringify(result));
+     }
+})
+});
+
 
 
 app.post('/table',jsonParser, function (req, res) {

@@ -23,13 +23,13 @@ class Recherche extends React.Component {
             panier:0,
             idPlat:0,
             listBoissons : [[{name:'Pas de boissons disponible',subtitle:'default',prix:0,idPlat:0 }]],
-            list : [[{name:'Pas de plats diponible',subtitle:'default',prix:0,idPlat:0 }]],
+            list : [[{name:'Pas de plats disponible',subtitle:'default',prix:0,idPlat:0 }]],
             listCommande:[],
 
 
 
 
-            listNote:[[{name:'Pas de notes associées',subtitle:'default',note:0,idNotation:0 }]],
+            listNote:[[{name:'Eric Cartman',subtitle:'default',note:0,idNotation:0 }]],
             notes:false,
             visibleNote:false,
             placeNote:0
@@ -157,6 +157,8 @@ class Recherche extends React.Component {
 */
 
 
+
+
           
         }
         changePlaceFood=(bool)=>{
@@ -280,8 +282,48 @@ class Recherche extends React.Component {
           this.setState({listCommande : com});
         }
         note(){
+          fetch('http://192.168.0.8:3001/notation?idRestaurant='+this.state.idRestaurant, {
+  method: 'GET',
+ 
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': 'true'
+  }
+}).then(response => response.json())
+.then((json) => {
+    let arr = [];
+        let arrCinq = [];
+        let compteur=0;
+        let bool = true;
+        for(let i = 0 ; i < json.length; i++){
+          if(this.state.idPlat==json[i].idPlat){
+            if(compteur<3){
+              arrCinq.push({name :json[i].prenom+' '+json[i].nom,subtitle : json[i].commentairesNotation,note : json[i].note,idPlat:json[i].idPlat});
+              compteur++;
+              bool = true;
+            }else{
+              arrCinq.push({name :json[i].prenom+' '+json[i].nom,subtitle : json[i].commentairesNotation,note : json[i].note,idPlat:json[i].idPlat});
+              arr.push(arrCinq);
+              arrCinq=[];
+              compteur=0;
+              bool = false;
+            }
+            compteur++;
+          }
+        }
+        if(bool){
+          arr.push(arrCinq);
+        }
+        if(json.length!==0){
+          this.setState({listNote : arr});
           this.setState({notes:true});
           this.setState({visibleNote:true});
+          this.setState({placeNote:0});
+        }
+  
+});
+          
         }
   render() {
     
@@ -535,8 +577,9 @@ class Recherche extends React.Component {
                       
                     <ListItem key={i} bottomDivider onPress={() => this.changerNote(i)} >
                         <ListItem.Content>
-                        <ListItem.Title>{l.name}: {}</ListItem.Title>
-                        <ListItem.Subtitle>{l.subtitle}</ListItem.Subtitle>
+                        <ListItem.Title>note : {l.note}/7</ListItem.Title>
+                        <ListItem.Subtitle>{l.name}</ListItem.Subtitle>
+                        <ListItem.Subtitle>Commentaire : {l.subtitle}</ListItem.Subtitle>
                         </ListItem.Content>
                     </ListItem>
                     
