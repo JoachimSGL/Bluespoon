@@ -30,12 +30,13 @@ class Home extends React.Component {
       <TouchableOpacity style={[styles.containerMauve, this.props.style]} onPress={() => { this.props.navigation.navigate('Splitter'); }} >
         <Text style={styles.splitter}>splitter</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={[styles.containerJaune, this.props.style]} onPress={() => { this.props.navigation.navigate('Table'); }} >
-        <Text style={styles.recherche}>recherche</Text>
+      <TouchableOpacity style={[styles.containerJaune, this.props.style]} onPress={() => { this.props.navigation.navigate('QR'); }} >
+        <Text style={styles.recherche}>QR</Text>
       </TouchableOpacity>
         <TouchableOpacity style={[styles.container, this.props.style]} onPress={() => { this.props.navigation.navigate('Carte'); }}>
         <Text style={styles.recherche}>Recherche de restaurant</Text>
       </TouchableOpacity>
+      
       </View>
       </View>
     );

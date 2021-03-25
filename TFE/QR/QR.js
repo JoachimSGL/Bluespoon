@@ -19,8 +19,8 @@ export default function QR({ navigation }) {
     if(type==256){
       //data = toString(data);
       //let res = data.substr(-2, -1);
-      console.log(parseInt(data.split("/")[4]));
-      navigation.navigate(data.split("/")[3], { idRestaurant: parseInt(data.split("/")[4]) });
+      console.log(data.split("/"));
+      navigation.navigate(data.split("/")[3], { idRestaurant: parseInt(data.split("/")[4]),numero: parseInt(data.split("/")[5]) });
     }
   };
 

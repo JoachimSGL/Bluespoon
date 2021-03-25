@@ -12,7 +12,7 @@ class Recherche extends React.Component {
         this.state = {
             id: -1,
             idRestaurant: (this.props.route.params== undefined ? 1  :this.props.route.params.idRestaurant),
-            numTable: (this.props.route.params== undefined ? 1  :this.props.route.params.numero),
+            numTable: (this.props.route.params== undefined ? 0  :this.props.route.params.numero),
             visible:false,
             nom:'Pas de plats diponible',
             commentaires:'default',
@@ -47,6 +47,24 @@ class Recherche extends React.Component {
             
             if(data!=null){
               this.setState({id:data});
+              if(Number.isInteger(parseInt(this.state.numTable)) && this.state.numTable!=0 ){
+                fetch('http://192.168.0.8:3001/table', {
+                  method: 'POST',
+                  headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    //'Access-Control-Allow-Origin': 'true'
+                  },
+                  body: JSON.stringify({
+                      numero: this.state.numTable,
+                      id :this.state.id,
+                  })
+                })
+      
+      
+            }else{
+              this.props.navigation.navigate('Home'); 
+            }
             }else{
               this.setState({id:0});
             }
@@ -55,10 +73,9 @@ class Recherche extends React.Component {
       }
     }
     componentDidMount(){
-        if(this.state.id==0){
-            this.props.navigation.navigate('Home');    
+      console.log(this.state.id);
+      console.log(this.state.numTable);
         
-        }
         fetch('http://192.168.0.8:3001/plats?idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
        
@@ -214,6 +231,7 @@ class Recherche extends React.Component {
           this.setState({commentaires : this.state.list[0][0].subtitle});
           this.setState({idPlat : this.state.list[0][0].idPlat});
           this.setState({placeNote:0});
+          this.setState({placeBoissons:0});
           this.setState({place:0});
         }
         boissons=()=>{
@@ -223,6 +241,7 @@ class Recherche extends React.Component {
           this.setState({commentaires : this.state.listBoissons[0][0].subtitle});
           this.setState({idPlat : this.state.listBoissons[0][0].idPlat});
           this.setState({placeNote:0});
+          this.setState({placeBoissons:0});
           this.setState({place:0});
         }
         panier=()=>{
@@ -243,6 +262,7 @@ class Recherche extends React.Component {
             this.setState({idPlat : this.state.list[this.state.place][val].idPlat});
             this.toggleOverlay();
             this.setState({placeNote:0});
+            this.setState({placeBoissons:0});
             this.setState({place:0});
         }
         changerBoisson=(val)=>{
@@ -252,6 +272,7 @@ class Recherche extends React.Component {
           this.setState({idPlat : this.state.listBoissons[this.state.place][val].idPlat});
           this.toggleOverlay();
           this.setState({placeNote:0});
+          this.setState({placeBoissons:0});
           this.setState({place:0});
       }
       changerNote=(val)=>{
@@ -475,7 +496,7 @@ class Recherche extends React.Component {
 
 {this.state.panier == 2 &&
             <Overlay isVisible={this.state.visible} onBackdropPress={this.toggleOverlay}  >
-                <Text>Menu:                                                               page : {this.state.place+1}/{this.state.listBoissons.length}</Text>
+                <Text>Menu:                                                               page : {this.state.placeBoissons+1}/{this.state.listBoissons.length}</Text>
                
                 {
                     this.state.listBoissons[this.state.placeBoissons].map((l, i) => (

@@ -62,6 +62,16 @@ app.get('/plats', function (req, res) {
      }
 })
 });
+app.get('/all', function (req, res) {
+  let idRestaurant = req.query['idRestaurant'];
+  let values = [[idRestaurant]];
+  var rechsql = 'select* from plats where idRestaurant = ?';
+  db.query(rechsql,values, function (err, result, fields) {
+    if (err) {throw err;}else{
+      res.send(JSON.stringify(result));
+     }
+})
+});
 
 app.get('/boissons', function (req, res) {
   let idRestaurant = req.query['idRestaurant'];
@@ -313,8 +323,10 @@ app.post('/modifPlat',jsonParser, function (req, res) {
   commentaires = req.body.commentaires;
   prix = req.body.prix;
   image = req.body.image;
-  let values = [[idRestaurant,nom,commentaires,prix,image]];
-  var rechsql = "UPDATE plats set idRestaurant = " + idRestaurant +", nomPlat= '" + nom +"', commentaires= '" + commentaires +"', prix= " + prix +" where idPlat = "+id;
+  boisson = req.body.boisson;
+  
+  let values = [[idRestaurant,nom,commentaires,prix,image,boisson]];
+  var rechsql = "UPDATE plats set nomPlat= '" + nom +"', commentaires= '" + commentaires +"', prix= " + prix +",boisson = "+boisson+" where idPlat = "+id;
   //, image= " + image +"
   db.query(rechsql, function (err, result, fields) { 
     if (err) {throw err;}else{
