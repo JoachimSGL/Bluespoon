@@ -120,7 +120,8 @@ class Notation extends React.Component {
               idPlat:this.state.idPlat,
               id:this.state.id,
               commentairesNotation:this.state.commentairesNotation,
-              note:this.state.note
+              note:this.state.note,
+              idRestaurant:this.state.idRestaurant
           })
         }).then(response => response.json())
         .then((json) => {

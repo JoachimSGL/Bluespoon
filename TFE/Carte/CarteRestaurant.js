@@ -5,7 +5,7 @@ import { Overlay,ListItem } from 'react-native-elements';
 import Icon from "react-native-vector-icons/Ionicons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-class Recherche extends React.Component {
+class CarteRestaurant extends React.Component {
     constructor(props) {
         super(props);
         this.getToken();
@@ -213,6 +213,7 @@ class Recherche extends React.Component {
           this.setState({prix : this.state.list[0][0].prix});
           this.setState({commentaires : this.state.list[0][0].subtitle});
           this.setState({idPlat : this.state.list[0][0].idPlat});
+          
           this.setState({placeNote:0});
           this.setState({place:0});
         }
@@ -222,6 +223,7 @@ class Recherche extends React.Component {
           this.setState({prix : this.state.listBoissons[0][0].prix});
           this.setState({commentaires : this.state.listBoissons[0][0].subtitle});
           this.setState({idPlat : this.state.listBoissons[0][0].idPlat});
+          
           this.setState({placeNote:0});
           this.setState({place:0});
         }
@@ -257,33 +259,7 @@ class Recherche extends React.Component {
       changerNote=(val)=>{
         console.log(val);
       }
-        Passercommande=()=>{
-          if(this.state.listCommande.length==0 ){
-            this.setState({panier:3});
-            this.toggleOverlay();
-          }else{
-            let numCommande=0;
-            fetch('http://192.168.0.8:3001/ajoutCommande', {
-              method: 'POST',
-              headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-                //'Access-Control-Allow-Origin': 'true'
-              },
-              body: JSON.stringify({
-                  commande: this.state.listCommande,
-                  idRestaurant:this.state.idRestaurant,
-                  id:this.state.id,
-                  idTable:this.state.numTable
-              })
-            }).then(response => response.json())
-            .then((json) => {
-              numCommande=json;
-              this.props.navigation.navigate('Splitter',{numCommande:numCommande,idRestaurant : this.state.idRestaurant});
-            });
-          }
-          
-        }
+        
         supprimer=(key)=>{
           let com = this.state.listCommande;
           com.splice(key,1);
@@ -324,10 +300,11 @@ class Recherche extends React.Component {
           arr.push(arrCinq);
         }
         if(json.length!==0){
+          this.setState({placeNote:0});
           this.setState({listNote : arr});
           this.setState({notes:true});
           this.setState({visibleNote:true});
-          this.setState({placeNote:0});
+          
         }
   
 });
@@ -338,34 +315,7 @@ class Recherche extends React.Component {
 
     return (
       <View className='container'>
-{this.state.panier == 3 &&
-            <Overlay isVisible={this.state.visible} onBackdropPress={this.toggleOverlay}  >
-                <Text>Veuillez séléctionner au moins un article</Text>
-            </Overlay>
-  }
 
-
-        {this.state.panier == 3 &&
-                <SafeAreaView style={{width:'100%', height:'89.7%'}} >
-                          <ScrollView  style={{ width:'100%', height:'100%'}}>
-
-                          {this.state.listCommande.map((l, i) => (
-                          <ListItem key={i} onPress={()=>this.supprimer(i)}>
-                              <ListItem.Content>
-                              <ListItem.Title>{l[0]}</ListItem.Title>
-                              <ListItem.Subtitle>{l[1]}</ListItem.Subtitle>
-                              <ListItem.Subtitle>prix : {l[2]} €</ListItem.Subtitle>
-                              </ListItem.Content>
-                          </ListItem>
-                          
-                          ))}
-                          </ScrollView>
-                          
-                        <TouchableOpacity style={[styles.containerButtonCommande, this.props.style]} onPress={()=>this.Passercommande()}>
-                        <Text style={styles.caption}>Passer commande</Text>
-                        </TouchableOpacity>
-                        </SafeAreaView>
-                }
 
 {this.state.panier == 0 &&
             <Overlay isVisible={this.state.visible} onBackdropPress={this.toggleOverlay}  >
@@ -458,9 +408,6 @@ class Recherche extends React.Component {
 
                         </View>
             <View style={{flex:1,width:'100%',height:'100%'}}>
-            <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>this.commander()}>
-            <Text style={styles.caption}>Ajouter à la commande</Text>
-            </TouchableOpacity>
             <TouchableOpacity style={[styles.containerButtonMauve, this.props.style]} onPress={this.toggleOverlay}>
             <Text style={styles.captionMauve}>Catalogue</Text>
             </TouchableOpacity>
@@ -562,9 +509,6 @@ class Recherche extends React.Component {
 
                         </View>
             <View style={{flex:1,width:'100%',height:'100%'}}>
-            <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>this.commander()}>
-            <Text style={styles.caption}>Ajouter à la commande</Text>
-            </TouchableOpacity>
             <TouchableOpacity style={[styles.containerButtonMauve, this.props.style]} onPress={this.toggleOverlay}>
             <Text style={styles.captionMauve}>Catalogue</Text>
             </TouchableOpacity>
@@ -683,13 +627,6 @@ class Recherche extends React.Component {
                 style={styles.activeIcon}
                 ></MaterialCommunityIconsIcon>
                 <Text style={styles.activeText}>Boissons</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.btnWrapper2} onPress={()=>this.panier()}>
-                <MaterialCommunityIconsIcon
-                name={this.props.icon2 || "package-variant-closed"}
-                style={styles.icon2}
-                ></MaterialCommunityIconsIcon>
-                <Text style={styles.btn2Text}>Commande</Text>
             </TouchableOpacity>
             
             </View>
@@ -972,7 +909,7 @@ const styles = StyleSheet.create({
         paddingBottom: 6,
         paddingHorizontal: 12,
         minWidth: 80,
-        maxWidth: 168,
+        maxWidth: '50%',
         alignItems: "center"
       },
       icon1: {
@@ -1100,4 +1037,4 @@ const styles = StyleSheet.create({
       
   });
   
-export default Recherche;
+export default CarteRestaurant;

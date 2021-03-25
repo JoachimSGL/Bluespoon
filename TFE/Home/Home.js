@@ -24,8 +24,8 @@ class Home extends React.Component {
         <View style={styles.containerBig}>
       <Text style={styles.bluespoon}>Bluespoon</Text>
       <View style={styles.containerSmall}>
-        <TouchableOpacity style={[styles.container, this.props.style]} onPress={() => { this.props.navigation.navigate('QR'); }}>
-        <Text style={styles.scanQrCode}>Scan QR code</Text>
+        <TouchableOpacity style={[styles.container, this.props.style]} onPress={() => { this.props.navigation.navigate('Reconnexion'); }}>
+        <Text style={styles.scanQrCode}>Connexion</Text>
       </TouchableOpacity>
       <TouchableOpacity style={[styles.containerMauve, this.props.style]} onPress={() => { this.props.navigation.navigate('Splitter'); }} >
         <Text style={styles.splitter}>splitter</Text>

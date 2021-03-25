@@ -8,15 +8,54 @@ class Carte extends React.Component {
         this.state = {
             id: 1,
             list:[{name:'Quick'},{name:'Mc Do'},{name:'Mc Do'},{name:'Mc Do'},{name:'Mc Do'},{name:'Mc Do'},{name:'Mc Do'}],
-
+            listShow:[{name:'Quick'},{name:'Mc Do'},{name:'Mc Do'},{name:'Mc Do'},{name:'Mc Do'},{name:'Mc Do'},{name:'Mc Do'}],
+            listAdresse:[{adresse:'default'}],
+            visible:false,
+            search:''
           };
+          this.changeSearch= this.changeSearch.bind(this);
     }
-    onPress(){
-      
-    }
-    componentDidMount(){
-        
+    changeSearch(txt){
+      this.setState({search:txt.nativeEvent.text});
+      let arr = [];
+      for(let i = 0 ; i<this.state.list.length;i++){
+        if(this.state.list[i].name.includes(txt.nativeEvent.text) || this.state.list[i].adresse.includes(txt.nativeEvent.text)){
+          arr.push(this.state.list[i]);
         }
+      }
+      this.setState({listShow:arr});
+    }
+    clearSearch(){
+      this.setState({listShow:this.state.list});
+      this.setState({search:''});
+    }
+    cancelSearch(){
+      this.setState({listShow:this.state.list});
+      this.setState({search:''});
+    }
+    toggleOverlay=()=>{
+      this.setState({visible : !this.state.visible});
+  }
+    componentDidMount(){
+      fetch('http://192.168.0.8:3001/restaurant', {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': 'true'
+        }
+      }).then(response => response.json())
+      .then((json) => {
+        let arr=[];
+        for(let i = 0 ; i<json.length;i++){
+          arr.push({name:json[i].nomRestaurant,id : json[i].id,adresse:json[i].adresse, localisation:json[i].adresse});// changer ici qd j aurai mis la localisation
+        }
+        this.setState({list:arr});
+        this.setState({listShow:arr});
+      })
+
+
+    }
 
         
   render() {
@@ -25,6 +64,33 @@ class Carte extends React.Component {
     return (
       
       <View style={styles.container}>
+
+
+
+<Overlay isVisible={this.state.visible} onBackdropPress={this.toggleOverlay}  >
+                <Text>Adresse:                                                               </Text>
+               
+                {
+                    this.state.listAdresse.map((l, i) => (
+                      
+                    <ListItem key={i} bottomDivider onPress={() => this.toggleOverlay()} >
+                        <ListItem.Content>
+                        <ListItem.Title>{l.adresse}</ListItem.Title>
+                        </ListItem.Content>
+                    </ListItem>
+                    
+                    ))
+                }
+            </Overlay>
+
+
+
+
+
+
+
+
+
         <SafeAreaView style={{width:'100%', height:'100%'}} >
 <View style={[styles.containerSearch, this.props.style]}>
       <View style={styles.inputBox}>
@@ -32,29 +98,33 @@ class Carte extends React.Component {
           name="magnify"
           style={styles.inputLeftIcon}
         ></MaterialCommunityIconsIcon>
-        <TextInput placeholder="Search" style={styles.inputStyle}></TextInput>
+        <TextInput placeholder="Search" style={styles.inputStyle} onChange={this.changeSearch}>{this.state.search}</TextInput>
         <MaterialCommunityIconsIcon
           name="close-circle"
           style={styles.inputRightIcon}
+          onPress={()=>this.clearSearch()}
         ></MaterialCommunityIconsIcon>
       </View>
-      <TouchableOpacity style={styles.rightIconButton}>
+      <TouchableOpacity style={styles.rightIconButton} onPress={()=>this.cancelSearch()}>
         <Text style={styles.rightButtonText}>Cancel</Text>
       </TouchableOpacity>
     </View>
 
 
     <ScrollView  style={{ width:'100%', height:'100%'}}>
-{ this.state.list.map((l, i) =>    (
+{ this.state.listShow.map((l, i) =>    (
       <View style={styles.rect} key={i}>
         <View style={styles.quickRow}>
           <Text style={styles.quick}>{l.name}</Text>
-          <TouchableOpacity style={[styles.containerButton, this.props.style]}>
-      <Text style={styles.voirLaCarte}>Voir la carte</Text>
-    </TouchableOpacity>
+          <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>{this.props.navigation.navigate('CarteRestaurant',{idRestaurant:l.id})}}>
+            <Text style={styles.voirLaCarte}>Voir la carte</Text>
+          </TouchableOpacity>
         </View>
         <Text style={styles.loremIpsum}>
-          Voir les adresses de ce restaurant
+         adresse: {l.adresse}  
+        </Text>
+        <Text style={styles.loremIpsum}>
+          localisation:{l.localisation}
         </Text>
       </View>
     ))
@@ -77,7 +147,8 @@ class Carte extends React.Component {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: '100%'
+    height: '100%',
+    backgroundColor:'#356DBD'
   },
   rect: {
     width: '100%',

@@ -5,6 +5,7 @@ import QR from './QR/QR';
 import Splitter from './Splitter/Splitter';
 import Recherche from './Recherche/Recherche';
 import Carte from './Carte/Carte';
+import CarteRestaurant from './Carte/CarteRestaurant';
 import Table from './Table/Table';
 import Notation from './Notation/Notation';
 import Connexion from './Connexion/Connexion';
@@ -21,6 +22,7 @@ function Routes() {
       <Stack.Screen name="Splitter" component={Splitter} />
       <Stack.Screen name="Recherche" component={Recherche} />
       <Stack.Screen name="Carte" component={Carte} />
+      <Stack.Screen name="CarteRestaurant" component={CarteRestaurant} />
       <Stack.Screen name="Table" component={Table} />
       <Stack.Screen name="Connexion" component={Connexion} />
       <Stack.Screen name="Reconnexion" component={Reconnexion} />

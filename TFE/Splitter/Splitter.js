@@ -48,6 +48,8 @@ class Splitter extends React.Component {
             this.setState({ chaine: test });
           });
 
+        }else{
+          this.props.navigation.navigate('Home')
         }
         } catch (error) {
         console.log("Something went wrong", error);

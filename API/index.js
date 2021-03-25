@@ -43,6 +43,15 @@ app.get('/commande', function (req, res) {
 })
 });
 
+app.get('/restaurant', function (req, res) {
+  var rechsql = 'select * from restaurant';
+  db.query(rechsql, function (err, result, fields) {
+    if (err) {throw err;}else{
+      res.send(JSON.stringify(result));
+     }
+})
+});
+
 app.get('/plats', function (req, res) {
   let idRestaurant = req.query['idRestaurant'];
   let values = [[idRestaurant]];
@@ -283,8 +292,9 @@ app.post('/ajoutNotationPlat',jsonParser, function (req, res) {
   commentairesNotation = req.body.commentairesNotation;
   id = req.body.id;
   note = req.body.note;
-  let values = [[id,idPlat,note,commentairesNotation]];
-  var rechsql = "insert into notationPlat(idUtilisateur,idPlat,note,commentairesNotation) values(?)";
+  idRestaurant = req.body.idRestaurant;
+  let values = [[id,idPlat,note,commentairesNotation,idRestaurant]];
+  var rechsql = "insert into notationPlat(idUtilisateur,idPlat,note,commentairesNotation,idRestaurant) values(?)";
 
   db.query(rechsql,values, function (err, result, fields) { 
     if (err) {throw err;}else{
