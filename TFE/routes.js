@@ -1,6 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import Home from './Home/Home';
+import HomeServeur from './Home/HomeServeur';
 import QR from './QR/QR';
 import Splitter from './Splitter/Splitter';
 import Recherche from './Recherche/Recherche';
@@ -10,6 +11,7 @@ import Table from './Table/Table';
 import Notation from './Notation/Notation';
 import Connexion from './Connexion/Connexion';
 import Reconnexion from './Connexion/Reconnexion';
+import Serveur from './Connexion/Serveur';
 import React from 'react';
 const Stack = createStackNavigator();
 
@@ -27,6 +29,8 @@ function Routes() {
       <Stack.Screen name="Connexion" component={Connexion} />
       <Stack.Screen name="Reconnexion" component={Reconnexion} />
       <Stack.Screen name="Notation" component={Notation} />
+      <Stack.Screen name="Serveur" component={Serveur} />
+      <Stack.Screen name="HomeServeur" component={HomeServeur} />
     </Stack.Navigator>
     </NavigationContainer>
   );

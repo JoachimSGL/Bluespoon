@@ -17,6 +17,7 @@ class Acceuil extends Component {
             keepId : [],
           };
           this.add = this.add.bind(this);
+          this.addServeur = this.addServeur.bind(this);
           this.send = this.send.bind(this);
           this.modif = this.modif.bind(this);
           this.changement = this.changement.bind(this);
@@ -73,6 +74,9 @@ class Acceuil extends Component {
         array.push(<div className='rectA' key={this.state.cle+1}><span className='Span'>boisson?<input type='checkbox' onClick={()=> this.setState({boisson:!this.state.boisson})} id={this.state.cle+'boiss'}/></span><span className='Span'>ajouter une image:</span><input type="file" className='Input' id={this.state.cle+'image'} accept="image/png, image/jpeg"/><button className='Button' onClick={this.send} value={this.state.cle}>confirmer</button></div>);
         this.setState({chaine : array});
         this.setState({ cle: this.state.cle+2 });
+    }
+    addServeur(){
+      this.props.history.push("/CompteServeur");
     }
     send(cle){
         cle = cle.target.value;
@@ -180,6 +184,7 @@ class Acceuil extends Component {
             
             {this.state.chaine.map((value) => value)}
             <button className='Button' onClick={this.add}>ajouter un plat</button>
+            <button className='Button' onClick={this.addServeur}>ajouter un compte serveur</button>
             <div className='rectAMargin'>
 
             <span className='Span'>Combien de Qr-codes voulez-vous?:</span>

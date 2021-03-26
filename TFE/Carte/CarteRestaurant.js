@@ -251,7 +251,7 @@ class CarteRestaurant extends React.Component {
           this.setState({nom : this.state.listBoissons[this.state.placeBoissons][val].name});
           this.setState({prix : this.state.listBoissons[this.state.placeBoissons][val].prix});
           this.setState({commentaires : this.state.listBoissons[this.state.placeBoissons][val].subtitle});
-          this.setState({idPlat : this.state.listBoissons[this.state.place][val].idPlat});
+          this.setState({idPlat : this.state.listBoissons[this.state.placeBoissons][val].idPlat});
           this.toggleOverlay();
           this.setState({placeNote:0});
           this.setState({place:0});
@@ -267,45 +267,45 @@ class CarteRestaurant extends React.Component {
         }
         note(){
           fetch('http://192.168.0.8:3001/notation?idRestaurant='+this.state.idRestaurant, {
-  method: 'GET',
- 
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': 'true'
-  }
-}).then(response => response.json())
-.then((json) => {
-    let arr = [];
-        let arrCinq = [];
-        let compteur=0;
-        let bool = true;
-        for(let i = 0 ; i < json.length; i++){
-          if(this.state.idPlat==json[i].idPlat){
-            if(compteur<3){
-              arrCinq.push({name :json[i].prenom+' '+json[i].nom,subtitle : json[i].commentairesNotation,note : json[i].note,idPlat:json[i].idPlat});
-              compteur++;
-              bool = true;
-            }else{
-              arrCinq.push({name :json[i].prenom+' '+json[i].nom,subtitle : json[i].commentairesNotation,note : json[i].note,idPlat:json[i].idPlat});
-              arr.push(arrCinq);
-              arrCinq=[];
-              compteur=0;
-              bool = false;
-            }
-            compteur++;
+          method: 'GET',
+        
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': 'true'
           }
-        }
-        if(bool){
-          arr.push(arrCinq);
-        }
-        if(json.length!==0){
-          this.setState({placeNote:0});
-          this.setState({listNote : arr});
-          this.setState({notes:true});
-          this.setState({visibleNote:true});
-          
-        }
+        }).then(response => response.json())
+        .then((json) => {
+            let arr = [];
+                let arrCinq = [];
+                let compteur=0;
+                let bool = true;
+                for(let i = 0 ; i < json.length; i++){
+                  if(this.state.idPlat==json[i].idPlat){
+                    if(compteur<3){
+                      arrCinq.push({name :json[i].prenom+' '+json[i].nom,subtitle : json[i].commentairesNotation,note : json[i].note,idPlat:json[i].idPlat});
+                      compteur++;
+                      bool = true;
+                    }else{
+                      arrCinq.push({name :json[i].prenom+' '+json[i].nom,subtitle : json[i].commentairesNotation,note : json[i].note,idPlat:json[i].idPlat});
+                      arr.push(arrCinq);
+                      arrCinq=[];
+                      compteur=0;
+                      bool = false;
+                    }
+                    compteur++;
+                  }
+                }
+                if(bool){
+                  arr.push(arrCinq);
+                }
+                if(json.length!==0){
+                  this.setState({placeNote:0});
+                  this.setState({listNote : arr});
+                  this.setState({notes:true});
+                  this.setState({visibleNote:true});
+                  
+                }
   
 });
           

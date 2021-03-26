@@ -41,8 +41,12 @@ class Reconnexion extends React.Component {
           .then((json) => {
           console.log(json);
           if(json!='pas autorisé' && json!='no'){
-            this.storeToken(json);
-            this.props.navigation.navigate('Home');
+            this.storeToken(json[0].id);
+            if(json[0].serveur){
+              this.props.navigation.navigate('HomeServeur',{serveur:json[0].serveur});
+            }else{
+              this.props.navigation.navigate('Home',{serveur:json[0].serveur});
+            }
           }else{
 
           }
@@ -73,6 +77,7 @@ class Reconnexion extends React.Component {
         <Text style={styles.caption}>Se connecter</Text>
         </TouchableOpacity>
         <Text style={styles.lien} onPress={()=>this.props.navigation.navigate('Connexion')}>Pas encore de compte?</Text>
+        <Text style={styles.lien} onPress={()=>this.props.navigation.navigate('Serveur')}>Créer un compte serveur?</Text>
       </View>
     );
 }

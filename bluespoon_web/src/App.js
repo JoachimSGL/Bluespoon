@@ -4,6 +4,7 @@ import { BrowserRouter , Route } from 'react-router-dom'
 import Navbar from './Navbar'
 import Connection from './Connection'
 import Acceuil from './Acceuil'
+import CompteServeur from './CompteServeur'
 
 class App extends Component {
 render() {
@@ -18,6 +19,7 @@ render() {
      <Route path='/Home' component={Home}></Route>
      <Route path='/Connection' component={Connection}></Route>
      <Route path='/Acceuil' component={Acceuil}></Route>
+     <Route path='/CompteServeur' component={CompteServeur}></Route>
     </BrowserRouter>
    );
   }

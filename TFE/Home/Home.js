@@ -1,41 +1,69 @@
 import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import React from 'react';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 //import {Permissions} from 'expo';
 class Home extends React.Component {
     constructor(props) {
         super(props);
+        this.getToken();
         this.state = {
-            id: 0
+            id: 0,
+            serveur:(this.props.route.params== undefined ? false  :this.props.route.params.serveur),
           };
     }
     onPress(){
       
     }
-    /*
-    PermissionsFlow= async()=>{
-        const {status} = await Permissions.askAsync(Permissions.CONTACTS)
+    async storeToken(m,nom) {
+      try {
+         await AsyncStorage.setItem(nom, JSON.stringify(m));
+      } catch (error) {
+        console.log("Something went wrong", error);
+      }
+    }
+    async getToken() {
+      try {
+        
+        let userData = await AsyncStorage.getItem("id");
+        let data = JSON.parse(userData);
+        
+        if(data!=null){
+          this.setState({id:data});
+        }else{
+          this.props.navigation.navigate('Reconnexion');
+        }
+      } catch (error) {
+          console.log("Something went wrong", error);
+          this.props.navigation.navigate('Reconnexion');
+  }
+}
+    componentDidMount(){
+      /*
+      if(Number.isInteger(parseInt(this.state.id))==false && this.state.id==0){
+        this.props.navigation.navigate('Reconnexion');
       }*/
+    }
+    deco(){
+      this.storeToken(null,'id');
+      this.props.navigation.navigate('Reconnexion');
+    }
   render() {
     
 
     return (
         <View style={styles.containerBig}>
+          
       <Text style={styles.bluespoon}>Bluespoon</Text>
       <View style={styles.containerSmall}>
-        <TouchableOpacity style={[styles.container, this.props.style]} onPress={() => { this.props.navigation.navigate('Reconnexion'); }}>
-        <Text style={styles.scanQrCode}>Connexion</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={[styles.containerMauve, this.props.style]} onPress={() => { this.props.navigation.navigate('Splitter'); }} >
-        <Text style={styles.splitter}>splitter</Text>
-      </TouchableOpacity>
+        
       <TouchableOpacity style={[styles.containerJaune, this.props.style]} onPress={() => { this.props.navigation.navigate('QR'); }} >
         <Text style={styles.recherche}>QR</Text>
       </TouchableOpacity>
         <TouchableOpacity style={[styles.container, this.props.style]} onPress={() => { this.props.navigation.navigate('Carte'); }}>
         <Text style={styles.recherche}>Recherche de restaurant</Text>
       </TouchableOpacity>
+      <Text style={styles.deco} onPress={() => { this.deco(); }}>Déconnexion</Text>
       
       </View>
       </View>
@@ -106,6 +134,17 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         fontSize: 30,
+        marginTop: 80,
+        //marginLeft: 93
+      },
+      deco: {
+        //fontFamily: "Georgian",
+        color: "#121212",
+        textDecorationLine: "underline",
+        textAlign: "center",
+        justifyContent: "center",
+        alignItems: "center",
+        fontSize: 20,
         marginTop: 80,
         //marginLeft: 93
       }

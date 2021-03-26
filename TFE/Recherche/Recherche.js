@@ -73,8 +73,6 @@ class Recherche extends React.Component {
       }
     }
     componentDidMount(){
-      console.log(this.state.id);
-      console.log(this.state.numTable);
         
         fetch('http://192.168.0.8:3001/plats?idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
@@ -269,7 +267,7 @@ class Recherche extends React.Component {
           this.setState({nom : this.state.listBoissons[this.state.placeBoissons][val].name});
           this.setState({prix : this.state.listBoissons[this.state.placeBoissons][val].prix});
           this.setState({commentaires : this.state.listBoissons[this.state.placeBoissons][val].subtitle});
-          this.setState({idPlat : this.state.listBoissons[this.state.place][val].idPlat});
+          this.setState({idPlat : this.state.listBoissons[this.state.placeBoissons][val].idPlat});
           this.toggleOverlay();
           this.setState({placeNote:0});
           this.setState({placeBoissons:0});

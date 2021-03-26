@@ -25,7 +25,6 @@ db.connect( (err) =>{
 
 var jsonParser = bodyParser.json()
  
-// create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 app.get('/', function (req, res) {
@@ -37,6 +36,17 @@ app.get('/commande', function (req, res) {
   let numCommande = req.query['numCommande'];
   var rechsql = 'select * from commandes join plats on commandes.idPlat=plats.idPlat join utilisateurs on commandes.idUtilisateur = utilisateurs.id where commandes.idUtilisateur= '+id+' and commandes.numCommande = '+ numCommande;
   db.query(rechsql, function (err, result, fields) {
+    if (err) {throw err;}else{
+      res.send(JSON.stringify(result));
+     }
+})
+});
+
+app.get('/commandeRestaurant', function (req, res) {
+  let idRestaurant = req.query['idRestaurant'];
+  let values = [[idRestaurant]];
+  var rechsql = 'select * from commandes join plats on commandes.idPlat=plats.idPlat where commandes.servi = false and commandes.idRestaurant = ?';
+  db.query(rechsql,values, function (err, result, fields) {
     if (err) {throw err;}else{
       res.send(JSON.stringify(result));
      }
@@ -91,13 +101,12 @@ app.get('/reconnexion', function (req, res) {
   var rechsql = 'select password from utilisateurs where email = ?';
   db.query(rechsql,values, function (err, result, fields) {
     if (err) {throw err;}else{
-      console.log(result[0]['password']);
       if(password == result[0]['password']){
         valueId = [[email]];
-        var rechsqlID = 'select id from utilisateurs where email = ?';
+        var rechsqlID = 'select id,serveur from utilisateurs where email = ?';
           db.query(rechsqlID,valueId, function (err2, result2, fields2) {
               if (err2) {res.send(JSON.stringify('no'));}else{
-                res.send(JSON.stringify(result2[0]['id']));
+                res.send(JSON.stringify(result2));
               }
           })
       }else{
@@ -115,7 +124,6 @@ app.get('/reconnexionRestaurant', function (req, res) {
   var rechsql = 'select passwordRestaurant from restaurant where nomRestaurant = ?';
   db.query(rechsql,values, function (err, result, fields) {
     if (err) {throw err;}else{
-      console.log(result[0]['passwordRestaurant']);
       if(password == result[0]['passwordRestaurant']){
         valueId = [[nom]];
         var rechsqlID = 'select id from restaurant where nomRestaurant = ?';
@@ -167,8 +175,19 @@ app.post('/table',jsonParser, function (req, res) {
   let numero = req.body.numero;
   let idU = req.body.id;
   
-  console.log(idU);
   var rechsql = "update utilisateurs set numTable = "+ numero + " where id = "+idU;
+  db.query(rechsql, function (err, result, fields) {
+    if (err) {throw err;}else{
+      res.send(JSON.stringify('done'));
+     }
+})
+});
+
+app.post('/addition',jsonParser, function (req, res) {
+  let servi = req.body.servi;
+  let numCommande = req.body.numCommande;
+  let values=[[servi]];
+  var rechsql = "update commandes set servi = "+servi+" where numCommande = "+ numCommande;
   db.query(rechsql, function (err, result, fields) {
     if (err) {throw err;}else{
       res.send(JSON.stringify('done'));
@@ -187,15 +206,51 @@ app.post('/inscription',jsonParser, function (req, res) {
     if (err) {res.send(JSON.stringify('no'));}else{
 
       valueId = [[email]];
-      var rechsqlID = 'select id from utilisateurs where email = ?';
+      var rechsqlID = 'select id,serveur from utilisateurs where email = ?';
         db.query(rechsqlID,valueId, function (err2, result2, fields2) {
             if (err2) {res.send(JSON.stringify('no'));}else{
-              res.send(JSON.stringify(result2[0]['id']));
+              res.send(JSON.stringify(result2));
             }
         })
       
      }
 })
+});
+
+app.post('/inscriptionServeur',jsonParser, function (req, res) {
+  let nom = req.body.nom;
+  let prenom = req.body.prenom;
+  let email = req.body.email;
+  let mdp = req.body.mdp;
+  let mdpR = req.body.mdpR;
+  let nomRestaurant = req.body.nomRestaurant;
+  let valuesR = [[nomRestaurant]];
+  var rechsqlR = 'select passwordRestaurant from restaurant where nomRestaurant = ?';
+  db.query(rechsqlR,valuesR, function (errR, resultR, fields) {
+    if (errR) {res.send(JSON.stringify('no'));}else{
+      if(mdpR == resultR[0]['passwordRestaurant']){
+
+        values=[[nom,prenom,email,0,mdp,true]];
+        var rechsql = "insert into utilisateurs(nom,prenom,email,numTable,password,serveur) values(?)";
+        db.query(rechsql ,values, function (err, result, fields) {
+          if (err) {res.send(JSON.stringify('no'));}else{
+
+            valueId = [[email]];
+            var rechsqlID = 'select id,serveur from utilisateurs where email = ?';
+              db.query(rechsqlID,valueId, function (err2, result2, fields2) {
+                  if (err2) {res.send(JSON.stringify('no'));}else{
+                    res.send(JSON.stringify(result2));
+                  }
+              })
+            
+          }
+      })
+      }else{
+        res.send(JSON.stringify('no'));
+      }
+  }
+});
+
 });
 
 
@@ -247,7 +302,6 @@ app.post('/ajoutCommande',jsonParser, function (req, res) {
   idRestaurant = req.body.idRestaurant;
   id = req.body.id;
   idTable = req.body.idTable;
-  console.log(commande);
   var valuesSelect = [id];
   var selectsql = "select numCommande from commandes where idUtilisateur= (?)";
 
