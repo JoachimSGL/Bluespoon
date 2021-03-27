@@ -66,7 +66,7 @@ class Connexion extends React.Component {
           console.log(json);
           if(json!='no' && json!='pas autorisé'){
             this.storeToken(json);
-            this.props.navigation.navigate('Home');
+            this.props.navigation.replace('Home');
           }else{
               
           }

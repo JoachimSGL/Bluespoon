@@ -10,6 +10,9 @@ class Home extends React.Component {
         this.state = {
             id: 0,
             serveur:(this.props.route.params== undefined ? false  :this.props.route.params.serveur),
+            numCommande:9,
+            idRestaurant:1,
+            commande:true
           };
     }
     onPress(){
@@ -31,22 +34,19 @@ class Home extends React.Component {
         if(data!=null){
           this.setState({id:data});
         }else{
-          this.props.navigation.navigate('Reconnexion');
+          this.props.navigation.replace('Reconnexion');
         }
       } catch (error) {
           console.log("Something went wrong", error);
-          this.props.navigation.navigate('Reconnexion');
+          this.props.navigation.replace('Reconnexion');
   }
 }
     componentDidMount(){
-      /*
-      if(Number.isInteger(parseInt(this.state.id))==false && this.state.id==0){
-        this.props.navigation.navigate('Reconnexion');
-      }*/
+      
     }
     deco(){
       this.storeToken(null,'id');
-      this.props.navigation.navigate('Reconnexion');
+      this.props.navigation.replace('Reconnexion');
     }
   render() {
     
@@ -60,7 +60,14 @@ class Home extends React.Component {
       <TouchableOpacity style={[styles.containerJaune, this.props.style]} onPress={() => { this.props.navigation.navigate('QR'); }} >
         <Text style={styles.recherche}>QR</Text>
       </TouchableOpacity>
-        <TouchableOpacity style={[styles.container, this.props.style]} onPress={() => { this.props.navigation.navigate('Carte'); }}>
+
+      {this.state.commande &&
+        <TouchableOpacity style={[styles.container, this.props.style]} onPress={() => { this.props.navigation.navigate('Splitter',{numCommande : this.state.numCommande, idRestaurant: this.state.idRestaurant}); }}>
+        <Text style={styles.recherche}>Votre commande</Text>
+      </TouchableOpacity>
+
+      }
+        <TouchableOpacity style={[styles.containerMauve, this.props.style]} onPress={() => { this.props.navigation.navigate('Carte'); }}>
         <Text style={styles.recherche}>Recherche de restaurant</Text>
       </TouchableOpacity>
       <Text style={styles.deco} onPress={() => { this.deco(); }}>Déconnexion</Text>

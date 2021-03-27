@@ -20,7 +20,7 @@ export default function QR({ navigation }) {
       //data = toString(data);
       //let res = data.substr(-2, -1);
       console.log(data.split("/"));
-      navigation.navigate(data.split("/")[3], { idRestaurant: parseInt(data.split("/")[4]),numero: parseInt(data.split("/")[5]) });
+      navigation.replace(data.split("/")[3], { idRestaurant: parseInt(data.split("/")[4]),numero: parseInt(data.split("/")[5]) });
     }
   };
 

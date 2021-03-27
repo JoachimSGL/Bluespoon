@@ -45,7 +45,7 @@ app.get('/commande', function (req, res) {
 app.get('/commandeRestaurant', function (req, res) {
   let idRestaurant = req.query['idRestaurant'];
   let values = [[idRestaurant]];
-  var rechsql = 'select * from commandes join plats on commandes.idPlat=plats.idPlat where commandes.servi = false and commandes.idRestaurant = ?';
+  var rechsql = 'select * from commandes join plats on commandes.idPlat=plats.idPlat where commandes.idRestaurant = ?';
   db.query(rechsql,values, function (err, result, fields) {
     if (err) {throw err;}else{
       res.send(JSON.stringify(result));
@@ -183,16 +183,48 @@ app.post('/table',jsonParser, function (req, res) {
 })
 });
 
+app.post('/demandeAddition',jsonParser, function (req, res) {
+  let addition = req.body.addition;
+  let idUtilisateur = req.body.idUtilisateur;
+  let numCommande = req.body.numCommande;
+  if(!addition){
+      var rechsql = "delete from commandes where numCommande = "+numCommande+ " and idUtilisateur = "+idUtilisateur;
+      db.query(rechsql, function (err, result, fields) {
+        if (err) {throw err;}else{
+          res.send(JSON.stringify('done'));
+        }
+    })
+  }else{
+    var rechsql = "select * from commandes where numCommande = "+numCommande+ " and idUtilisateur = "+idUtilisateur;
+    db.query(rechsql, function (err, result, fields) {
+      if (err) {throw err;}else{
+          if(result[0].servi==true){
+            var rechsql = "update commandes set addition = "+ addition + " where numCommande = "+numCommande+ " and idUtilisateur = "+idUtilisateur;
+            db.query(rechsql, function (err2, result2, fields2) {
+              if (err2) {throw err2;}else{
+                res.send(JSON.stringify('done'));
+              }
+          })
+          }else{
+            res.send(JSON.stringify('no'));
+          }
+      }
+  })
+  }
+});
+
 app.post('/addition',jsonParser, function (req, res) {
   let servi = req.body.servi;
   let numCommande = req.body.numCommande;
+  let idUtilisateur = req.body.idUtilisateur;
   let values=[[servi]];
-  var rechsql = "update commandes set servi = "+servi+" where numCommande = "+ numCommande;
-  db.query(rechsql, function (err, result, fields) {
-    if (err) {throw err;}else{
-      res.send(JSON.stringify('done'));
-     }
-})
+      var rechsql = "update commandes set servi = "+servi+" where numCommande = "+ numCommande +' and idUtilisateur = '+ idUtilisateur;
+      db.query(rechsql, function (err, result, fields) {
+        if (err) {throw err;}else{
+          res.send(JSON.stringify('done'));
+        }
+    })
+  
 });
 
 app.post('/inscription',jsonParser, function (req, res) {

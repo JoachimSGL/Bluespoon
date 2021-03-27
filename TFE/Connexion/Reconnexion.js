@@ -16,6 +16,7 @@ class Reconnexion extends React.Component {
           this.onChange= this.onChange.bind(this);
           this.onChangePass= this.onChangePass.bind(this);
     }
+    
     onChange(txt){
         this.setState({email:txt.nativeEvent.text});
     }
@@ -43,9 +44,9 @@ class Reconnexion extends React.Component {
           if(json!='pas autorisé' && json!='no'){
             this.storeToken(json[0].id);
             if(json[0].serveur){
-              this.props.navigation.navigate('HomeServeur',{serveur:json[0].serveur});
+              this.props.navigation.replace('HomeServeur',{serveur:json[0].serveur});
             }else{
-              this.props.navigation.navigate('Home',{serveur:json[0].serveur});
+              this.props.navigation.replace('Home',{serveur:json[0].serveur});
             }
           }else{
 

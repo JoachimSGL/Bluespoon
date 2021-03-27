@@ -248,7 +248,7 @@ class Notation extends React.Component {
                 <TouchableOpacity style={[styles.containerButtonOverlay, this.props.style]} onPress={()=>this.toggleAndClear()}>
                 <Text style={styles.caption}>Notation</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.containerButtonOverlay, this.props.style]} onPress={()=>this.props.navigation.navigate('Home') }>
+                <TouchableOpacity style={[styles.containerButtonOverlay, this.props.style]} onPress={()=>this.props.navigation.replace('Home') }>
                 <Text style={styles.caption}>Home</Text>
                 </TouchableOpacity>
                 </View>

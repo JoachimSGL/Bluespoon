@@ -13,6 +13,7 @@ import Connexion from './Connexion/Connexion';
 import Reconnexion from './Connexion/Reconnexion';
 import Serveur from './Connexion/Serveur';
 import React from 'react';
+import HeaderBackButton from "@react-navigation/stack";
 const Stack = createStackNavigator();
 
 function Routes() {
@@ -35,4 +36,7 @@ function Routes() {
     </NavigationContainer>
   );
 }
+/*
+headerLeft={ ()=>{ return null}}
+*/
 export default Routes;

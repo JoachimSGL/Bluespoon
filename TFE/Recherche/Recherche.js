@@ -63,7 +63,7 @@ class Recherche extends React.Component {
       
       
             }else{
-              this.props.navigation.navigate('Home'); 
+              this.props.navigation.replace('Home'); 
             }
             }else{
               this.setState({id:0});
@@ -251,7 +251,7 @@ class Recherche extends React.Component {
           this.setState({listCommande : arr});
         }
         splitter=()=>{
-          this.props.navigation.navigate('Splitter'); 
+          this.props.navigation.replace('Splitter'); 
         }
         changerPlat=(val)=>{
             this.setState({nom : this.state.list[this.state.place][val].name});
@@ -298,7 +298,7 @@ class Recherche extends React.Component {
             }).then(response => response.json())
             .then((json) => {
               numCommande=json;
-              this.props.navigation.navigate('Splitter',{numCommande:numCommande,idRestaurant : this.state.idRestaurant});
+              this.props.navigation.replace('Splitter',{numCommande:numCommande,idRestaurant : this.state.idRestaurant});
             });
           }
           

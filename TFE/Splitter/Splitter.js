@@ -2,6 +2,7 @@ import { StyleSheet, View, TouchableOpacity, Text,ScrollView,SafeAreaView, Statu
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Overlay } from 'react-native-elements';
 class Splitter extends React.Component {
     constructor(props) {
         super(props);
@@ -14,9 +15,11 @@ class Splitter extends React.Component {
             type :0,
             split:true,
             numCommande : (this.props.route.params==undefined ? 2 : this.props.route.params.numCommande),
-            idRestaurant : (this.props.route.params==undefined ? 1 : this.props.route.params.idRestaurant)
+            idRestaurant : (this.props.route.params==undefined ? 1 : this.props.route.params.idRestaurant),
+            additionValide : false
 
           };
+          this.toggleOverlay= this.toggleOverlay.bind(this);
     }
     async getToken() {
       try {
@@ -49,7 +52,7 @@ class Splitter extends React.Component {
           });
 
         }else{
-          this.props.navigation.navigate('Home')
+          this.props.navigation.replace('Home')
         }
         } catch (error) {
         console.log("Something went wrong", error);
@@ -79,6 +82,28 @@ componentDidMount(){
 }
 toggleSplit=(bool)=>{
   this.setState({split: bool});
+}
+demandeAddition(){
+  fetch('http://192.168.0.8:3001/demandeAddition', {
+                  method: 'POST',
+                  headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    //'Access-Control-Allow-Origin': 'true'
+                  },
+                  body: JSON.stringify({
+                      addition: true,
+                      numCommande: this.state.numCommande,
+                      idUtilisateur: this.state.id
+                  })
+                }).then(response => response.json())
+                .then((json) => {
+                    if(json=='done'){
+                    this.props.navigation.replace('Notation',{id :this.state.id,numCommande: this.state.numCommande,idRestaurant:this.state.idRestaurant});
+                    }else{
+                      this.toggleOverlay();
+                    }
+                  });
 }
 commandes=()=>{
   if(this.state.channel!='commandes'){
@@ -195,6 +220,9 @@ contacts=()=>{
     
   
 }
+toggleOverlay(){
+  this.setState({additionValide:!this.state.additionValide});
+}
 addition=()=>{
   
   if(this.state.channel!='addition'){
@@ -221,7 +249,7 @@ addition=()=>{
           autre.push(<View style={[styles.actionBody,{backgroundColor: this.props.actionBody || undefined}]} key={this.state.cle}><TouchableOpacity style={styles.actionButton1}><Text style={styles.actionText1}>{json[i]['nomPlat']}</Text></TouchableOpacity><TouchableOpacity style={styles.actionButton2}><Text style={styles.actionText2}>{json[i]['prix']}€</Text></TouchableOpacity></View>);
           this.setState({ cle: this.state.cle+1 });
         }
-          test.push(<View style={[styles.containerAddition, this.props.style]} key='1'><View style={styles.bodyContent}><Text style={styles.titleGoesHere}>Addition</Text><Text style={styles.subtitleStyle}>{json[0]['prenom']}  {json[0]['nom']}</Text></View>{autre}<View style={styles.body}><Text style={styles.bodyText}>total: {prix}€</Text></View><TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.props.navigation.navigate('Notation',{id :this.state.id,numCommande: this.state.numCommande,idRestaurant:this.state.idRestaurant})} ><Text style={styles.payement}>Payer</Text></TouchableOpacity></View>);
+          test.push(<View style={[styles.containerAddition, this.props.style]} key='1'><View style={styles.bodyContent}><Text style={styles.titleGoesHere}>Addition</Text><Text style={styles.subtitleStyle}>{json[0]['prenom']}  {json[0]['nom']}</Text></View>{autre}<View style={styles.body}><Text style={styles.bodyText}>total: {prix}€</Text></View><TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.demandeAddition()} ><Text style={styles.payement}>Payer</Text></TouchableOpacity></View>);
         this.setState({ chaine: test });
         this.setState({type:0});
         
@@ -294,6 +322,18 @@ payement=()=>{
         </ScrollView >
 
         }
+
+
+
+<Overlay isVisible={this.state.additionValide} onBackdropPress={this.toggleOverlay}  >
+                <Text>  Veuillez attendre que votre plat soit arrivé avant de commander l'addition               </Text>
+               
+                
+            </Overlay>
+
+
+
+
   {this.state.type == 1 &&
   <View style={{width:'100%', height:'92.2%'}}>
     <TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.toggleSplit(true)}><Text style={styles.payement}>par plats</Text></TouchableOpacity>

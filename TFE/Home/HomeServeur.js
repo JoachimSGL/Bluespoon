@@ -20,7 +20,8 @@ class HomeServeur extends React.Component {
             vue : [],
             vueId:[],
             textAccept:'Accepter la commande',
-            textDelete:"Envoyer l'addition",
+            textDelete:"Commande Servie",
+            textAddition:"Addition envoyée"
           };
     }
     onPress(){
@@ -59,11 +60,20 @@ fetched(){
             let arrComplet=[];
             let id=[];
             for(let i = 0 ; i<json.length;i++){
-                if(this.findValue(id,json[i].numCommande,json[i].idUtilisateur)){//----------------ERREUR ICI-------------
-                    arr.push(json[i]);
-                    id.push({num :json[i].numCommande,id:json[i].idUtilisateur});
+                if(!json[i].servi){   
+                    if(this.findValue(id,json[i].numCommande,json[i].idUtilisateur)){
+                        arr.push(json[i]);
+                        id.push({num :json[i].numCommande,id:json[i].idUtilisateur,addition:false});
+                    }
+                    arrComplet.push(json[i]);
+                }else{
+                    if(json[i].addition){
+                        if(this.findValue(id,json[i].numCommande,json[i].idUtilisateur)){
+                            arr.push(json[i]);
+                            id.push({num :json[i].numCommande,id:json[i].idUtilisateur,addition:true});
+                        }
+                    }
                 }
-                arrComplet.push(json[i]);
             }
             this.setState({list : arr});
             this.setState({listFull : arrComplet});
@@ -115,8 +125,8 @@ fetched(){
     }
 
     
-    ack(num,id){
-        if(!this.findValue(this.state.vue,num,id) ){
+    ack(num,id,addition){
+        if(!this.findValue(this.state.vue,num,id) && !addition){
             fetch('http://192.168.0.8:3001/addition', {
                   method: 'POST',
                   headers: {
@@ -137,14 +147,29 @@ fetched(){
                 arr.splice(index, 1);
                 }
                 this.setState({vue:arr});
-        }else{
+        }else if(this.findValue(this.state.vue,num,id) && !addition){
             let t = this.state.vue;
             t.push({num:num,id:id});
             this.setState({vue:t});
+        }else{
+            fetch('http://192.168.0.8:3001/demandeAddition', {
+                method: 'POST',
+                headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/json',
+                  //'Access-Control-Allow-Origin': 'true'
+                },
+                body: JSON.stringify({
+                    addition: false,
+                    numCommande: num,
+                    idUtilisateur: id
+                })
+              })
+              this.fetched();
         }
     }
-    rectStyle(val,id){
-        if(!this.findValue(this.state.vue,val,id)){
+    rectStyle(val,id,addition){
+        if(!this.findValue(this.state.vue,val,id) && !addition){
         return {
             width: '100%',
             height: 150,
@@ -153,7 +178,7 @@ fetched(){
             marginTop: 13,
             marginLeft: 1
           }
-        }else{
+        }else if(this.findValue(this.state.vue,val,id) && !addition){
             return {
                 width: '100%',
                 height: 150,
@@ -162,14 +187,25 @@ fetched(){
                 marginTop: 13,
                 marginLeft: 1
               } 
+        }else{
+            return {
+                width: '100%',
+                height: 150,
+                backgroundColor: "rgba(255,0,0,1)",
+                borderRadius: 33,
+                marginTop: 13,
+                marginLeft: 1
+              }  
         }
 
     }
-    afficherTextButton(val,id){
-        if(!this.findValue(this.state.vue,val,id)){
+    afficherTextButton(val,id,addition){
+        if(!this.findValue(this.state.vue,val,id) && !addition){
             return this.state.textDelete
-        }else{
+        }else if(this.findValue(this.state.vue,val,id) && !addition){
             return this.state.textAccept
+        }else{
+            return this.state.textAddition
         }
     }
   render() {
@@ -208,18 +244,20 @@ fetched(){
         <ScrollView  style={{ width:'100%', height:'100%'}}>
 
         {this.state.list.map((l, i) => (
-        <View style={this.rectStyle(l.numCommande,l.idUtilisateur)} key={i} id={i}>
+        <View style={this.rectStyle(l.numCommande,l.idUtilisateur,l.addition)} key={i} id={i}>
             <View style={{flexDirection:'row'}}>
                     <Text style={styles.table20}>Table: {l.idTable}</Text>
-                    <TouchableOpacity style={[styles.containerButtonConfirmation, this.props.style]} onPress={()=>this.ack(l.numCommande,l.idUtilisateur)}>
-                        <Text style={styles.voirLaCommande}>{this.afficherTextButton(l.numCommande,l.idUtilisateur)}</Text>
+                    <TouchableOpacity style={[styles.containerButtonConfirmation, this.props.style]} onPress={()=>this.ack(l.numCommande,l.idUtilisateur,l.addition)}>
+                        <Text style={styles.voirLaCommande}>{this.afficherTextButton(l.numCommande,l.idUtilisateur,l.addition)}</Text>
                         </TouchableOpacity>
                 </View>
             <View style={styles.commande2Row}>
             <Text style={styles.commande2}></Text>
+            {!l.addition &&
             <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>this.showCommande(l)}>
                 <Text style={styles.voirLaCommande}>Voir la commande</Text>
                 </TouchableOpacity>
+            }
             </View>
         </View>
         ))}
