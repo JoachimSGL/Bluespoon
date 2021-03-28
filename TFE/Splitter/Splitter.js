@@ -1,8 +1,9 @@
-import { StyleSheet, View, TouchableOpacity, Text,ScrollView,SafeAreaView, StatusBar   } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Text,ScrollView,SafeAreaView, StatusBar ,TextInput  } from "react-native";
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Overlay } from 'react-native-elements';
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 class Splitter extends React.Component {
     constructor(props) {
         super(props);
@@ -16,10 +17,13 @@ class Splitter extends React.Component {
             split:true,
             numCommande : (this.props.route.params==undefined ? 2 : this.props.route.params.numCommande),
             idRestaurant : (this.props.route.params==undefined ? 1 : this.props.route.params.idRestaurant),
-            additionValide : false
+            numTable : (this.props.route.params==undefined ? 1 : this.props.route.params.numTable),
+            additionValide : false,
+            listeContact:[{prenom:'default', nom:'fuhzifo' , prix: 12 , id : 1}],
 
           };
           this.toggleOverlay= this.toggleOverlay.bind(this);
+          this.ajoutPersonne= this.ajoutPersonne.bind(this);
     }
     async getToken() {
       try {
@@ -121,7 +125,7 @@ commandes=()=>{
       const test = [];
       this.setState({ cle: 1 });
       for(let i=0; i<json.length;i++){
-      test.push(<View style={styles.rect} key={this.state.cle} ><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>{json[i]['nomPlat']}</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Prix: {json[i]['prix']}€</Text><TouchableOpacity style={[styles.boutton, this.props.style]} ><Text style={styles.texte}>button</Text></TouchableOpacity></View></View>);
+      test.push(<View style={styles.rect} key={this.state.cle} ><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>{json[i]['nomPlat']}</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Prix: {json[i]['prix']}€</Text></View></View>);
       this.setState({ cle: this.state.cle+1 });
       }
 
@@ -144,7 +148,7 @@ commandes=()=>{
       const test = [];
       this.setState({ cle: 1 });
       for(let i=0; i<json.length;i++){
-      test.push(<View style={styles.rect} key={this.state.cle} ><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>{json[i]['nomPlat']}</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Prix: {json[i]['prix']}€</Text><TouchableOpacity style={[styles.boutton, this.props.style]} ><Text style={styles.texte}>button</Text></TouchableOpacity></View></View>);
+      test.push(<View style={styles.rect} key={this.state.cle} ><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>{json[i]['nomPlat']}</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Prix: {json[i]['prix']}€</Text></View></View>);
       this.setState({ cle: this.state.cle+1 });
       }
 
@@ -198,19 +202,24 @@ contacts=()=>{
       }
 
 
-      this.setState({ channel: 'contacts' });
       this.setState({ cle: 1 });
       const test = [];
       for(let i = 0 ; i < prix.length;i++){
         if(this.state.id == prix[i].id){
-          test.push(<View style={styles.rect} key={this.state.cle}><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>Ma commande:</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Prix: {prix[i].prix}€</Text><TouchableOpacity style={[styles.boutton, this.props.style]} ><Text style={styles.texte}>button</Text></TouchableOpacity></View></View>);
+          
+          test.push({prenom: 'Ma' , nom: 'Commande' , prix: prix[i].prix , id : prix[i].id});
+          //test.push(<View style={styles.rect} key={this.state.cle}><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>Ma commande:</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Total: {prix[i].prix}€</Text><TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant}); }}><Text style={styles.texte}>Recommander</Text></TouchableOpacity></View></View>);
           this.setState({ cle: this.state.cle+1 });
         }else{
-          test.push(<View style={styles.rect} key={this.state.cle}><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>{prix[i].prenom} {prix[i].nom}</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Prix: {prix[i].prix}€</Text><TouchableOpacity style={[styles.boutton, this.props.style]} ><Text style={styles.texte}>button</Text></TouchableOpacity></View></View>);
+          test.push({prenom: prix[i].prenom , nom: prix[i].nom , prix: prix[i].prix , id : prix[i].id});
+          //test.push(<View style={styles.rect} key={this.state.cle}><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>{prix[i].prenom} {prix[i].nom}</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Total: {prix[i].prix}€</Text></View></View>);
           this.setState({ cle: this.state.cle+1 });
         }
       }
-      this.setState({ chaine: test });
+      console.log(test);
+      this.setState({ chaine: []});
+      this.setState({listeContact: test});
+      this.setState({ channel: 'contacts' });
       this.setState({type:0});
     });
 
@@ -222,6 +231,11 @@ contacts=()=>{
 }
 toggleOverlay(){
   this.setState({additionValide:!this.state.additionValide});
+}
+ajoutPersonne(){
+  let arr = this.state.listeContact;
+  arr.push({prenom:'Nouveau',nom:'contact', prix:0,id:0});
+  this.setState({listeContact : arr});
 }
 addition=()=>{
   
@@ -317,8 +331,41 @@ payement=()=>{
         
       
         {this.state.chaine.map((value) => value)}
-       
+       {this.state.channel=='contacts' &&
+    this.state.listeContact.map((l, i) => (
+      <View style={styles.rect} key={i}>
         
+        <View style={[styles.containerPrix, this.props.style]}>
+          {l.id!==0 &&
+          <Text numberOfLines={1} style={styles.commande}>{l.prenom} {l.nom}:</Text>
+          }
+          {l.id==0 &&
+            <TextInput numberOfLines={1} style={styles.commande}>{l.prenom} {l.nom}:</TextInput>
+          }
+      </View>
+    
+    <View style={styles.prixRow}>
+      <Text style={styles.prix}>Total: {l.prix}€</Text>
+
+      {l.id == this.state.id &&
+      <TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant}); }}>
+        <Text style={styles.texte}>Recommander</Text>
+      </TouchableOpacity>
+  }
+
+{l.id == 0 &&
+      <TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant}); }}>
+        <Text style={styles.texte}>Commander</Text>
+      </TouchableOpacity>
+  }
+        </View>
+        </View>
+        ))
+    }
+        {this.state.channel=='contacts' &&
+        <TouchableOpacity style={[styles.containerAdd, this.props.style]} onPress={()=>{this.ajoutPersonne()}}><Icon name="account-plus" style={styles.iconAdd} ></Icon></TouchableOpacity>
+        
+       }
         </ScrollView >
 
         }
@@ -397,7 +444,7 @@ payement=()=>{
 }
 
 /*
-<TouchableOpacity style={[styles.boutton, this.props.style]} }><Text style={styles.commande}>plats partagés</Text></TouchableOpacity>
+  <TouchableOpacity style={[styles.containerAdd, thisprops.style]}><Icon name="share-variant" style={styles.iconAdd}></Icon></TouchableOpacity>
 */
 
 
@@ -414,6 +461,27 @@ const styles = StyleSheet.create({
         borderRadius: 100,
         marginTop: 8,
         marginLeft: 19
+      },
+      containerAdd: {
+        backgroundColor: "#3F51B5",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: 28,
+        shadowColor: "#111",
+        shadowOffset: {
+          width: 0,
+          height: 2
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 1.2,
+        elevation: 2,
+        minWidth: 40,
+        minHeight: 40
+      },
+      iconAdd: {
+        color: "#fff",
+        fontSize: 24,
+        alignSelf: "center"
       },
       commande: {
         fontSize: 17,

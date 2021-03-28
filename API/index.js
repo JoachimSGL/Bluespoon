@@ -42,6 +42,18 @@ app.get('/commande', function (req, res) {
 })
 });
 
+app.get('/commandeHome', function (req, res) {
+  let id = req.query['id'];
+  let value=[[id]];
+  var rechsql = 'select * from commandes join plats on commandes.idPlat=plats.idPlat join utilisateurs on commandes.idUtilisateur = utilisateurs.id where commandes.idUtilisateur= ?';
+  db.query(rechsql,value, function (err, result, fields) {
+    if (err) {throw err;}else{
+      
+      res.send(JSON.stringify(result[0]));
+     }
+})
+});
+
 app.get('/commandeRestaurant', function (req, res) {
   let idRestaurant = req.query['idRestaurant'];
   let values = [[idRestaurant]];

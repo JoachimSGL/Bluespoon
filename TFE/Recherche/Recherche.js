@@ -44,7 +44,8 @@ class Recherche extends React.Component {
             
             let userData = await AsyncStorage.getItem("id");
             let data = JSON.parse(userData);
-            
+            console.log(this.state.numTable);
+            console.log(this.state.idRestaurant);
             if(data!=null){
               this.setState({id:data});
               if(Number.isInteger(parseInt(this.state.numTable)) && this.state.numTable!=0 ){
@@ -298,7 +299,7 @@ class Recherche extends React.Component {
             }).then(response => response.json())
             .then((json) => {
               numCommande=json;
-              this.props.navigation.replace('Splitter',{numCommande:numCommande,idRestaurant : this.state.idRestaurant});
+              this.props.navigation.replace('Splitter',{numCommande:numCommande,idRestaurant : this.state.idRestaurant,numTable:this.state.numTable});
             });
           }
           

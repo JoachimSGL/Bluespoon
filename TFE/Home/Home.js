@@ -48,6 +48,22 @@ class Home extends React.Component {
       this.storeToken(null,'id');
       this.props.navigation.replace('Reconnexion');
     }
+    splitter(){
+      console.log(this.state.id)
+      fetch('http://192.168.0.8:3001/commandeHome?id='+this.state.id, {
+        method: 'GET',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            //'Access-Control-Allow-Origin': 'true'
+        }
+        }).then(response => response.json())
+        .then((json) => {
+          console.log(json.idTable);
+            this.props.navigation.navigate('Splitter',{numCommande : json.numCommande, idRestaurant: json.idRestaurant,numTable:json.idTable}); 
+        });
+      
+    }
   render() {
     
 
@@ -62,7 +78,7 @@ class Home extends React.Component {
       </TouchableOpacity>
 
       {this.state.commande &&
-        <TouchableOpacity style={[styles.container, this.props.style]} onPress={() => { this.props.navigation.navigate('Splitter',{numCommande : this.state.numCommande, idRestaurant: this.state.idRestaurant}); }}>
+        <TouchableOpacity style={[styles.container, this.props.style]} onPress={() => {this.splitter() }}>
         <Text style={styles.recherche}>Votre commande</Text>
       </TouchableOpacity>
 
