@@ -40,9 +40,9 @@ class Connexion extends React.Component {
     onChangeMdp2(txt){
         this.setState({mdp2:txt.nativeEvent.text});
     }
-    async storeToken(m) {
+    async storeToken(m,p) {
         try {
-           await AsyncStorage.setItem("id", JSON.stringify(m));
+           await AsyncStorage.setItem(p, JSON.stringify(m));
         } catch (error) {
           console.log("Something went wrong", error);
         }
@@ -65,7 +65,8 @@ class Connexion extends React.Component {
           .then((json) => {
           console.log(json);
           if(json!='no' && json!='pas autorisé'){
-            this.storeToken(json);
+            this.storeToken(json[0].id,'id');
+            this.storeToken(json[0].serveur,'serveur');
             this.props.navigation.replace('Home');
           }else{
               

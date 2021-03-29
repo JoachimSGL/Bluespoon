@@ -32,9 +32,16 @@ class HomeServeur extends React.Component {
         
         let userData = await AsyncStorage.getItem("id");
         let data = JSON.parse(userData);
+        let serveurData = await AsyncStorage.getItem("serveur");
+        let dataS = JSON.parse(serveurData);
         
         if(data!=null){
-          this.setState({id:data});
+            if(dataS){
+                this.setState({id:data});
+                this.setState({serveur:dataS});
+            }else{
+                this.props.navigation.replace('Home');
+            }
         }else{
             this.props.navigation.navigate('Reconnexion');
         }
@@ -68,9 +75,9 @@ fetched(){
                     arrComplet.push(json[i]);
                 }else{
                     if(json[i].addition){
-                        if(this.findValue(id,json[i].numCommande,json[i].idUtilisateur)){
+                        if(this.findValueAddition(id,json[i].idUtilisateur,json[i].contact)){
                             arr.push(json[i]);
-                            id.push({num :json[i].numCommande,id:json[i].idUtilisateur,addition:true});
+                            id.push({num :json[i].contact,id:json[i].idUtilisateur,addition:true});
                         }
                     }
                 }
@@ -99,6 +106,20 @@ fetched(){
             
             if(arr[i].id == id && arr[i].num == num){
                return false;
+            }
+        }
+        return true;
+    }
+    findValueAddition(arr,id,contact){//A FAIRE: boucle pour trouver si la com est dedans(en fct de la numcom et de  l id)
+        for(let i = 0 ; i<arr.length;i++){
+            if(contact==null){
+                if(arr[i].id == id){
+                    return false;
+                }
+            }else{
+                if(arr[i].num==contact){
+                    return false
+                }
             }
         }
         return true;

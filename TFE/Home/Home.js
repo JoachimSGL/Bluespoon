@@ -30,9 +30,16 @@ class Home extends React.Component {
         
         let userData = await AsyncStorage.getItem("id");
         let data = JSON.parse(userData);
+        let serveurData = await AsyncStorage.getItem("serveur");
+        let dataS = JSON.parse(serveurData);
         
-        if(data!=null){
-          this.setState({id:data});
+        if(data!=null && data!=0){
+          if(dataS==null || dataS==false){
+            this.setState({id:data});
+            this.setState({serveur:dataS});
+          }else{
+            this.props.navigation.navigate('HomeServeur');
+          }
         }else{
           this.props.navigation.replace('Reconnexion');
         }
@@ -46,6 +53,7 @@ class Home extends React.Component {
     }
     deco(){
       this.storeToken(null,'id');
+      this.storeToken(null,'serveur');
       this.props.navigation.replace('Reconnexion');
     }
     splitter(){
@@ -59,8 +67,10 @@ class Home extends React.Component {
         }
         }).then(response => response.json())
         .then((json) => {
+          if(json!=='no'){
           console.log(json.idTable);
             this.props.navigation.navigate('Splitter',{numCommande : json.numCommande, idRestaurant: json.idRestaurant,numTable:json.idTable}); 
+          }
         });
       
     }

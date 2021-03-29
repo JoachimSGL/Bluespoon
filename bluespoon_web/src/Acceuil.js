@@ -110,6 +110,19 @@ class Acceuil extends Component {
             boisson:boissonBool
         })
       });
+      /*
+      fetch('http://192.168.0.8:3001/image', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          //'Access-Control-Allow-Origin': 'true'
+        },
+        body: {
+            file: file
+        }
+      });*/
+
     }
     modif(cle){
         cle = cle.target.value;

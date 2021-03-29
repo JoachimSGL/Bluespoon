@@ -47,7 +47,7 @@ app.get('/commandeHome', function (req, res) {
   let value=[[id]];
   var rechsql = 'select * from commandes join plats on commandes.idPlat=plats.idPlat join utilisateurs on commandes.idUtilisateur = utilisateurs.id where commandes.idUtilisateur= ?';
   db.query(rechsql,value, function (err, result, fields) {
-    if (err) {throw err;}else{
+    if (err) {res.send(JSON.stringify('no'));}else{
       
       res.send(JSON.stringify(result[0]));
      }
@@ -441,7 +441,11 @@ app.post('/modifPlat',jsonParser, function (req, res) {
 })
 });
 
-
+app.post('/image2', function (req, res) {
+  let file = req.files.file;
+  let filename = file.name;
+  console.log(filename);
+})
 app.get('/image', function (req, res) {
   let idPlat = req.query['idPlat'];
   let values=[[idPlat]]

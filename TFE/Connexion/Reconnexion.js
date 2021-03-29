@@ -23,9 +23,9 @@ class Reconnexion extends React.Component {
     onChangePass(txt){
         this.setState({password:txt.nativeEvent.text});
     }
-    async storeToken(m) {
+    async storeToken(m,p) {
         try {
-           await AsyncStorage.setItem("id", JSON.stringify(m));
+           await AsyncStorage.setItem(p, JSON.stringify(m));
         } catch (error) {
           console.log("Something went wrong", error);
         }
@@ -42,10 +42,12 @@ class Reconnexion extends React.Component {
           .then((json) => {
           console.log(json);
           if(json!='pas autorisé' && json!='no'){
-            this.storeToken(json[0].id);
+            this.storeToken(json[0].id,'id');
             if(json[0].serveur){
+              this.storeToken(json[0].serveur,'serveur');
               this.props.navigation.navigate('HomeServeur',{serveur:json[0].serveur});
             }else{
+              this.storeToken(json[0].serveur),'serveur';
               this.props.navigation.replace('Home',{serveur:json[0].serveur});
             }
           }else{

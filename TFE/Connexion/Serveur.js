@@ -51,9 +51,9 @@ class Serveur extends React.Component {
     onChangeNomRestaurant(txt){
         this.setState({nomRestaurant:txt.nativeEvent.text});
     }
-    async storeToken(m) {
+    async storeToken(m,n) {
         try {
-           await AsyncStorage.setItem("id", JSON.stringify(m));
+           await AsyncStorage.setItem(n, JSON.stringify(m));
         } catch (error) {
           console.log("Something went wrong", error);
         }
@@ -78,7 +78,8 @@ class Serveur extends React.Component {
           .then((json) => {
           console.log(json);
           if(json!='no' && json!='pas autorisé'){
-            this.storeToken(json);
+            this.storeToken(json[0].id,'id');
+            this.storeToken(json[0].serveur,'serveur');
             this.props.navigation.navigate('HomeServeur',{serveur:true});
           }else{
               
