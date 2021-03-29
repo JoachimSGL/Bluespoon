@@ -20,6 +20,7 @@ class Splitter extends React.Component {
             numTable : (this.props.route.params==undefined ? 1 : this.props.route.params.numTable),
             additionValide : false,
             listeContact:[{prenom:'default', nom:'fuhzifo' , prix: 12 , id : 1}],
+            noms:[]
 
           };
           this.toggleOverlay= this.toggleOverlay.bind(this);
@@ -34,7 +35,7 @@ class Splitter extends React.Component {
         if(data!=null){
           this.setState({id:data});
 
-          fetch('http://192.168.0.8:3001/commande?id='+this.state.id+'&&numCommande='+this.state.numCommande, {
+          fetch('http://192.168.0.8:3001/commande?id='+this.state.id, {
               method: 'GET',
             
               headers: {
@@ -63,7 +64,7 @@ class Splitter extends React.Component {
       }
     }
 componentDidMount(){
-  fetch('http://192.168.0.8:3001/commande?id='+this.state.id+'&&numCommande='+this.state.numCommande, {
+  fetch('http://192.168.0.8:3001/commande?id='+this.state.id, {
         method: 'GET',
        
         headers: {
@@ -111,7 +112,7 @@ demandeAddition(){
 }
 commandes=()=>{
   if(this.state.channel!='commandes'){
-    fetch('http://192.168.0.8:3001/commande?id='+this.state.id+'&&numCommande='+this.state.numCommande, {
+    fetch('http://192.168.0.8:3001/commande?id='+this.state.id, {
         method: 'GET',
        
         headers: {
@@ -134,7 +135,7 @@ commandes=()=>{
     });
     
   }else{
-    fetch('http://192.168.0.8:3001/commande?id='+this.state.id+'&&numCommande='+this.state.numCommande, {
+    fetch('http://192.168.0.8:3001/commande?id='+this.state.id, {
         method: 'GET',
        
         headers: {
@@ -174,9 +175,13 @@ contacts=()=>{
 
       if(this.state.split){
         for(let i = 0 ; i < json.length; i++){
+          if(json[i].contact==null){
+            
           if(!nombrePersonne.includes(json[i].id)){
-            nombrePersonne.push(json[i].id);
-            prix.push({id :json[i].id , nom : json[i].nom , prenom : json[i].prenom , prix : json[i].prix});
+            
+             nombrePersonne.push(json[i].id);
+             prix.push({id :json[i].id , nom : json[i].nom , prenom : json[i].prenom , prix : json[i].prix,contact:json[i].contact});
+            
           }else{
             for(let j = 0 ; j < prix.length;j++){
               if(prix[j].id == json[i].id){
@@ -185,6 +190,18 @@ contacts=()=>{
             }
             
           }
+        }else{
+          if(!nombrePersonne.includes(json[i].contact)){
+            nombrePersonne.push(json[i].contact);
+            prix.push({id : -1 , nom : '' , prenom : json[i].contact , prix : json[i].prix, contact:json[i].contact});
+          }else{
+            for(let j = 0 ; j < prix.length;j++){
+              if(prix[j].id == -1 && prix[j].nom=='' && prix[j].prenom ==json[i].contact){
+                prix[j].prix = prix[j].prix + json[i].prix;
+              }
+            }
+          }
+        }
         }
       }else{
         let prixTotal = 0;
@@ -204,21 +221,23 @@ contacts=()=>{
 
       this.setState({ cle: 1 });
       const test = [];
+      let arr = [];
       for(let i = 0 ; i < prix.length;i++){
         if(this.state.id == prix[i].id){
-          
-          test.push({prenom: 'Ma' , nom: 'Commande' , prix: prix[i].prix , id : prix[i].id});
+          arr.push('Ma Commande');
+          test.push({prenom: 'Ma' , nom: 'Commande' , prix: prix[i].prix , id : prix[i].id, contact:prix[i].contact});
           //test.push(<View style={styles.rect} key={this.state.cle}><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>Ma commande:</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Total: {prix[i].prix}€</Text><TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant}); }}><Text style={styles.texte}>Recommander</Text></TouchableOpacity></View></View>);
           this.setState({ cle: this.state.cle+1 });
         }else{
-          test.push({prenom: prix[i].prenom , nom: prix[i].nom , prix: prix[i].prix , id : prix[i].id});
+          arr.push(prix[i].prenom +' '+ prix[i].nom);
+          test.push({prenom: prix[i].prenom , nom: prix[i].nom , prix: prix[i].prix , id : prix[i].id, contact:prix[i].contact});
           //test.push(<View style={styles.rect} key={this.state.cle}><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>{prix[i].prenom} {prix[i].nom}</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Total: {prix[i].prix}€</Text></View></View>);
           this.setState({ cle: this.state.cle+1 });
         }
       }
-      console.log(test);
       this.setState({ chaine: []});
       this.setState({listeContact: test});
+      this.setState({noms:arr});
       this.setState({ channel: 'contacts' });
       this.setState({type:0});
     });
@@ -237,12 +256,23 @@ ajoutPersonne(){
   arr.push({prenom:'Nouveau',nom:'contact', prix:0,id:0});
   this.setState({listeContact : arr});
 }
+rechercheContact(val){
+  let txt = this.state.noms[val]; 
+  this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant,contact:txt});
+}
+changeNom(val,txt){
+  let arr = this.state.noms;
+  console.log(txt.nativeEvent.text);
+  arr[val] = txt.nativeEvent.text;
+  this.setState({noms: arr});
+
+}
 addition=()=>{
   
   if(this.state.channel!='addition'){
     
 
-      fetch('http://192.168.0.8:3001/commande?id='+this.state.id+'&&numCommande='+this.state.numCommande, {
+      fetch('http://192.168.0.8:3001/commande?id='+this.state.id, {
         method: 'GET',
        
         headers: {
@@ -273,7 +303,7 @@ addition=()=>{
   }else{
 
 
-    fetch('http://192.168.0.8:3001/commande?id='+this.state.id+'&&numCommande='+this.state.numCommande, {
+    fetch('http://192.168.0.8:3001/commande?id='+this.state.id, {
       method: 'GET',
      
       headers: {
@@ -340,21 +370,21 @@ payement=()=>{
           <Text numberOfLines={1} style={styles.commande}>{l.prenom} {l.nom}:</Text>
           }
           {l.id==0 &&
-            <TextInput numberOfLines={1} style={styles.commande}>{l.prenom} {l.nom}:</TextInput>
+            <TextInput numberOfLines={1} style={styles.commande} onChange={(text)=>this.changeNom(i,text)}>{l.prenom} {l.nom}:</TextInput>
           }
       </View>
     
     <View style={styles.prixRow}>
       <Text style={styles.prix}>Total: {l.prix}€</Text>
 
-      {l.id == this.state.id &&
-      <TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant}); }}>
+      {(l.id == this.state.id || l.id==-1)&&
+      <TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant,contact:l.contact}); }}>
         <Text style={styles.texte}>Recommander</Text>
       </TouchableOpacity>
   }
 
 {l.id == 0 &&
-      <TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant}); }}>
+      <TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.rechercheContact(i); }}>
         <Text style={styles.texte}>Commander</Text>
       </TouchableOpacity>
   }

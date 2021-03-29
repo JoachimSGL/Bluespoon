@@ -29,7 +29,7 @@ class Notation extends React.Component {
     }
     // idPlat attention
     componentDidMount(){
-      fetch('http://192.168.0.8:3001/commande?id='+this.state.id+'&&numCommande='+this.state.numCommande, {
+      fetch('http://192.168.0.8:3001/commande?id='+this.state.id, {
         method: 'GET',
       
         headers: {

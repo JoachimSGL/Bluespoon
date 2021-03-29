@@ -33,9 +33,9 @@ app.get('/', function (req, res) {
 
 app.get('/commande', function (req, res) {
   let id = req.query['id'];
-  let numCommande = req.query['numCommande'];
-  var rechsql = 'select * from commandes join plats on commandes.idPlat=plats.idPlat join utilisateurs on commandes.idUtilisateur = utilisateurs.id where commandes.idUtilisateur= '+id+' and commandes.numCommande = '+ numCommande;
-  db.query(rechsql, function (err, result, fields) {
+  let value=[[id]];
+  var rechsql = 'select * from commandes join plats on commandes.idPlat=plats.idPlat join utilisateurs on commandes.idUtilisateur = utilisateurs.id where commandes.idUtilisateur= ?';
+  db.query(rechsql,value, function (err, result, fields) {
     if (err) {throw err;}else{
       res.send(JSON.stringify(result));
      }
@@ -159,7 +159,7 @@ app.get('/personnes', function (req, res) {
   db.query(rechsql,values, function (err, result, fields) {
     if (err) {throw err;}else{
       var values2 = [[result[0].numTable]]
-      var rechsql2 = 'select id , nom , prenom , nomPlat, prix from commandes join plats on commandes.idPlat=plats.idPlat join utilisateurs on commandes.idUtilisateur = utilisateurs.id where idTable = ?';
+      var rechsql2 = 'select id , nom , prenom , nomPlat, prix ,contact from commandes join plats on commandes.idPlat=plats.idPlat join utilisateurs on commandes.idUtilisateur = utilisateurs.id where idTable = ?';
       db.query(rechsql2,values2, function (err2, result2, fields2) {
         if (err2) {throw err2;}else{
           res.send(JSON.stringify(result2));
@@ -200,26 +200,33 @@ app.post('/demandeAddition',jsonParser, function (req, res) {
   let idUtilisateur = req.body.idUtilisateur;
   let numCommande = req.body.numCommande;
   if(!addition){
-      var rechsql = "delete from commandes where numCommande = "+numCommande+ " and idUtilisateur = "+idUtilisateur;
+      //var rechsql = "delete from commandes where numCommande = "+numCommande+ " and idUtilisateur = "+idUtilisateur;
+      var rechsql = "delete from commandes where idUtilisateur = "+idUtilisateur;
       db.query(rechsql, function (err, result, fields) {
         if (err) {throw err;}else{
           res.send(JSON.stringify('done'));
         }
     })
   }else{
-    var rechsql = "select * from commandes where numCommande = "+numCommande+ " and idUtilisateur = "+idUtilisateur;
+    var rechsql = "select * from commandes where idUtilisateur = "+idUtilisateur;
     db.query(rechsql, function (err, result, fields) {
       if (err) {throw err;}else{
-          if(result[0].servi==true){
-            var rechsql = "update commandes set addition = "+ addition + " where numCommande = "+numCommande+ " and idUtilisateur = "+idUtilisateur;
+        let bool =true;
+        for(let i = 0 ; i<result.length;i++){
+          if(result[i].servi==false){
+            res.send(JSON.stringify('no'));
+            bool =false
+          }
+        }
+        if(bool){
+            var rechsql = "update commandes set addition = "+ addition + " where idUtilisateur = "+idUtilisateur;
             db.query(rechsql, function (err2, result2, fields2) {
               if (err2) {throw err2;}else{
                 res.send(JSON.stringify('done'));
               }
           })
-          }else{
-            res.send(JSON.stringify('no'));
-          }
+        }
+          
       }
   })
   }
@@ -346,6 +353,7 @@ app.post('/ajoutCommande',jsonParser, function (req, res) {
   idRestaurant = req.body.idRestaurant;
   id = req.body.id;
   idTable = req.body.idTable;
+  contact = req.body.contact;
   var valuesSelect = [id];
   var selectsql = "select numCommande from commandes where idUtilisateur= (?)";
 
@@ -359,8 +367,8 @@ app.post('/ajoutCommande',jsonParser, function (req, res) {
       }
 
         for(let i =0 ; i<commande.length;i++ ){
-          let values = [[commande[i][3],idRestaurant,id,numCommande,idTable]];
-          var rechsql = "insert into commandes(idPlat,idRestaurant,idUtilisateur,numCommande,idTable) values(?)";
+          let values = [[commande[i][3],idRestaurant,id,numCommande,idTable,contact]];
+          var rechsql = "insert into commandes(idPlat,idRestaurant,idUtilisateur,numCommande,idTable,contact) values(?)";
     
           db.query(rechsql,values, function (err, result, fields) { 
             if (err) {throw err;}else{

@@ -13,6 +13,7 @@ class Recherche extends React.Component {
             id: -1,
             idRestaurant: (this.props.route.params== undefined ? 1  :this.props.route.params.idRestaurant),
             numTable: (this.props.route.params== undefined ? 0  :this.props.route.params.numero),
+            contact: (this.props.route.params== undefined ? null  :this.props.route.params.contact),
             visible:false,
             nom:'Pas de plats diponible',
             commentaires:'default',
@@ -294,13 +295,19 @@ class Recherche extends React.Component {
                   commande: this.state.listCommande,
                   idRestaurant:this.state.idRestaurant,
                   id:this.state.id,
-                  idTable:this.state.numTable
+                  idTable:this.state.numTable,
+                  contact:this.state.contact
               })
             }).then(response => response.json())
             .then((json) => {
               numCommande=json;
               this.props.navigation.replace('Splitter',{numCommande:numCommande,idRestaurant : this.state.idRestaurant,numTable:this.state.numTable});
             });
+
+          
+
+
+
           }
           
         }
