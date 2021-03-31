@@ -48,8 +48,11 @@ app.get('/commandeHome', function (req, res) {
   var rechsql = 'select * from commandes join plats on commandes.idPlat=plats.idPlat join utilisateurs on commandes.idUtilisateur = utilisateurs.id where commandes.idUtilisateur= ?';
   db.query(rechsql,value, function (err, result, fields) {
     if (err) {res.send(JSON.stringify('no'));}else{
-      
-      res.send(JSON.stringify(result[0]));
+        if(result[0]==undefined){
+          res.send(JSON.stringify('no'));
+        }else{
+          res.send(JSON.stringify(result[0]));
+        }
      }
 })
 });
@@ -66,7 +69,7 @@ app.get('/commandeRestaurant', function (req, res) {
 });
 
 app.get('/restaurant', function (req, res) {
-  var rechsql = 'select * from restaurant';
+  var rechsql = 'select * from restaurant join plats on restaurant.id=plats.idRestaurant';
   db.query(rechsql, function (err, result, fields) {
     if (err) {throw err;}else{
       res.send(JSON.stringify(result));
@@ -181,6 +184,15 @@ app.get('/notation', function (req, res) {
 })
 });
 
+app.get('/notationRestaurant', function (req, res) {
+  var rechsql = 'select  idRestaurant,note from notation join restaurant on notation.idRestaurant=restaurant.id ';
+  db.query(rechsql, function (err, result, fields) {
+    if (err) {throw err;}else{
+      res.send(JSON.stringify(result));
+     }
+})
+});
+
 
 
 app.post('/table',jsonParser, function (req, res) {
@@ -216,6 +228,7 @@ app.post('/demandeAddition',jsonParser, function (req, res) {
           if(result[i].servi==false){
             res.send(JSON.stringify('no'));
             bool =false
+            break;
           }
         }
         if(bool){

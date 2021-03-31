@@ -49,8 +49,8 @@ class Splitter extends React.Component {
             const test = [];
             this.setState({ cle: 1 });
             for(let i=0; i<json.length;i++){
-            test.push(<View style={styles.rect} key={this.state.cle} ><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>{json[i]['nomPlat']}</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Prix: {json[i]['prix']}€</Text><TouchableOpacity style={[styles.boutton, this.props.style]} ><Text style={styles.texte}>button</Text></TouchableOpacity></View></View>);
-            this.setState({ cle: this.state.cle+1 });
+              test.push(<View style={styles.rect} key={this.state.cle} ><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>{json[i]['nomPlat']}</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Prix: {json[i]['prix']}€</Text></View></View>);
+              this.setState({ cle: this.state.cle+1 });
             }
 
             this.setState({ chaine: test });
@@ -78,8 +78,8 @@ componentDidMount(){
       const test = [];
       this.setState({ cle: 1 });
       for(let i=0; i<json.length;i++){
-      test.push(<View style={styles.rect} key={this.state.cle} ><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>{json[i]['nomPlat']}</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Prix: {json[i]['prix']}€</Text><TouchableOpacity style={[styles.boutton, this.props.style]} ><Text style={styles.texte}>button</Text></TouchableOpacity></View></View>);
-      this.setState({ cle: this.state.cle+1 });
+        test.push(<View style={styles.rect} key={this.state.cle} ><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>{json[i]['nomPlat']}</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Prix: {json[i]['prix']}€</Text></View></View>);
+        this.setState({ cle: this.state.cle+1 }); 
       }
 
       this.setState({ chaine: test });
@@ -206,9 +206,16 @@ contacts=()=>{
       }else{
         let prixTotal = 0;
         for(let i = 0 ; i < json.length; i++){
-          if(!nombrePersonne.includes(json[i].id)){
-            nombrePersonne.push(json[i].id);
-            prix.push({id :json[i].id , nom : json[i].nom , prenom : json[i].prenom , prix : 0});
+          if(json[i].contact==null){
+            if(!nombrePersonne.includes(json[i].id)){
+              nombrePersonne.push(json[i].id);
+              prix.push({id :json[i].id , nom : json[i].nom , prenom : json[i].prenom , prix : 0});
+            }
+          }else{
+            if(!nombrePersonne.includes(json[i].contact)){
+              nombrePersonne.push(json[i].contact);
+              prix.push({id : -1 , nom : '' , prenom : json[i].contact , prix : json[i].prix, contact:json[i].contact});
+            }
           }
           prixTotal = prixTotal + json[i].prix;
         }
@@ -262,7 +269,6 @@ rechercheContact(val){
 }
 changeNom(val,txt){
   let arr = this.state.noms;
-  console.log(txt.nativeEvent.text);
   arr[val] = txt.nativeEvent.text;
   this.setState({noms: arr});
 
@@ -283,10 +289,9 @@ addition=()=>{
       }).then(response => response.json())
       .then((json) => {
         this.setState({ channel: 'addition' });
-        this.setState({ cle: 1 });
+        this.setState({ cle: 2 });
         const test = [];
         const autre =[];
-        this.setState({ cle: 1 });
         let prix = 0;
         let listeContact=[]
         for(let i = 0 ; i<json.length;i++){
@@ -305,15 +310,18 @@ addition=()=>{
         this.setState({ cle: this.state.cle+1 });
         let detailContact=[];
         for(let i = 0 ; i<listeContact.length;i++){
+
           let prixC=0
           for(let j = 0 ; j<json.length;j++){
-            if(listeContact[i]==json[j].contact){
+            if(listeContact[i]==json[j].contact && json[j].contact!==null){
+              
               detailContact.push(<View style={[styles.actionBody,{backgroundColor: this.props.actionBody || undefined}]} key={this.state.cle}><TouchableOpacity style={styles.actionButton1}><Text style={styles.actionText1}>{json[j]['nomPlat']}</Text></TouchableOpacity><TouchableOpacity style={styles.actionButton2}><Text style={styles.actionText2}>{json[j]['prix']}€</Text></TouchableOpacity></View>);
               prixC=prixC+json[j].prix;
               this.setState({ cle: this.state.cle+1 });
             }
           }
           test.push(<View style={[styles.containerAddition, this.props.style]} key={this.state.cle}><View style={styles.bodyContent}><Text style={styles.subtitleStyle}>{listeContact[i]}</Text></View>{detailContact}<View style={styles.body}><Text style={styles.bodyText}>total: {prixC}€</Text></View></View>);
+          detailContact=[];
           this.setState({ cle: this.state.cle+1 });
         }
         
@@ -589,14 +597,14 @@ const styles = StyleSheet.create({
       boutton: {
         backgroundColor: "#007AFF",
         height: '80%',
-        width: '40%',
+        width: '100%',
         marginLeft: 66,
         flex:1,
         borderRadius: 15,
       },
       texte: {
         color: "#fff",
-      fontSize: 17,
+      fontSize: 14,
       justifyContent: "center",
         alignItems: "center",
       },

@@ -32,7 +32,7 @@ class Home extends React.Component {
         let data = JSON.parse(userData);
         let serveurData = await AsyncStorage.getItem("serveur");
         let dataS = JSON.parse(serveurData);
-        
+        console.log(data);
         if(data!=null && data!=0){
           if(dataS==null || dataS==false){
             this.setState({id:data});
@@ -67,7 +67,7 @@ class Home extends React.Component {
         }
         }).then(response => response.json())
         .then((json) => {
-          if(json!=='no'){
+          if(json!=='no' && !json.addition){
           console.log(json.idTable);
             this.props.navigation.navigate('Splitter',{numCommande : json.numCommande, idRestaurant: json.idRestaurant,numTable:json.idTable}); 
           }

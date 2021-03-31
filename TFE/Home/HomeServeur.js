@@ -19,9 +19,11 @@ class HomeServeur extends React.Component {
             visible:false,
             vue : [],
             vueId:[],
+            listAddition:[],
             textAccept:'Accepter la commande',
             textDelete:"Commande Servie",
-            textAddition:"Addition envoyée"
+            textAddition:"Addition envoyée",
+            prixAddition:0,
           };
     }
     onPress(){
@@ -66,6 +68,7 @@ fetched(){
             let arr = [];
             let arrComplet=[];
             let id=[];
+            let arrAddition =[];
             for(let i = 0 ; i<json.length;i++){
                 if(!json[i].servi){   
                     if(this.findValue(id,json[i].numCommande,json[i].idUtilisateur)){
@@ -79,11 +82,13 @@ fetched(){
                             arr.push(json[i]);
                             id.push({num :json[i].contact,id:json[i].idUtilisateur,addition:true});
                         }
+                        arrAddition.push(json[i]);
                     }
                 }
             }
             this.setState({list : arr});
             this.setState({listFull : arrComplet});
+            this.setState({listAddition : arrAddition});
         });
 }
     componentDidMount(){
@@ -144,6 +149,28 @@ fetched(){
         this.setState({listOverlay: arr});
         this.setState({visible:true});
     }
+    showAddition(cle){
+        let arr = [];
+        let full = this.state.listAddition;
+        let prix = 0;
+        for(let i = 0 ; i<full.length;i++){
+            if(cle.contact==null){
+                if(full[i].idUtilisateur==cle.idUtilisateur && full[i].contact==null){
+                    arr.push(full[i]);
+                    prix= prix+full[i].prix;
+                }
+            }else{
+                if(full[i].contact==cle.contact && full[i].idUtilisateur==cle.idUtilisateur ){
+                    arr.push(full[i]);
+                    prix= prix+full[i].prix;
+                }
+            }
+        }
+        this.setState({prixAddition:prix});
+        this.setState({listOverlay: arr});
+        this.setState({visible:true});
+    }
+
 
     
     ack(num,id,addition){
@@ -245,13 +272,19 @@ fetched(){
                       
                     <ListItem key={i} bottomDivider onPress={() => this.toggleOverlay()} >
                         <ListItem.Content>
-                        <ListItem.Title>{l.nomPlat}</ListItem.Title>
+                        <ListItem.Title>{l.nomPlat} : {l.prix} €</ListItem.Title>
                         </ListItem.Content>
                     </ListItem>
                     
                     ))
                 }
-
+    {this.state.prixAddition!==0 &&
+        <ListItem key={-1} bottomDivider onPress={() => this.toggleOverlay()} >
+        <ListItem.Content>
+        <ListItem.Title>total : {this.state.prixAddition} €</ListItem.Title>
+        </ListItem.Content>
+        </ListItem>
+    }
 
 </Overlay>
 
@@ -273,13 +306,20 @@ fetched(){
                         </TouchableOpacity>
                 </View>
             <View style={styles.commande2Row}>
-            <Text style={styles.commande2}></Text>
+            
             {!l.addition &&
             <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>this.showCommande(l)}>
                 <Text style={styles.voirLaCommande}>Voir la commande</Text>
                 </TouchableOpacity>
             }
+            {l.addition==true &&
+                <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>this.showAddition(l)}>
+                <Text style={styles.voirLaCommande}>Voir l'addition</Text>
+                </TouchableOpacity>
+            }
+            
             </View>
+            
         </View>
         ))}
       
