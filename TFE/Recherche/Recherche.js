@@ -105,6 +105,10 @@ class Recherche extends React.Component {
           }
         }
         if(bool){
+          console.log(compteur);
+          for(let i = compteur;i<5;i++){
+            arrCinq.push({});
+          }
           arr.push(arrCinq);
         }
         if(json.length!==0){
@@ -149,6 +153,10 @@ class Recherche extends React.Component {
           compteur++;
         }
         if(bool){
+          console.log(compteur);
+          for(let i = compteur;i<5;i++){
+            arrCinq.push({});
+          }
           arr.push(arrCinq);
         }
         if(json.length!==0){
@@ -261,6 +269,12 @@ class Recherche extends React.Component {
           this.props.navigation.replace('Splitter'); 
         }
         changerPlat=(val)=>{
+          if(Object.entries(this.state.list[this.state.place][val]).length==0){
+            this.toggleOverlay();
+            this.setState({placeNote:0});
+            this.setState({place:0});
+            this.setState({placeBoissons:0});
+          }else{
             this.setState({nom : this.state.list[this.state.place][val].name});
             this.setState({prix : this.state.list[this.state.place][val].prix});
             this.setState({commentaires : this.state.list[this.state.place][val].subtitle});
@@ -271,17 +285,25 @@ class Recherche extends React.Component {
             this.setState({placeNote:0});
             this.setState({placeBoissons:0});
             this.setState({place:0});
+          }
         }
         changerBoisson=(val)=>{
-          this.setState({nom : this.state.listBoissons[this.state.placeBoissons][val].name});
-          this.setState({prix : this.state.listBoissons[this.state.placeBoissons][val].prix});
-          this.setState({commentaires : this.state.listBoissons[this.state.placeBoissons][val].subtitle});
-          this.setState({idPlat : this.state.listBoissons[this.state.placeBoissons][val].idPlat});
-          this.setState({imagePlat : this.state.listBoissons[this.state.placeBoissons][val].imagePlat});
-          this.toggleOverlay();
-          this.setState({placeNote:0});
-          this.setState({placeBoissons:0});
-          this.setState({place:0});
+          if(Object.entries(this.state.listBoissons[this.state.placeBoissons][val]).length==0){
+            this.toggleOverlay();
+            this.setState({placeNote:0});
+            this.setState({place:0});
+            this.setState({placeBoissons:0});
+          }else{
+            this.setState({nom : this.state.listBoissons[this.state.placeBoissons][val].name});
+            this.setState({prix : this.state.listBoissons[this.state.placeBoissons][val].prix});
+            this.setState({commentaires : this.state.listBoissons[this.state.placeBoissons][val].subtitle});
+            this.setState({idPlat : this.state.listBoissons[this.state.placeBoissons][val].idPlat});
+            this.setState({imagePlat : this.state.listBoissons[this.state.placeBoissons][val].imagePlat});
+            this.toggleOverlay();
+            this.setState({placeNote:0});
+            this.setState({placeBoissons:0});
+            this.setState({place:0});
+          }
       }
       changerNote=(val)=>{
         console.log(val);
@@ -462,7 +484,7 @@ class Recherche extends React.Component {
                                             source={{uri: "http://192.168.0.8:3001/image/"+this.state.imagePlat}}
                                             style={styles.cardItemImagePlace}
                                         ></Image>
-                                                <View style={styles.cardBody}>
+                                                <View style={styles.cardBodyTop}>
                                                     <View style={styles.bodyContent}>
                                                     <Text style={styles.titleStyle}>
                                                         {this.state.nom}
@@ -471,6 +493,8 @@ class Recherche extends React.Component {
                                                     {this.state.commentaires}
                                                     </Text>
                                                     </View>
+                                                    </View>
+                                                    <View style={styles.cardBody}>
                                                     <View style={styles.actionBody}>
                                                     <TouchableOpacity style={styles.actionButton1}>
                                                         <Text style={styles.actionText1}>
@@ -482,12 +506,10 @@ class Recherche extends React.Component {
                                                         {this.state.prix} €
                                                         </Text>
                                                     </TouchableOpacity>
-                                                    
                                                     </View>
                                                     <TouchableOpacity style={[styles.containerButtonNote, this.props.style]} onPress={()=>this.note()}>
                                                     <Text style={styles.captionNote}>Notes</Text>
                                                     </TouchableOpacity>
-
                                                 </View>
                                     </View>
 
@@ -568,7 +590,7 @@ class Recherche extends React.Component {
                                             source={{uri: "http://192.168.0.8:3001/image/"+this.state.imagePlat}}
                                             style={styles.cardItemImagePlace}
                                         ></Image>
-                                                <View style={styles.cardBody}>
+                                                <View style={styles.cardBodyTop}>
                                                     <View style={styles.bodyContent}>
                                                     <Text style={styles.titleStyle}>
                                                         {this.state.nom}
@@ -577,6 +599,8 @@ class Recherche extends React.Component {
                                                     {this.state.commentaires}
                                                     </Text>
                                                     </View>
+                                                    </View>
+                                                    <View style={styles.cardBody}>
                                                     <View style={styles.actionBody}>
                                                     <TouchableOpacity style={styles.actionButton1}>
                                                         <Text style={styles.actionText1}>
@@ -667,7 +691,7 @@ class Recherche extends React.Component {
 
 
         {this.state.panier == 1 &&
-        <SafeAreaView style={{width:'100%', height:'89.7%'}} >
+        <SafeAreaView style={{width:'100%', height:'90%'}} >
           <ScrollView  style={{ width:'100%', height:'100%'}}>
 
           {this.state.listCommande.map((l, i) => (
@@ -782,11 +806,10 @@ const styles = StyleSheet.create({
       },
       rect: {
         width: '100%',
-        height: '87%',
+        height: '90%',
         backgroundColor: "rgba(159,218,215,1)",
-        borderRadius: 21,
-        marginTop: '2%',
-        marginBottom: '2%'
+        borderRadius: 0,
+       //marginBottom: '2%'
 
       },
 
@@ -813,15 +836,28 @@ const styles = StyleSheet.create({
         flex: 1,
         minHeight: '100%',
         width: '100%',
-        resizeMode: 'cover',
-        backgroundColor: 'red',
+        resizeMode: 'contain',
+        backgroundColor: "rgba(159,218,215,1)",
       },
       cardBody: {
         position: "absolute",
-        bottom: 5,
-        backgroundColor: "rgba(0,0,0,0.2)",
+        bottom: 0,
+        backgroundColor: "rgba(0,0,0,0.3)",
         left: 0,
-        right: 14
+        right: 14,
+        width:'100%',
+        height:'25%'
+
+      },
+      cardBodyTop: {
+        position: "absolute",
+        top: 0,
+        backgroundColor: "rgba(0,0,0,0.3)",
+        left: 0,
+        right: 14,
+        width:'100%',
+        height:'30%'
+
       },
       bodyContent: {
         padding: 16,
@@ -958,7 +994,7 @@ const styles = StyleSheet.create({
         minWidth: 88,
         paddingLeft: 16,
         paddingRight: 16,
-        height: '15%',
+        height: '40%',
         width: '50%',
         marginLeft:'0%'
       },
@@ -989,7 +1025,7 @@ const styles = StyleSheet.create({
         marginTop:'1%'
       },
       containerFooter: {
-        backgroundColor: "#3f51b5",
+        backgroundColor: "#4C83B9",
         flexDirection: "row",
         alignItems: "center",
         shadowColor: "#111",
@@ -1000,6 +1036,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 1.2,
         elevation: 3,
+        height:'10%'
       },
       btnWrapper1: {
         flex: 1,

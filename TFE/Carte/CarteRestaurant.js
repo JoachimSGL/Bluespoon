@@ -88,6 +88,10 @@ class CarteRestaurant extends React.Component {
           }
         }
         if(bool){
+          console.log(compteur);
+          for(let i = compteur;i<5;i++){
+            arrCinq.push({});
+          }
           arr.push(arrCinq);
         }
         if(json.length!==0){
@@ -132,6 +136,9 @@ class CarteRestaurant extends React.Component {
           compteur++;
         }
         if(bool){
+          for(let i = compteur;i<5;i++){
+            arrCinq.push({});
+          }
           arr.push(arrCinq);
         }
         if(json.length!==0){
@@ -219,6 +226,7 @@ class CarteRestaurant extends React.Component {
           
           this.setState({placeNote:0});
           this.setState({place:0});
+          this.setState({placeBoissons:0});
         }
         boissons=()=>{
           this.setState({panier : 2});
@@ -230,6 +238,7 @@ class CarteRestaurant extends React.Component {
           
           this.setState({placeNote:0});
           this.setState({place:0});
+          this.setState({placeBoissons:0});
         }
         panier=()=>{
           this.setState({panier : 1});
@@ -243,6 +252,12 @@ class CarteRestaurant extends React.Component {
           this.props.navigation.navigate('Splitter'); 
         }
         changerPlat=(val)=>{
+          if(Object.entries(this.state.list[this.state.place][val]).length==0){
+            this.toggleOverlay();
+            this.setState({placeNote:0});
+            this.setState({place:0});
+            this.setState({placeBoissons:0});
+          }else{
             this.setState({nom : this.state.list[this.state.place][val].name});
             this.setState({prix : this.state.list[this.state.place][val].prix});
             this.setState({commentaires : this.state.list[this.state.place][val].subtitle});
@@ -251,17 +266,27 @@ class CarteRestaurant extends React.Component {
             this.toggleOverlay();
             this.setState({placeNote:0});
             this.setState({place:0});
+            this.setState({placeBoissons:0});
+          }
         }
         changerBoisson=(val)=>{
-          this.setState({nom : this.state.listBoissons[this.state.placeBoissons][val].name});
-          this.setState({prix : this.state.listBoissons[this.state.placeBoissons][val].prix});
-          this.setState({commentaires : this.state.listBoissons[this.state.placeBoissons][val].subtitle});
-          this.setState({idPlat : this.state.listBoissons[this.state.placeBoissons][val].idPlat});
-          
-          this.setState({imagePlat : this.state.listBoissons[this.state.placeBoissons][val].imagePlat});
-          this.toggleOverlay();
-          this.setState({placeNote:0});
-          this.setState({place:0});
+          if(Object.entries(this.state.listBoissons[this.state.placeBoissons][val]).length==0){
+            this.toggleOverlay();
+            this.setState({placeNote:0});
+            this.setState({place:0});
+            this.setState({placeBoissons:0});
+          }else{
+            this.setState({nom : this.state.listBoissons[this.state.placeBoissons][val].name});
+            this.setState({prix : this.state.listBoissons[this.state.placeBoissons][val].prix});
+            this.setState({commentaires : this.state.listBoissons[this.state.placeBoissons][val].subtitle});
+            this.setState({idPlat : this.state.listBoissons[this.state.placeBoissons][val].idPlat});
+            
+            this.setState({imagePlat : this.state.listBoissons[this.state.placeBoissons][val].imagePlat});
+            this.toggleOverlay();
+            this.setState({placeNote:0});
+            this.setState({place:0});
+            this.setState({placeBoissons:0});
+          }
       }
       changerNote=(val)=>{
         console.log(val);
@@ -384,7 +409,7 @@ class CarteRestaurant extends React.Component {
                                             source={{uri: "http://192.168.0.8:3001/image/"+this.state.imagePlat}}
                                             style={styles.cardItemImagePlace}
                                         ></Image>
-                                                <View style={styles.cardBody}>
+                                               <View style={styles.cardBodyTop}>
                                                     <View style={styles.bodyContent}>
                                                     <Text style={styles.titleStyle}>
                                                         {this.state.nom}
@@ -393,6 +418,10 @@ class CarteRestaurant extends React.Component {
                                                     {this.state.commentaires}
                                                     </Text>
                                                     </View>
+                                                    
+                                                </View>
+                                                <View style={styles.cardBody}>
+                                                    
                                                     <View style={styles.actionBody}>
                                                     <TouchableOpacity style={styles.actionButton1}>
                                                         <Text style={styles.actionText1}>
@@ -404,7 +433,6 @@ class CarteRestaurant extends React.Component {
                                                         {this.state.prix} €
                                                         </Text>
                                                     </TouchableOpacity>
-                                                    
                                                     </View>
                                                     
 
@@ -412,18 +440,19 @@ class CarteRestaurant extends React.Component {
                                     </View>
 
                         </View>
-            <View style={{flex:1,width:'100%',height:'100%'}}>
-            <TouchableOpacity style={[styles.containerButtonMauve, this.props.style]} onPress={this.toggleOverlay}>
-            <Text style={styles.captionMauve}>Catalogue</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.containerButtonNote, this.props.style]} onPress={()=>this.note()}>
-            <Text style={styles.captionNote}>Notes</Text>
-            </TouchableOpacity>
-            </View>  
+              <View style={{flex:1,width:'100%',height:'100%',backgroundColor:"rgba(159,218,215,1)"}}>
+              <TouchableOpacity style={[styles.containerButtonNote, this.props.style]} onPress={()=>this.note()}>
+              <Text style={styles.captionNote}>Notes</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.containerButtonMauve, this.props.style]} onPress={this.toggleOverlay}>
+              <Text style={styles.captionMauve}>Catalogue</Text>
+              </TouchableOpacity>
+              
+              </View>  
             <View>
             
-            </View>
-        </View >
+            </View ></View >
+        
 
         }
 
@@ -483,11 +512,12 @@ class CarteRestaurant extends React.Component {
         <View style={styles.rect}>
                         <View style={styles.materialButtonPrimary1Row}>
                                     <View style={[styles.containerImage, this.props.style]}>
+                                    
                                         <Image
                                             source={{uri: "http://192.168.0.8:3001/image/"+this.state.imagePlat}}
                                             style={styles.cardItemImagePlace}
                                         ></Image>
-                                                <View style={styles.cardBody}>
+                                        <View style={styles.cardBodyTop}>
                                                     <View style={styles.bodyContent}>
                                                     <Text style={styles.titleStyle}>
                                                         {this.state.nom}
@@ -496,6 +526,10 @@ class CarteRestaurant extends React.Component {
                                                     {this.state.commentaires}
                                                     </Text>
                                                     </View>
+                                                    
+                                                </View>
+                                                <View style={styles.cardBody}>
+                                                    
                                                     <View style={styles.actionBody}>
                                                     <TouchableOpacity style={styles.actionButton1}>
                                                         <Text style={styles.actionText1}>
@@ -513,13 +547,14 @@ class CarteRestaurant extends React.Component {
                                     </View>
 
                         </View>
-            <View style={{flex:1,width:'100%',height:'100%'}}>
+            <View style={{flex:1,width:'100%',height:'100%',backgroundColor:"rgba(159,218,215,1)"}}>
+            <TouchableOpacity style={[styles.containerButtonNote, this.props.style]} onPress={()=>this.note()}>
+            <Text style={styles.captionNote}>Notes</Text>
+            </TouchableOpacity>
             <TouchableOpacity style={[styles.containerButtonMauve, this.props.style]} onPress={this.toggleOverlay}>
             <Text style={styles.captionMauve}>Catalogue</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.containerButtonNote, this.props.style]} onPress={()=>this.note()}>
-                                                    <Text style={styles.captionNote}>Notes</Text>
-                                                    </TouchableOpacity>
+            
             </View>  
             <View>
             
@@ -692,18 +727,17 @@ const styles = StyleSheet.create({
       },
       rect: {
         width: '100%',
-        height: '87%',
+        height: '90%',
         backgroundColor: "rgba(159,218,215,1)",
-        borderRadius: 21,
-        marginTop: '2%',
-        marginBottom: '1%'
+        borderRadius: 0,
+        marginBottom: '0%'
 
       },
 
       containerImage: {
         borderWidth: 1,
         borderRadius: 20,
-        borderColor: "#CCC",
+        borderColor: "rgba(159,218,215,1)",
         flexWrap: "nowrap",
         backgroundColor: "#FFF",
         shadowColor: "#000",
@@ -719,19 +753,32 @@ const styles = StyleSheet.create({
         height:'100%'
       },
       cardItemImagePlace: {
-        backgroundColor: "#ccc",
+        backgroundColor: "rgba(159,218,215,1)",
         flex: 1,
         minHeight: '100%',
         width: '100%',
-        resizeMode: 'cover',
-        backgroundColor: 'red',
+        resizeMode: 'contain',
+        backgroundColor: "rgba(159,218,215,1)",
       },
       cardBody: {
         position: "absolute",
-        bottom: 5,
-        backgroundColor: "rgba(0,0,0,0.2)",
+        bottom: 0,
+        backgroundColor: "rgba(0,0,0,0.3)",
         left: 0,
-        right: 14
+        right: 14,
+        width:'100%',
+        height:'15%'
+
+      },
+      cardBodyTop: {
+        position: "absolute",
+        top: 0,
+        backgroundColor: "rgba(0,0,0,0.3)",
+        left: 0,
+        right: 14,
+        width:'100%',
+        height:'30%'
+
       },
       bodyContent: {
         padding: 16,
@@ -899,7 +946,7 @@ const styles = StyleSheet.create({
         marginTop:'1%'
       },
       containerFooter: {
-        backgroundColor: "#3f51b5",
+        backgroundColor: "#4C83B9",
         flexDirection: "row",
         alignItems: "center",
         shadowColor: "#111",
@@ -910,6 +957,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 1.2,
         elevation: 3,
+        height:'10%'
       },
       btnWrapper1: {
         flex: 1,

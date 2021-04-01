@@ -10,7 +10,7 @@ class Splitter extends React.Component {
         this.getToken();
         this.state = {
             chaine: [],
-            channel:'',
+            channel:'contacts',
             cle:1,
             id:0,
             type :0,
@@ -19,8 +19,9 @@ class Splitter extends React.Component {
             idRestaurant : (this.props.route.params==undefined ? 1 : this.props.route.params.idRestaurant),
             numTable : (this.props.route.params==undefined ? 1 : this.props.route.params.numTable),
             additionValide : false,
-            listeContact:[{prenom:'default', nom:'fuhzifo' , prix: 12 , id : 1}],
-            noms:[]
+            listeContact:[{prenom:'default', nom:'' , prix: 0 , id : 1}],
+            noms:[],
+            addition:false,
 
           };
           this.toggleOverlay= this.toggleOverlay.bind(this);
@@ -34,7 +35,7 @@ class Splitter extends React.Component {
         
         if(data!=null){
           this.setState({id:data});
-
+          /*
           fetch('http://192.168.0.8:3001/commande?id='+this.state.id, {
               method: 'GET',
             
@@ -55,7 +56,8 @@ class Splitter extends React.Component {
 
             this.setState({ chaine: test });
           });
-
+          */
+          this.contacts();
         }else{
           this.props.navigation.replace('Home')
         }
@@ -64,6 +66,8 @@ class Splitter extends React.Component {
       }
     }
 componentDidMount(){
+ 
+  /*
   fetch('http://192.168.0.8:3001/commande?id='+this.state.id, {
         method: 'GET',
        
@@ -84,6 +88,7 @@ componentDidMount(){
 
       this.setState({ chaine: test });
     });
+    */
 }
 toggleSplit=(bool)=>{
   this.setState({split: bool});
@@ -110,6 +115,7 @@ demandeAddition(){
                     }
                   });
 }
+/*
 commandes=()=>{
   if(this.state.channel!='commandes'){
     fetch('http://192.168.0.8:3001/commande?id='+this.state.id, {
@@ -159,6 +165,7 @@ commandes=()=>{
     
   }
 }
+*/
 contacts=()=>{
     fetch('http://192.168.0.8:3001/personnes?id='+this.state.id, {
       method: 'GET',
@@ -247,6 +254,7 @@ contacts=()=>{
       this.setState({noms:arr});
       this.setState({ channel: 'contacts' });
       this.setState({type:0});
+      this.setState({addition:false});
     });
 
 
@@ -325,9 +333,10 @@ addition=()=>{
           this.setState({ cle: this.state.cle+1 });
         }
         
-        test.push(<TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.demandeAddition()} ><Text style={styles.payement}>Payer</Text></TouchableOpacity>);
+        //test.push(<TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.demandeAddition()} ><Text style={styles.payement}>Payer</Text></TouchableOpacity>);
         this.setState({ chaine: test });
         this.setState({type:0});
+        this.setState({addition:true});
         
       });
 
@@ -345,10 +354,9 @@ addition=()=>{
         }
       }).then(response => response.json())
       .then((json) => {
-        this.setState({ cle: 1 });
         const test = [];
         const autre =[];
-        this.setState({ cle: 1 });
+        this.setState({ cle: 2 });
         let prix = 0;
         let listeContact=[]
         for(let i = 0 ; i<json.length;i++){
@@ -365,6 +373,7 @@ addition=()=>{
         }
         test.push(<View style={[styles.containerAddition, this.props.style]} key='1'><View style={styles.bodyContent}><Text style={styles.titleGoesHere}>Addition</Text><Text style={styles.subtitleStyle}>{json[0]['prenom']}  {json[0]['nom']}</Text></View>{autre}<View style={styles.body}><Text style={styles.bodyText}>total: {prix}€</Text></View></View>);
         let detailContact=[];
+        
         for(let i = 0 ; i<listeContact.length;i++){
           let prixC=0
           for(let j = 0 ; j<json.length;j++){
@@ -378,10 +387,10 @@ addition=()=>{
           this.setState({ cle: this.state.cle+1 });
         }
         
-        test.push(<TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.demandeAddition()} ><Text style={styles.payement}>Payer</Text></TouchableOpacity>);
+        //test.push(<TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.demandeAddition()} ><Text style={styles.payement}>Payer</Text></TouchableOpacity>);
         this.setState({ chaine: test });
         this.setState({type:0});
-        
+        this.setState({addition:true});
       });
   }
   
@@ -391,6 +400,7 @@ payement=()=>{
   if(this.state.channel!='payement'){
     this.setState({ channel: 'payement' });
     this.setState({type:1});
+    this.setState({addition:false});
     /*
     const test = [];
     test.push(<View key={1}><TouchableOpacity style={[styles.typePayement, this.props.style]}><Text style={styles.payement}>par plats</Text></TouchableOpacity><TouchableOpacity style={[styles.typePayement, this.props.style]}><Text style={styles.payement}>Divisé</Text></TouchableOpacity></View>);
@@ -471,29 +481,11 @@ payement=()=>{
     <TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.toggleSplit(false)} ><Text style={styles.payement}>Divisé</Text></TouchableOpacity>
     </View>
   }
+{this.state.addition &&
+<TouchableOpacity style={[styles.typePayementAddition, this.props.style]} onPress={()=>this.demandeAddition()} ><Text style={styles.payement}>Payer</Text></TouchableOpacity>
+  }
         <View style={[styles.footer, this.props.style]}>
-      <TouchableOpacity style={styles.btnWrapper1} onPress={this.commandes}>
-        <MaterialCommunityIconsIcon
-          name={this.props.icon || "food"}
-          style={[
-            styles.icon,
-            {
-              color: this.props.active ? "#007AFF" : "#616161"
-            }
-          ]}
-          
-        ></MaterialCommunityIconsIcon>
-        <Text
-          style={[
-            styles.btn1Caption,
-            {
-              color: this.props.active ? "#007AFF" : "#9E9E9E"
-            }
-          ]}
-        >
-          Commandes
-        </Text>
-      </TouchableOpacity>
+      
       <TouchableOpacity style={styles.btnWrapper2}  onPress={this.contacts}>
         <MaterialCommunityIconsIcon
           name={this.props.icon1 || "contacts"}
@@ -528,7 +520,28 @@ payement=()=>{
 }
 
 /*
-  <TouchableOpacity style={[styles.containerAdd, thisprops.style]}><Icon name="share-variant" style={styles.iconAdd}></Icon></TouchableOpacity>
+  <TouchableOpacity style={styles.btnWrapper1} onPress={this.commandes}>
+        <MaterialCommunityIconsIcon
+          name={this.props.icon || "food"}
+          style={[
+            styles.icon,
+            {
+              color: this.props.active ? "#007AFF" : "#616161"
+            }
+          ]}
+          
+        ></MaterialCommunityIconsIcon>
+        <Text
+          style={[
+            styles.btn1Caption,
+            {
+              color: this.props.active ? "#007AFF" : "#9E9E9E"
+            }
+          ]}
+        >
+          Commandes
+        </Text>
+      </TouchableOpacity>
 */
 
 
@@ -536,12 +549,12 @@ const styles = StyleSheet.create({
   containerPrix: {
         minWidth: 288,
         justifyContent: "center",
-        backgroundColor: "#323232",
-        paddingLeft: 24,
-        paddingRight: 24,
+        backgroundColor: "#0B2444",
+        paddingLeft: '10%',
+        paddingRight: '10%',
         //borderRadius: 2,
-        width: 322,
-        height: 48,
+        width: '80%',
+        height: '30%',
         borderRadius: 100,
         marginTop: 8,
         marginLeft: 19
@@ -588,23 +601,25 @@ const styles = StyleSheet.create({
         marginTop: 11
       },
       prixRow: {
-        height: 44,
+        height: '50%',
         flexDirection: "row",
-        marginTop: 25,
-        marginLeft: 76,
-        marginRight: 46
+        marginTop: '5%',
+        marginLeft: '10%',
+        marginRight: '2%'
       },
       boutton: {
         backgroundColor: "#007AFF",
-        height: '80%',
+        height: '100%',
         width: '100%',
-        marginLeft: 66,
+        marginLeft: '10%',
         flex:1,
         borderRadius: 15,
+        justifyContent: "center",
+        alignItems: "center",
       },
       texte: {
         color: "#fff",
-      fontSize: 14,
+      fontSize: 18,
       justifyContent: "center",
         alignItems: "center",
       },
@@ -763,6 +778,17 @@ const styles = StyleSheet.create({
         paddingLeft: 16,
         paddingRight: 16,
         height: '30%',
+        width: '100%'
+      },
+      typePayementAddition:{
+        backgroundColor: "#007AFF",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        borderRadius: 5,
+        paddingLeft: 16,
+        paddingRight: 16,
+        height: '10%',
         width: '100%'
       },
       payement:{
