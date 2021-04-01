@@ -85,12 +85,8 @@ class Carte extends React.Component {
             arrPlat.push({id:json[i].id,nomPlat:json[i].nomPlat,name:json[i].nomRestaurant,commentaires:json[i].commentaires});
           }
         }
-        this.setState({list:arr});
-        this.setState({listShow:arr});
-        this.setState({listePlat:arrPlat});
-      })
 
-      fetch('http://192.168.0.8:3001/notationRestaurant', {
+        fetch('http://192.168.0.8:3001/notationRestaurant', {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -116,6 +112,13 @@ class Carte extends React.Component {
       }
       this.setState({noteRestaurant:noteRestaurant});
       })
+        this.setState({list:arr});
+        this.setState({listShow:arr});
+        this.setState({listePlat:arrPlat});
+
+      })
+
+      
 
 
 

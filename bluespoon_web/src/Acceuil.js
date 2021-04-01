@@ -86,8 +86,9 @@ class Acceuil extends Component {
         let boissonBool = document.getElementById(cle+ 'boiss').checked;
         console.log(boissonBool);
         let imageB = document.getElementById(cle+ 'image').value;
+        let arr=imageB.split("\\");
+        imageB=arr[arr.length-1];
         const file = document.getElementById(cle+ 'image').files[0];
-        var blob = new Blob([file]);
         /*
         const fileInput = document.querySelector(imageB) ;
         //const fileInput = document.getElementById(cle.target.value+ 'image').files[0].name; 
@@ -106,9 +107,21 @@ class Acceuil extends Component {
             plat:platB,
             commentaires:commentairesB,
             prix:prixB,
-            image: blob,
+            imagePlat:imageB,
             boisson:boissonBool
         })
+      });
+      var formData = new FormData();
+      formData.append('file', file);
+      console.log(file);
+      fetch('http://192.168.0.8:3001/image', {
+        method: 'POST',
+        headers: {
+          //Accept: 'application/json',
+          //'Content-Type': 'multipart/form-data',
+          //'Access-Control-Allow-Origin': 'true'
+        },
+        body:formData,
       });
       /*
       fetch('http://192.168.0.8:3001/image', {
@@ -135,8 +148,10 @@ class Acceuil extends Component {
         console.log(boissonBool);
         
         let imageB = document.getElementById(cle+ 'image').value;
+        let arr=imageB.split("\\");
+        imageB=arr[arr.length-1];
         const file = document.getElementById(cle+ 'image').files[0];
-        var blob = new Blob([file]);
+        //var blob = new Blob([file]);
         /*
         const fileInput = document.querySelector(imageB) ;
         //const fileInput = document.getElementById(cle.target.value+ 'image').files[0].name; 
@@ -156,9 +171,21 @@ class Acceuil extends Component {
             plat:platB,
             commentaires:commentairesB,
             prix:prixB,
-            image: blob,
+            imagePlat:imageB,
             boisson : boissonBool
         })
+      });
+      var formData = new FormData();
+      formData.append('file', file);
+      console.log(file);
+      fetch('http://192.168.0.8:3001/image', {
+        method: 'POST',
+        headers: {
+          //Accept: 'application/json',
+          //'Content-Type': 'multipart/form-data',
+          //'Access-Control-Allow-Origin': 'true'
+        },
+        body:formData,
       });
     }
      downloadQR = () => {

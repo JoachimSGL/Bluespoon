@@ -17,6 +17,7 @@ class Recherche extends React.Component {
             visible:false,
             nom:'Pas de plats diponible',
             commentaires:'default',
+            imagePlat:'null.jpg',
             prix:'0',
             num:0,
             place:0,
@@ -92,11 +93,11 @@ class Recherche extends React.Component {
         let bool = true;
         for(let i = 0 ; i < json.length; i++){
           if(compteur<4){
-            arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat});
+            arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat});
             compteur++;
             bool = true;
           }else{
-            arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat});
+            arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat});
             arr.push(arrCinq);
             arrCinq = [];
             compteur=0;
@@ -113,6 +114,7 @@ class Recherche extends React.Component {
         this.setState({prix : arr[0][0].prix});
         this.setState({commentaires : arr[0][0].subtitle});
         this.setState({idPlat : arr[0][0].idPlat});
+        this.setState({imagePlat : arr[0][0].imagePlat});
         }
       });
 
@@ -134,11 +136,11 @@ class Recherche extends React.Component {
         let bool = true;
         for(let i = 0 ; i < json.length; i++){
           if(compteur<4){
-          arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat});
+          arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat});
             compteur++;
             bool = true;
           }else{
-            arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat});
+            arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat});
             arr.push(arrCinq);
             arrCinq=[];
             compteur=0;
@@ -230,6 +232,7 @@ class Recherche extends React.Component {
           this.setState({prix : this.state.list[0][0].prix});
           this.setState({commentaires : this.state.list[0][0].subtitle});
           this.setState({idPlat : this.state.list[0][0].idPlat});
+          this.setState({imagePlat : this.state.list[0][0].imagePlat});
           this.setState({placeNote:0});
           this.setState({placeBoissons:0});
           this.setState({place:0});
@@ -240,6 +243,8 @@ class Recherche extends React.Component {
           this.setState({prix : this.state.listBoissons[0][0].prix});
           this.setState({commentaires : this.state.listBoissons[0][0].subtitle});
           this.setState({idPlat : this.state.listBoissons[0][0].idPlat});
+          this.setState({imagePlat : this.state.listBoissons[0][0].imagePlat});
+          
           this.setState({placeNote:0});
           this.setState({placeBoissons:0});
           this.setState({place:0});
@@ -260,6 +265,8 @@ class Recherche extends React.Component {
             this.setState({prix : this.state.list[this.state.place][val].prix});
             this.setState({commentaires : this.state.list[this.state.place][val].subtitle});
             this.setState({idPlat : this.state.list[this.state.place][val].idPlat});
+            this.setState({imagePlat : this.state.list[this.state.place][val].imagePlat});
+
             this.toggleOverlay();
             this.setState({placeNote:0});
             this.setState({placeBoissons:0});
@@ -270,6 +277,7 @@ class Recherche extends React.Component {
           this.setState({prix : this.state.listBoissons[this.state.placeBoissons][val].prix});
           this.setState({commentaires : this.state.listBoissons[this.state.placeBoissons][val].subtitle});
           this.setState({idPlat : this.state.listBoissons[this.state.placeBoissons][val].idPlat});
+          this.setState({imagePlat : this.state.listBoissons[this.state.placeBoissons][val].imagePlat});
           this.toggleOverlay();
           this.setState({placeNote:0});
           this.setState({placeBoissons:0});
@@ -451,7 +459,7 @@ class Recherche extends React.Component {
                         <View style={styles.materialButtonPrimary1Row}>
                                     <View style={[styles.containerImage, this.props.style]}>
                                         <Image
-                                            source={require("./giant.jpg")}
+                                            source={{uri: "http://192.168.0.8:3001/image/"+this.state.imagePlat}}
                                             style={styles.cardItemImagePlace}
                                         ></Image>
                                                 <View style={styles.cardBody}>
@@ -557,7 +565,7 @@ class Recherche extends React.Component {
                         <View style={styles.materialButtonPrimary1Row}>
                                     <View style={[styles.containerImage, this.props.style]}>
                                         <Image
-                                            source={require("./coca.jpg")}
+                                            source={{uri: "http://192.168.0.8:3001/image/"+this.state.imagePlat}}
                                             style={styles.cardItemImagePlace}
                                         ></Image>
                                                 <View style={styles.cardBody}>

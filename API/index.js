@@ -2,9 +2,22 @@ var express = require('express');
 var app = express();
 const mysql = require('mysql');
 const cors = require('cors');
+app.use('/image',express.static('images'));
+var multer  = require('multer')
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'images/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname ) //Appending .jpg
+  }
+})
 
+var upload = multer({ storage: storage });
+//var upload = multer({ dest: 'uploads/' })
 
 var bodyParser = require('body-parser');
+var fs = require('fs');
 
 app.use(cors());
 
@@ -198,9 +211,9 @@ app.get('/notationRestaurant', function (req, res) {
 app.post('/table',jsonParser, function (req, res) {
   let numero = req.body.numero;
   let idU = req.body.id;
-  
-  var rechsql = "update utilisateurs set numTable = "+ numero + " where id = "+idU;
-  db.query(rechsql, function (err, result, fields) {
+  let values=[[numero],[idU]]
+  var rechsql = "update utilisateurs set numTable = ? where id = ?";
+  db.query(rechsql,values, function (err, result, fields) {
     if (err) {throw err;}else{
       res.send(JSON.stringify('done'));
      }
@@ -211,17 +224,19 @@ app.post('/demandeAddition',jsonParser, function (req, res) {
   let addition = req.body.addition;
   let idUtilisateur = req.body.idUtilisateur;
   let numCommande = req.body.numCommande;
+  let value=[[idUtilisateur]];
   if(!addition){
       //var rechsql = "delete from commandes where numCommande = "+numCommande+ " and idUtilisateur = "+idUtilisateur;
-      var rechsql = "delete from commandes where idUtilisateur = "+idUtilisateur;
-      db.query(rechsql, function (err, result, fields) {
+      
+      var rechsql = "delete from commandes where idUtilisateur = ?";
+      db.query(rechsql,value, function (err, result, fields) {
         if (err) {throw err;}else{
           res.send(JSON.stringify('done'));
         }
     })
   }else{
-    var rechsql = "select * from commandes where idUtilisateur = "+idUtilisateur;
-    db.query(rechsql, function (err, result, fields) {
+    var rechsql = "select * from commandes where idUtilisateur = ?";
+    db.query(rechsql,value, function (err, result, fields) {
       if (err) {throw err;}else{
         let bool =true;
         for(let i = 0 ; i<result.length;i++){
@@ -232,8 +247,9 @@ app.post('/demandeAddition',jsonParser, function (req, res) {
           }
         }
         if(bool){
-            var rechsql = "update commandes set addition = "+ addition + " where idUtilisateur = "+idUtilisateur;
-            db.query(rechsql, function (err2, result2, fields2) {
+          let value2=[[addition],[idUtilisateur]];
+            var rechsql = "update commandes set addition = ? where idUtilisateur = ?";
+            db.query(rechsql,value2, function (err2, result2, fields2) {
               if (err2) {throw err2;}else{
                 res.send(JSON.stringify('done'));
               }
@@ -249,9 +265,9 @@ app.post('/addition',jsonParser, function (req, res) {
   let servi = req.body.servi;
   let numCommande = req.body.numCommande;
   let idUtilisateur = req.body.idUtilisateur;
-  let values=[[servi]];
-      var rechsql = "update commandes set servi = "+servi+" where numCommande = "+ numCommande +' and idUtilisateur = '+ idUtilisateur;
-      db.query(rechsql, function (err, result, fields) {
+  let values=[[servi],[numCommande],[idUtilisateur]];
+      var rechsql = "update commandes set servi = ? where numCommande = ? and idUtilisateur = ?";
+      db.query(rechsql,values, function (err, result, fields) {
         if (err) {throw err;}else{
           res.send(JSON.stringify('done'));
         }
@@ -345,11 +361,10 @@ app.post('/ajoutPlat',jsonParser, function (req, res) {
   idRestaurant = req.body.idRestaurant;
   commentaires = req.body.commentaires;
   prix = req.body.prix;
-  image = req.body.image;
   boisson = req.body.boisson;
-  console.log(image);
-  let values = [[idRestaurant,nom,commentaires,prix,image,boisson]];
-  var rechsql = "insert into plats(idRestaurant,nomPlat,commentaires,prix,image,boisson) values(?)";
+  imagePlat = req.body.imagePlat;
+  let values = [[idRestaurant,nom,commentaires,prix,boisson,imagePlat]];
+  var rechsql = "insert into plats(idRestaurant,nomPlat,commentaires,prix,boisson,imagePlat) values(?)";
 
   db.query(rechsql,values, function (err, result, fields) { 
     if (err) {throw err;}else{
@@ -441,25 +456,25 @@ app.post('/modifPlat',jsonParser, function (req, res) {
   idRestaurant = req.body.idRestaurant;
   commentaires = req.body.commentaires;
   prix = req.body.prix;
-  image = req.body.image;
+  imagePlat = req.body.imagePlat;
   boisson = req.body.boisson;
   
-  let values = [[idRestaurant,nom,commentaires,prix,image,boisson]];
-  var rechsql = "UPDATE plats set nomPlat= '" + nom +"', commentaires= '" + commentaires +"', prix= " + prix +",boisson = "+boisson+" where idPlat = "+id;
-  //, image= " + image +"
-  db.query(rechsql, function (err, result, fields) { 
+  let values = [[nom],[commentaires],[prix],[boisson],[imagePlat],[id]];
+  var rechsql = "UPDATE plats set nomPlat= ?, commentaires= ?, prix= ?,boisson = ? ,imagePlat = ? where idPlat = ?";
+  db.query(rechsql,values, function (err, result, fields) { 
     if (err) {throw err;}else{
       res.send('done');
      }
 })
 });
 
-app.post('/image2', function (req, res) {
-  let file = req.files.file;
-  let filename = file.name;
-  console.log(filename);
+app.post('/image',upload.single('file'), function (req, res) {
+  let file = req.file;
+  console.log(file);
+  
+//fs.writeFile(file.originalname, file);
 })
-app.get('/image', function (req, res) {
+app.get('/image2', function (req, res) {
   let idPlat = req.query['idPlat'];
   let values=[[idPlat]]
   var rechsql = 'select image from plats where idPlat= ?';

@@ -3,7 +3,6 @@ import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommun
 import React from 'react';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 class Reconnexion extends React.Component {
     constructor(props) {
         super(props);
@@ -24,11 +23,15 @@ class Reconnexion extends React.Component {
         this.setState({password:txt.nativeEvent.text});
     }
     async storeToken(m,p) {
+      
         try {
            await AsyncStorage.setItem(p, JSON.stringify(m));
         } catch (error) {
           console.log("Something went wrong", error);
         }
+        
+  
+      
       }
     connexion(){
         fetch('http://192.168.0.8:3001/reconnexion?email='+this.state.email+'&&password='+this.state.password, {
