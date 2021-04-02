@@ -164,16 +164,41 @@ fetched(){
         let arr = [];
         let full = this.state.listAddition;
         let prix = 0;
+        let plat=[];
         for(let i = 0 ; i<full.length;i++){
             if(cle.contact==null){
                 if(full[i].idUtilisateur==cle.idUtilisateur && full[i].contact==null){
-                    arr.push(full[i]);
-                    prix= prix+full[i].prix;
+                    if(!plat.includes(full[i].idPlat)){
+                        full[i].nombre=1;
+                        arr.push(full[i]);
+                        prix= prix+full[i].prix;
+                        plat.push(full[i].idPlat);
+                    }else{
+                        for(let j=0;j<arr.length;j++){
+                            if(arr[j].idPlat==full[i].idPlat){
+                                
+                                prix= prix+full[i].prix;
+                                arr[j].nombre=arr[j].nombre+1;
+                            }
+                        }
+                    }
                 }
             }else{
                 if(full[i].contact==cle.contact && full[i].idUtilisateur==cle.idUtilisateur ){
-                    arr.push(full[i]);
-                    prix= prix+full[i].prix;
+                    if(!plat.includes(full[i].idPlat)){
+                        full[i].nombre=1;
+                        arr.push(full[i]);
+                        prix= prix+full[i].prix;
+                        plat.push(full[i].idPlat);
+                    }else{
+                        for(let j=0;j<arr.length;j++){
+                            if(arr[j].idPlat==full[i].idPlat){
+                                
+                                prix= prix+full[i].prix;
+                                arr[j].nombre=arr[j].nombre+1;
+                            }
+                        }
+                    }
                 }
             }
         }

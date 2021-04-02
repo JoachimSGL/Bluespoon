@@ -92,6 +92,11 @@ componentDidMount(){
 }
 toggleSplit=(bool)=>{
   this.setState({split: bool});
+  if(bool){
+    //fetch => par plat
+  }else{
+    //fetch => divisé
+  }
 }
 demandeAddition(){
   fetch('http://192.168.0.8:3001/demandeAddition', {
@@ -445,9 +450,10 @@ payement=()=>{
 
 
   {this.state.type == 1 &&
-  <View style={{width:'100%', height:'93.2%'}}>
+  <View style={{width:'100%', height:'90%'}}>
     <TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.toggleSplit(true)}><Text style={styles.payement}>par plats</Text></TouchableOpacity>
     <TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.toggleSplit(false)} ><Text style={styles.payement}>Divisé</Text></TouchableOpacity>
+    <TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.toggleSplit(false)} ><Text style={styles.payement}>Je paye l'addition</Text></TouchableOpacity>
     </View>
   }
 {this.state.addition &&
@@ -602,7 +608,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "flex-end",
         justifyContent: "flex-end",
-        width: "100%"
+        width: "100%",
+        height:'10%'
       },
       btnWrapper1: {
         flex: 1,

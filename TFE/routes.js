@@ -25,7 +25,7 @@ function Routes() {
       <Stack.Screen name="Home" component={Home} options={{
           title: 'Acceuil',
           headerStyle: {
-            backgroundColor: '#4492E1',
+            backgroundColor: "rgba(68,146,225,0.5)",
           },
           headerTintColor: '#fff',
           headerTitleStyle: {

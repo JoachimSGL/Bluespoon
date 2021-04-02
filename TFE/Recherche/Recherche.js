@@ -932,7 +932,7 @@ const styles = StyleSheet.create({
 
       },
       titleStyleAnimated: {
-        fontSize: 30,
+        fontSize: 20,
         color: "#FFF",
         marginLeft: '10%',
         marginTop:'8%'

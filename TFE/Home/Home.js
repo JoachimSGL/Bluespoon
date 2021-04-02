@@ -1,7 +1,8 @@
-import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Text ,Dimensions} from "react-native";
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ImageBackground } from "react-native";
 //import {Permissions} from 'expo';
 class Home extends React.Component {
     constructor(props) {
@@ -37,6 +38,22 @@ class Home extends React.Component {
           if(dataS==null || dataS==false){
             this.setState({id:data});
             this.setState({serveur:dataS});
+            fetch('http://192.168.0.8:3001/commandeHome?id='+this.state.id, {
+              method: 'GET',
+              headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/json',
+                  //'Access-Control-Allow-Origin': 'true'
+              }
+              }).then(response => response.json())
+              .then((json) => {
+                console.log(json);
+                if(json!=='no' && !json.addition){
+                  this.setState({commande:true});
+                }else{
+                  this.setState({commande:false});
+                }
+              });
           }else{
             this.props.navigation.navigate('HomeServeur');
           }
@@ -78,27 +95,35 @@ class Home extends React.Component {
     
 
     return (
+      <View style={{flex:1,flexDirection: "column"}}>
+    <ImageBackground style={[styles.containerImage, this.props.style]} source={{uri: "http://192.168.0.8:3001/image/acceuil.jpg"}}>
         <View style={styles.containerBig}>
-          
       <Text style={styles.bluespoon}>Bluespoon</Text>
       <View style={styles.containerSmall}>
         
       <TouchableOpacity style={[styles.containerJaune, this.props.style]} onPress={() => { this.props.navigation.navigate('QR'); }} >
-        <Text style={styles.recherche}>QR</Text>
+        <ImageBackground style={[styles.containerJauneImage, this.props.style]} source={{uri: "http://192.168.0.8:3001/image/loupe.png"}}></ImageBackground>
       </TouchableOpacity>
+      </View>
 
+<View style={{flex:1,flexDirection: "row",width:'100%',height:'60%'}}> 
       {this.state.commande &&
         <TouchableOpacity style={[styles.container, this.props.style]} onPress={() => {this.splitter() }}>
         <Text style={styles.recherche}>Votre commande</Text>
       </TouchableOpacity>
 
       }
+      {!this.state.commande &&
         <TouchableOpacity style={[styles.containerMauve, this.props.style]} onPress={() => { this.props.navigation.navigate('Carte'); }}>
         <Text style={styles.recherche}>Recherche de restaurant</Text>
       </TouchableOpacity>
+  }
+      </View>
       <Text style={styles.deco} onPress={() => { this.deco(); }}>Déconnexion</Text>
       
       </View>
+      
+      </ImageBackground>
       </View>
     );
 }
@@ -106,37 +131,51 @@ class Home extends React.Component {
 }
 const styles = StyleSheet.create({
     container: {
-      backgroundColor: "#007AFF",
+      backgroundColor: "#5856D6",
       justifyContent: "center",
       alignItems: "center",
       flexDirection: "column",
-      borderRadius: 5,
-      paddingLeft: 16,
-      paddingRight: 16,
-      height: '20%',
-      width: '50%'
+      borderRadius: Dimensions.get('window').width*10,
+      height: '50%',
+      width: '100%',
+      marginTop:'20%',
+      borderWidth:2,
     },
     containerMauve: {
         backgroundColor: "#5856D6",
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
-        borderRadius: 5,
-        paddingLeft: 16,
-        paddingRight: 16,
-        height: '20%',
-        width: '50%'
+        borderRadius: Dimensions.get('window').width*10,
+        height: '100%',
+        width: '100%',
+        borderWidth:2,
       },
       containerJaune: {
-        backgroundColor: "#FFCC00",
+        backgroundColor: "rgba(116,166,214,1)",
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
-        borderRadius: 5,
-        paddingLeft: 16,
-        paddingRight: 16,
-        height: '20%',
-        width: '50%'
+        borderRadius: Dimensions.get('window').width*10,
+        height: '50%',
+        width: '45%',
+        borderWidth:3,
+      },
+      containerJauneImage: {
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        height: '100%',
+        width: '100%',
+        resizeMode: 'contain',
+        
+        
+        
+      },
+      containerImage: {
+        height: '100%',
+        width: '100%',
+        resizeMode: 'cover'
       },
     scanQrCode: {
       color: "#fff",
@@ -152,16 +191,16 @@ const styles = StyleSheet.create({
       },
     containerBig: {
         flex: 1,
-        backgroundColor: "rgba(191,209,249,1)"
+        backgroundColor: 'rgba(52, 52, 52, 0)'
       },
       containerSmall: {
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "rgba(191,209,249,1)"
+        backgroundColor: "rgba(191,209,249,0)"
       },
       bluespoon: {
         //fontFamily: "Georgian",
-        color: "#121212",
+        color: "#fff",
         textDecorationLine: "underline",
         textAlign: "center",
         justifyContent: "center",
@@ -172,13 +211,14 @@ const styles = StyleSheet.create({
       },
       deco: {
         //fontFamily: "Georgian",
-        color: "#121212",
+        color: "#fff",
         textDecorationLine: "underline",
         textAlign: "center",
         justifyContent: "center",
         alignItems: "center",
         fontSize: 20,
         marginTop: 80,
+        backgroundColor: "rgba(191,209,249,0.5)"
         //marginLeft: 93
       }
   });
