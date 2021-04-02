@@ -140,10 +140,21 @@ fetched(){
     showCommande(cle){
         let arr = [];
         let full = this.state.listFull;
+        let plat=[];
         for(let i = 0 ; i<full.length;i++){
             
             if(full[i].numCommande==cle.numCommande && full[i].idUtilisateur==cle.idUtilisateur){
-                arr.push(full[i]);
+                if(!plat.includes(full[i].idPlat)){
+                    full[i].nombre=1;
+                    arr.push(full[i]);
+                    plat.push(full[i].idPlat);
+                }else{
+                    for(let j=0;j<arr.length;j++){
+                        if(arr[j].idPlat==full[i].idPlat){
+                            arr[j].nombre=arr[j].nombre+1;
+                        }
+                    }
+                }
             }
         }
         this.setState({listOverlay: arr});
@@ -272,7 +283,7 @@ fetched(){
                       
                     <ListItem key={i} bottomDivider onPress={() => this.toggleOverlay()} >
                         <ListItem.Content>
-                        <ListItem.Title>{l.nomPlat} : {l.prix} €</ListItem.Title>
+                        <ListItem.Title>{l.nomPlat} (x{l.nombre}) : {l.prix*l.nombre} € </ListItem.Title>
                         </ListItem.Content>
                     </ListItem>
                     

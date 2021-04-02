@@ -395,14 +395,16 @@ app.post('/ajoutCommande',jsonParser, function (req, res) {
       }
 
         for(let i =0 ; i<commande.length;i++ ){
-          let values = [[commande[i][3],idRestaurant,id,numCommande,idTable,contact]];
-          var rechsql = "insert into commandes(idPlat,idRestaurant,idUtilisateur,numCommande,idTable,contact) values(?)";
-    
-          db.query(rechsql,values, function (err, result, fields) { 
-            if (err) {throw err;}else{
-              console.log('done');
-            }
-        })
+          for(let j = 0;j<commande[i][4];j++){
+            let values = [[commande[i][3],idRestaurant,id,numCommande,idTable,contact]];
+            var rechsql = "insert into commandes(idPlat,idRestaurant,idUtilisateur,numCommande,idTable,contact) values(?)";
+      
+            db.query(rechsql,values, function (err, result, fields) { 
+              if (err) {throw err;}else{
+                console.log('done');
+              }
+          })
+        }
       }
       res.send(JSON.stringify(numCommande));
 

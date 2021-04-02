@@ -1,4 +1,4 @@
-import { StyleSheet, View, TouchableOpacity, Text, Image,ScrollView,SafeAreaView, StatusBar  } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Text, Image,ScrollView,SafeAreaView, Animated ,Easing } from "react-native";
 import React from 'react';
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Overlay,ListItem } from 'react-native-elements';
@@ -29,18 +29,43 @@ class Recherche extends React.Component {
             listCommande:[],
 
 
-
-
             listNote:[[{name:'Eric Cartman',subtitle:'default',note:0,idNotation:0 }]],
             notes:false,
             visibleNote:false,
-            placeNote:0
+            placeNote:0,
+
+
+
+
+
+            fadeAnim: new Animated.Value(0),
+          
 
           };
     }
     onPress(){
       
     }
+    fadeIn = () => {
+      // Will change fadeAnim value to 1 in 5 seconds
+      Animated.sequence([
+      Animated.timing(this.state.fadeAnim, {
+        toValue: 1,
+        duration: 1200,
+        easing:Easing.elastic(2),
+        useNativeDriver: true
+      }),
+      Animated.timing(this.state.fadeAnim, {
+        toValue: 0,
+        duration: 1200,
+        useNativeDriver: true
+      }),
+    ]
+      ).start();
+      
+      
+    };
+  
     async getToken() {
           try {
             
@@ -261,8 +286,20 @@ class Recherche extends React.Component {
           this.setState({panier : 1});
         }
         commander=()=>{
+          
           let arr = this.state.listCommande;
-          arr.push([this.state.nom,this.state.commentaires,this.state.prix,this.state.idPlat]);
+          let bool=true;
+          for(let i = 0 ; i<arr.length;i++){
+            if(arr[i][3]==this.state.idPlat){
+              arr[i][4]=arr[i][4]+1;
+              bool=false;
+            }
+          }
+          if(bool){
+            arr.push([this.state.nom,this.state.commentaires,this.state.prix,this.state.idPlat,1]);
+          }
+          this.fadeIn();
+          //this.fadeOut();
           this.setState({listCommande : arr});
         }
         splitter=()=>{
@@ -343,7 +380,11 @@ class Recherche extends React.Component {
         }
         supprimer=(key)=>{
           let com = this.state.listCommande;
-          com.splice(key,1);
+          if(com[key][4]==1){
+            com.splice(key,1);
+          }else{
+            com[key][4]=com[key][4]-1;
+          }
           this.setState({listCommande : com});
         }
         note(){
@@ -493,7 +534,24 @@ class Recherche extends React.Component {
                                                     {this.state.commentaires}
                                                     </Text>
                                                     </View>
+                                                    
                                                     </View>
+
+
+                                                    <Animated.View style={[styles.cardBodyAnimated,{opacity: this.state.fadeAnim, transform: [
+                            
+                                                    {
+                                                        translateY: this.state.fadeAnim.interpolate({
+                                                            inputRange: [0, 1],
+                                                            outputRange: [0, 25]
+                                                        })
+                                                    }]}]} >
+                                                    <View style={styles.actionBody}>
+                                                    <Text style={styles.titleStyleAnimated}>Ajouté à la commande</Text>
+                                                    </View>
+                                                    </Animated.View>
+
+
                                                     <View style={styles.cardBody}>
                                                     <View style={styles.actionBody}>
                                                     <TouchableOpacity style={styles.actionButton1}>
@@ -600,6 +658,20 @@ class Recherche extends React.Component {
                                                     </Text>
                                                     </View>
                                                     </View>
+
+                                                    <Animated.View style={[styles.cardBodyAnimated,{opacity: this.state.fadeAnim, transform: [
+                            
+                                                    {
+                                                        translateY: this.state.fadeAnim.interpolate({
+                                                            inputRange: [0, 1],
+                                                            outputRange: [0, 25]
+                                                        })
+                                                    }]}]} >
+                                                    <View style={styles.actionBody}>
+                                                    <Text style={styles.titleStyleAnimated}>Ajouté à la commande</Text>
+                                                    </View>
+                                                    </Animated.View>
+
                                                     <View style={styles.cardBody}>
                                                     <View style={styles.actionBody}>
                                                     <TouchableOpacity style={styles.actionButton1}>
@@ -697,7 +769,7 @@ class Recherche extends React.Component {
           {this.state.listCommande.map((l, i) => (
           <ListItem key={i}>
               <ListItem.Content>
-              <ListItem.Title>{l[0]}</ListItem.Title>
+              <ListItem.Title>{l[0]} (x{l[4]})</ListItem.Title>
               <ListItem.Subtitle>{l[1]}</ListItem.Subtitle>
               <ListItem.Subtitle>prix : {l[2]} €</ListItem.Subtitle>
               
@@ -848,6 +920,22 @@ const styles = StyleSheet.create({
         width:'100%',
         height:'25%'
 
+      },
+      cardBodyAnimated: {
+        position: "absolute",
+        bottom: '40%',
+        backgroundColor: "rgba(159,218,215,1)",
+        left: 0,
+        right: 14,
+        width:'100%',
+        height:'25%'
+
+      },
+      titleStyleAnimated: {
+        fontSize: 30,
+        color: "#FFF",
+        marginLeft: '10%',
+        marginTop:'8%'
       },
       cardBodyTop: {
         position: "absolute",

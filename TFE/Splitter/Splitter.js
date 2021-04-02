@@ -283,7 +283,6 @@ changeNom(val,txt){
 }
 addition=()=>{
   
-  if(this.state.channel!='addition'){
     
 
       fetch('http://192.168.0.8:3001/commande?id='+this.state.id, {
@@ -296,103 +295,73 @@ addition=()=>{
         }
       }).then(response => response.json())
       .then((json) => {
-        this.setState({ channel: 'addition' });
-        this.setState({ cle: 2 });
-        const test = [];
-        const autre =[];
-        let prix = 0;
-        let listeContact=[]
-        for(let i = 0 ; i<json.length;i++){
-          if(json[i].contact==null){
-            prix = prix+json[i]['prix'];
-            autre.push(<View style={[styles.actionBody,{backgroundColor: this.props.actionBody || undefined}]} key={this.state.cle}><TouchableOpacity style={styles.actionButton1}><Text style={styles.actionText1}>{json[i]['nomPlat']}</Text></TouchableOpacity><TouchableOpacity style={styles.actionButton2}><Text style={styles.actionText2}>{json[i]['prix']}€</Text></TouchableOpacity></View>);
-            this.setState({ cle: this.state.cle+1 });
-          }else{
-            if(!listeContact.includes(json[i].contact)){
-              listeContact.push(json[i].contact);
-            }
-          }
-
-        }
-        test.push(<View style={[styles.containerAddition, this.props.style]} key='1'><View style={styles.bodyContent}><Text style={styles.titleGoesHere}>Addition</Text><Text style={styles.subtitleStyle}>{json[0]['prenom']}  {json[0]['nom']}</Text></View>{autre}<View style={styles.body}><Text style={styles.bodyText}>total: {prix}€</Text></View></View>);
-        this.setState({ cle: this.state.cle+1 });
-        let detailContact=[];
-        for(let i = 0 ; i<listeContact.length;i++){
-
-          let prixC=0
-          for(let j = 0 ; j<json.length;j++){
-            if(listeContact[i]==json[j].contact && json[j].contact!==null){
-              
-              detailContact.push(<View style={[styles.actionBody,{backgroundColor: this.props.actionBody || undefined}]} key={this.state.cle}><TouchableOpacity style={styles.actionButton1}><Text style={styles.actionText1}>{json[j]['nomPlat']}</Text></TouchableOpacity><TouchableOpacity style={styles.actionButton2}><Text style={styles.actionText2}>{json[j]['prix']}€</Text></TouchableOpacity></View>);
-              prixC=prixC+json[j].prix;
+        if(this.state.split){
+          this.setState({ channel: 'addition' });
+          this.setState({ cle: 2 });
+          const test = [];
+          const autre =[];
+          let prix = 0;
+          let listeContact=[]
+          for(let i = 0 ; i<json.length;i++){
+            if(json[i].contact==null){
+              prix = prix+json[i]['prix'];
+              autre.push(<View style={[styles.actionBody,{backgroundColor: this.props.actionBody || undefined}]} key={this.state.cle}><TouchableOpacity style={styles.actionButton1}><Text style={styles.actionText1}>{json[i]['nomPlat']}</Text></TouchableOpacity><TouchableOpacity style={styles.actionButton2}><Text style={styles.actionText2}>{json[i]['prix']}€</Text></TouchableOpacity></View>);
               this.setState({ cle: this.state.cle+1 });
+            }else{
+              if(!listeContact.includes(json[i].contact)){
+                listeContact.push(json[i].contact);
+              }
             }
+
           }
-          test.push(<View style={[styles.containerAddition, this.props.style]} key={this.state.cle}><View style={styles.bodyContent}><Text style={styles.subtitleStyle}>{listeContact[i]}</Text></View>{detailContact}<View style={styles.body}><Text style={styles.bodyText}>total: {prixC}€</Text></View></View>);
-          detailContact=[];
+          test.push(<View style={[styles.containerAddition, this.props.style]} key='1'><View style={styles.bodyContent}><Text style={styles.titleGoesHere}>Addition</Text><Text style={styles.subtitleStyle}>{json[0]['prenom']}  {json[0]['nom']}</Text></View>{autre}<View style={styles.body}><Text style={styles.bodyText}>total: {prix}€</Text></View></View>);
           this.setState({ cle: this.state.cle+1 });
+          let detailContact=[];
+          for(let i = 0 ; i<listeContact.length;i++){
+
+            let prixC=0
+            for(let j = 0 ; j<json.length;j++){
+              if(listeContact[i]==json[j].contact && json[j].contact!==null){
+                
+                detailContact.push(<View style={[styles.actionBody,{backgroundColor: this.props.actionBody || undefined}]} key={this.state.cle}><TouchableOpacity style={styles.actionButton1}><Text style={styles.actionText1}>{json[j]['nomPlat']}</Text></TouchableOpacity><TouchableOpacity style={styles.actionButton2}><Text style={styles.actionText2}>{json[j]['prix']}€</Text></TouchableOpacity></View>);
+                prixC=prixC+json[j].prix;
+                this.setState({ cle: this.state.cle+1 });
+              }
+            }
+            test.push(<View style={[styles.containerAddition, this.props.style]} key={this.state.cle}><View style={styles.bodyContent}><Text style={styles.subtitleStyle}>{listeContact[i]}</Text></View>{detailContact}<View style={styles.body}><Text style={styles.bodyText}>total: {prixC}€</Text></View></View>);
+            detailContact=[];
+            this.setState({ cle: this.state.cle+1 });
+          }
+          
+          //test.push(<TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.demandeAddition()} ><Text style={styles.payement}>Payer</Text></TouchableOpacity>);
+          this.setState({ chaine: test });
+          this.setState({type:0});
+          this.setState({addition:true});
+        }else{
+          let prix=0;
+          let arr=[];
+          let bigArr=[];
+          let contacts=[];
+          this.setState({ cle: 2 });
+          for(let i = 0 ; i<json.length;i++){
+              prix = prix+json[i]['prix'];
+              arr.push(<View style={[styles.actionBody,{backgroundColor: this.props.actionBody || undefined}]} key={this.state.cle}><TouchableOpacity style={styles.actionButton1}><Text style={styles.actionText1}>{json[i]['nomPlat']}</Text></TouchableOpacity><TouchableOpacity style={styles.actionButton2}><Text style={styles.actionText2}>{json[i]['prix']}€</Text></TouchableOpacity></View>);
+              this.setState({ cle: this.state.cle+1 });
+              if(json[i].contact!==null && !contacts.includes(json[i].contact)){
+                contacts.push(json[i].contact);
+              }
+          }
+            prix=prix/(contacts.length+1);
+            bigArr.push(<View style={[styles.containerAddition, this.props.style]} key='1'><View style={styles.bodyContent}><Text style={styles.titleGoesHere}>Addition</Text></View>{arr}<View style={styles.body}><Text style={styles.bodyText}>total: {prix}€ par personne</Text></View></View>);
+            this.setState({ chaine: bigArr });
+            this.setState({ channel: 'addition' });
+            this.setState({type:0});
+            this.setState({addition:true});
         }
-        
-        //test.push(<TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.demandeAddition()} ><Text style={styles.payement}>Payer</Text></TouchableOpacity>);
-        this.setState({ chaine: test });
-        this.setState({type:0});
-        this.setState({addition:true});
         
       });
 
     
-  }else{
-
-
-    fetch('http://192.168.0.8:3001/commande?id='+this.state.id, {
-        method: 'GET',
-       
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': 'true'
-        }
-      }).then(response => response.json())
-      .then((json) => {
-        const test = [];
-        const autre =[];
-        this.setState({ cle: 2 });
-        let prix = 0;
-        let listeContact=[]
-        for(let i = 0 ; i<json.length;i++){
-          if(json[i].contact==null){
-            prix = prix+json[i]['prix'];
-            autre.push(<View style={[styles.actionBody,{backgroundColor: this.props.actionBody || undefined}]} key={this.state.cle}><TouchableOpacity style={styles.actionButton1}><Text style={styles.actionText1}>{json[i]['nomPlat']}</Text></TouchableOpacity><TouchableOpacity style={styles.actionButton2}><Text style={styles.actionText2}>{json[i]['prix']}€</Text></TouchableOpacity></View>);
-            this.setState({ cle: this.state.cle+1 });
-          }else{
-            if(!listeContact.includes(json[i].contact)){
-              listeContact.push(json[i].contact);
-            }
-          }
-
-        }
-        test.push(<View style={[styles.containerAddition, this.props.style]} key='1'><View style={styles.bodyContent}><Text style={styles.titleGoesHere}>Addition</Text><Text style={styles.subtitleStyle}>{json[0]['prenom']}  {json[0]['nom']}</Text></View>{autre}<View style={styles.body}><Text style={styles.bodyText}>total: {prix}€</Text></View></View>);
-        let detailContact=[];
-        
-        for(let i = 0 ; i<listeContact.length;i++){
-          let prixC=0
-          for(let j = 0 ; j<json.length;j++){
-            if(listeContact[i]==json[j].contact){
-              detailContact.push(<View style={[styles.actionBody,{backgroundColor: this.props.actionBody || undefined}]} key={this.state.cle}><TouchableOpacity style={styles.actionButton1}><Text style={styles.actionText1}>{json[j]['nomPlat']}</Text></TouchableOpacity><TouchableOpacity style={styles.actionButton2}><Text style={styles.actionText2}>{json[j]['prix']}€</Text></TouchableOpacity></View>);
-              prixC=prixC+json[j].prix;
-              this.setState({ cle: this.state.cle+1 });
-            }
-          }
-          test.push(<View style={[styles.containerAddition, this.props.style]} key={this.state.cle}><View style={styles.bodyContent}><Text style={styles.subtitleStyle}>{listeContact[i]}</Text></View>{detailContact}<View style={styles.body}><Text style={styles.bodyText}>total: {prixC}€</Text></View></View>);
-          this.setState({ cle: this.state.cle+1 });
-        }
-        
-        //test.push(<TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.demandeAddition()} ><Text style={styles.payement}>Payer</Text></TouchableOpacity>);
-        this.setState({ chaine: test });
-        this.setState({type:0});
-        this.setState({addition:true});
-      });
-  }
   
 }
 
@@ -476,7 +445,7 @@ payement=()=>{
 
 
   {this.state.type == 1 &&
-  <View style={{width:'100%', height:'92.2%'}}>
+  <View style={{width:'100%', height:'93.2%'}}>
     <TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.toggleSplit(true)}><Text style={styles.payement}>par plats</Text></TouchableOpacity>
     <TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.toggleSplit(false)} ><Text style={styles.payement}>Divisé</Text></TouchableOpacity>
     </View>
