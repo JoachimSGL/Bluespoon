@@ -175,7 +175,7 @@ app.get('/personnes', function (req, res) {
   db.query(rechsql,values, function (err, result, fields) {
     if (err) {throw err;}else{
       var values2 = [[result[0].numTable]]
-      var rechsql2 = 'select id , nom , prenom , nomPlat, prix ,contact from commandes join plats on commandes.idPlat=plats.idPlat join utilisateurs on commandes.idUtilisateur = utilisateurs.id where idTable = ?';
+      var rechsql2 = 'select id , nom , prenom , nomPlat, prix ,contact,payement from commandes join plats on commandes.idPlat=plats.idPlat join utilisateurs on commandes.idUtilisateur = utilisateurs.id where idTable = ?';
       db.query(rechsql2,values2, function (err2, result2, fields2) {
         if (err2) {throw err2;}else{
           res.send(JSON.stringify(result2));
@@ -425,6 +425,19 @@ app.post('/ajoutNotation',jsonParser, function (req, res) {
   note = req.body.note;
   let values = [[id,idRestaurant,note,commentairesNotation]];
   var rechsql = "insert into notation(idUtilisateur,idRestaurant,note,commentairesNotation) values(?)";
+
+  db.query(rechsql,values, function (err, result, fields) { 
+    if (err) {throw err;}else{
+      res.send(JSON.stringify('done'));
+     }
+})
+});
+
+app.post('/payement',jsonParser, function (req, res) {
+  payement = req.body.payement;
+  idTable = req.body.idTable;
+  let values = [[payement],[idTable]];
+  var rechsql = "update commandes set payement=? where idTable=?";
 
   db.query(rechsql,values, function (err, result, fields) { 
     if (err) {throw err;}else{

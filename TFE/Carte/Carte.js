@@ -63,7 +63,7 @@ class Carte extends React.Component {
   }
     componentDidMount(){
       let id=[];
-      fetch('http://192.168.0.8:3001/restaurant', {
+      fetch('http://192.168.0.27:3001/restaurant', {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -86,7 +86,7 @@ class Carte extends React.Component {
           }
         }
 
-        fetch('http://192.168.0.8:3001/notationRestaurant', {
+        fetch('http://192.168.0.27:3001/notationRestaurant', {
         method: 'GET',
         headers: {
           Accept: 'application/json',

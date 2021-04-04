@@ -52,6 +52,7 @@ function Routes() {
           headerTitleStyle: {
             fontWeight: 'bold',
           },
+          cardStyleInterpolator: CardStyleInterpolators.forRevealFromBottomAndroid,
         }} />
       <Stack.Screen name="Recherche" component={Recherche}  options={{
           title: 'Choisissez votre commande ',

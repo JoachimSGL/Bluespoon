@@ -33,12 +33,12 @@ class Home extends React.Component {
         let data = JSON.parse(userData);
         let serveurData = await AsyncStorage.getItem("serveur");
         let dataS = JSON.parse(serveurData);
-        console.log(data);
+        console.log(dataS);
         if(data!=null && data!=0){
           if(dataS==null || dataS==false){
             this.setState({id:data});
             this.setState({serveur:dataS});
-            fetch('http://192.168.0.8:3001/commandeHome?id='+this.state.id, {
+            fetch('http://192.168.0.27:3001/commandeHome?id='+this.state.id, {
               method: 'GET',
               headers: {
                   Accept: 'application/json',
@@ -47,7 +47,6 @@ class Home extends React.Component {
               }
               }).then(response => response.json())
               .then((json) => {
-                console.log(json);
                 if(json!=='no' && !json.addition){
                   this.setState({commande:true});
                 }else{
@@ -75,7 +74,7 @@ class Home extends React.Component {
     }
     splitter(){
       console.log(this.state.id)
-      fetch('http://192.168.0.8:3001/commandeHome?id='+this.state.id, {
+      fetch('http://192.168.0.27:3001/commandeHome?id='+this.state.id, {
         method: 'GET',
         headers: {
             Accept: 'application/json',
@@ -211,7 +210,7 @@ const styles = StyleSheet.create({
       },
       deco: {
         //fontFamily: "Georgian",
-        color: "#fff",
+        color: "#000",
         textDecorationLine: "underline",
         textAlign: "center",
         justifyContent: "center",

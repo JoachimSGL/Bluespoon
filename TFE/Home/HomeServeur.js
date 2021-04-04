@@ -56,7 +56,7 @@ toggleOverlay=()=>{
     this.setState({visible : !this.state.visible});
 }
 fetched(){
-    fetch('http://192.168.0.8:3001/commandeRestaurant?idRestaurant='+this.state.idRestaurant, {
+    fetch('http://192.168.0.27:3001/commandeRestaurant?idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
         headers: {
             Accept: 'application/json',
@@ -211,7 +211,7 @@ fetched(){
     
     ack(num,id,addition){
         if(!this.findValue(this.state.vue,num,id) && !addition){
-            fetch('http://192.168.0.8:3001/addition', {
+            fetch('http://192.168.0.27:3001/addition', {
                   method: 'POST',
                   headers: {
                     Accept: 'application/json',
@@ -236,7 +236,7 @@ fetched(){
             t.push({num:num,id:id});
             this.setState({vue:t});
         }else{
-            fetch('http://192.168.0.8:3001/demandeAddition', {
+            fetch('http://192.168.0.27:3001/demandeAddition', {
                 method: 'POST',
                 headers: {
                   Accept: 'application/json',

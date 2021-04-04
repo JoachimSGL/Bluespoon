@@ -23,7 +23,7 @@ class Acceuil extends Component {
           this.changement = this.changement.bind(this);
     }
     componentDidMount(){
-        fetch('http://192.168.0.8:3001/all?idRestaurant='+this.state.id, {
+        fetch('http://192.168.0.27:3001/all?idRestaurant='+this.state.id, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -95,7 +95,7 @@ class Acceuil extends Component {
         const formData = new FormData();
         formData.append('file', fileInput.files[0]);
         */
-        fetch('http://192.168.0.8:3001/ajoutPlat', {
+        fetch('http://192.168.0.27:3001/ajoutPlat', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -114,7 +114,7 @@ class Acceuil extends Component {
       var formData = new FormData();
       formData.append('file', file);
       console.log(file);
-      fetch('http://192.168.0.8:3001/image', {
+      fetch('http://192.168.0.27:3001/image', {
         method: 'POST',
         headers: {
           //Accept: 'application/json',
@@ -124,7 +124,7 @@ class Acceuil extends Component {
         body:formData,
       });
       /*
-      fetch('http://192.168.0.8:3001/image', {
+      fetch('http://192.168.0.27:3001/image', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -158,7 +158,7 @@ class Acceuil extends Component {
         const formData = new FormData();
         formData.append('file', fileInput.files[0]);
         */
-        fetch('http://192.168.0.8:3001/modifPlat', {
+        fetch('http://192.168.0.27:3001/modifPlat', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -178,7 +178,7 @@ class Acceuil extends Component {
       var formData = new FormData();
       formData.append('file', file);
       console.log(file);
-      fetch('http://192.168.0.8:3001/image', {
+      fetch('http://192.168.0.27:3001/image', {
         method: 'POST',
         headers: {
           //Accept: 'application/json',

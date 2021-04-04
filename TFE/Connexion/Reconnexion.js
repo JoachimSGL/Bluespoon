@@ -34,7 +34,7 @@ class Reconnexion extends React.Component {
       
       }
     connexion(){
-        fetch('http://192.168.0.8:3001/reconnexion?email='+this.state.email+'&&password='+this.state.password, {
+        fetch('http://192.168.0.27:3001/reconnexion?email='+this.state.email+'&&password='+this.state.password, {
             method: 'GET',
             headers: {
               Accept: 'application/json',

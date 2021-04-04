@@ -71,12 +71,10 @@ class Recherche extends React.Component {
             
             let userData = await AsyncStorage.getItem("id");
             let data = JSON.parse(userData);
-            console.log(this.state.numTable);
-            console.log(this.state.idRestaurant);
             if(data!=null){
               this.setState({id:data});
               if(Number.isInteger(parseInt(this.state.numTable)) && this.state.numTable!=0 ){
-                fetch('http://192.168.0.8:3001/table', {
+                fetch('http://192.168.0.27:3001/table', {
                   method: 'POST',
                   headers: {
                     Accept: 'application/json',
@@ -102,7 +100,7 @@ class Recherche extends React.Component {
     }
     componentDidMount(){
         
-        fetch('http://192.168.0.8:3001/plats?idRestaurant='+this.state.idRestaurant, {
+        fetch('http://192.168.0.27:3001/plats?idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
        
         headers: {
@@ -130,7 +128,6 @@ class Recherche extends React.Component {
           }
         }
         if(bool){
-          console.log(compteur);
           for(let i = compteur;i<5;i++){
             arrCinq.push({});
           }
@@ -149,7 +146,7 @@ class Recherche extends React.Component {
 
 
 
-      fetch('http://192.168.0.8:3001/boissons?idRestaurant='+this.state.idRestaurant, {
+      fetch('http://192.168.0.27:3001/boissons?idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
        
         headers: {
@@ -178,7 +175,6 @@ class Recherche extends React.Component {
           compteur++;
         }
         if(bool){
-          console.log(compteur);
           for(let i = compteur;i<5;i++){
             arrCinq.push({});
           }
@@ -189,7 +185,7 @@ class Recherche extends React.Component {
         }
       });
       /*
-      fetch('http://192.168.0.8:3001/image?idPlat=8', {
+      fetch('http://192.168.0.27:3001/image?idPlat=8', {
         method: 'GET',
        
         headers: {
@@ -343,7 +339,7 @@ class Recherche extends React.Component {
           }
       }
       changerNote=(val)=>{
-        console.log(val);
+        this.toggleOverlayNote();
       }
         Passercommande=()=>{
           if(this.state.listCommande.length==0 ){
@@ -351,7 +347,7 @@ class Recherche extends React.Component {
             this.toggleOverlay();
           }else{
             let numCommande=0;
-            fetch('http://192.168.0.8:3001/ajoutCommande', {
+            fetch('http://192.168.0.27:3001/ajoutCommande', {
               method: 'POST',
               headers: {
                 Accept: 'application/json',
@@ -388,7 +384,7 @@ class Recherche extends React.Component {
           this.setState({listCommande : com});
         }
         note(){
-          fetch('http://192.168.0.8:3001/notation?idRestaurant='+this.state.idRestaurant, {
+          fetch('http://192.168.0.27:3001/notation?idRestaurant='+this.state.idRestaurant, {
   method: 'GET',
  
   headers: {
