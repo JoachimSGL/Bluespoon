@@ -2,6 +2,10 @@ import { StyleSheet, View, TouchableOpacity, Text, Image,ScrollView,SafeAreaView
 import React from 'react';
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Overlay,ListItem, Avatar } from 'react-native-elements';
+import Geolocation from '@react-native-community/geolocation';
+import MapView ,{PROVIDER_GOOGLE,Marker}from 'react-native-maps';
+import Geocoder from 'react-native-geocoding';
+
 class Carte extends React.Component {
     constructor(props) {
         super(props);
@@ -17,9 +21,24 @@ class Carte extends React.Component {
             listePlatCorrespondant:[],
             listePlatCorrespondantShow:[],
             noteRestaurant:[],
+            location:false,
+            lat:0,
+            long:0,
+            markers:[{latlng:{ latitude :  38 , longitude :  -123 },title:'Quick',description:'Nous c est le gout'},{latlng:{ latitude :  36 , longitude :  -121 },title:'MC DO',description:'Nous c est PAS le gout'}]
           };
           this.changeSearch= this.changeSearch.bind(this);
     }
+
+
+
+
+
+
+
+
+
+
+    
     changeSearch(txt){
       this.setState({search:txt.nativeEvent.text});
       if(this.state.method){
@@ -63,7 +82,7 @@ class Carte extends React.Component {
   }
     componentDidMount(){
       let id=[];
-      fetch('http://192.168.0.27:3001/restaurant', {
+      fetch('http://192.168.0.8:3001/restaurant', {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -74,19 +93,19 @@ class Carte extends React.Component {
       .then((json) => {
         let arr=[];
         let arrPlat=[];
-        
+        let location = [];
         for(let i = 0 ; i<json.length;i++){
           if(!id.includes(json[i].id)){
             id.push(json[i].id);
             arrPlat.push({id:json[i].id,nomPlat:json[i].nomPlat,name:json[i].nomRestaurant,commentaires:json[i].commentaires});
             arr.push({name:json[i].nomRestaurant,id : json[i].id,adresse:json[i].adresse, localisation:json[i].adresse});// changer ici qd j aurai mis la localisation
-
+            location.push({title:json[i].nomRestaurant,description:json[i].adresse,latlng:{longitude:json[i].longitude,latitude:json[i].latitude}})
           }else{
             arrPlat.push({id:json[i].id,nomPlat:json[i].nomPlat,name:json[i].nomRestaurant,commentaires:json[i].commentaires});
           }
         }
 
-        fetch('http://192.168.0.27:3001/notationRestaurant', {
+        fetch('http://192.168.0.8:3001/notationRestaurant', {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -115,68 +134,193 @@ class Carte extends React.Component {
         this.setState({list:arr});
         this.setState({listShow:arr});
         this.setState({listePlat:arrPlat});
-
+        this.setState({markers:location});
       })
 
-      
-
-
-
+      /*
+      setInterval(() => {
+        Geolocation.getCurrentPosition(
+          (position) => {
+          console.log(position);
+          this.setState({long: position.coords.longitude}); 
+          this.setState({lat: position.coords.latitude});
+          
+         },
+         (error) => {
+          console.log('error :'+error);
+         },
+         {enableHighAccuracy: true, timeout: 20000})
+      }, 20000);
+*/
     }
     changeFontLeft(){
-      if(this.state.method){
-        return{
-          fontSize: 13,
-          color: "#ffffff"
+      if(!this.state.location){
+        if(this.state.method){
+          return{
+            fontSize: 13,
+            color: "#ffffff"
+          }
+        }else{
+          return{
+            fontSize: 13,
+            color: "#007AFF"
+          }
         }
-      }else{
-        return{
-          fontSize: 13,
-          color: "#007AFF"
-        }
+    }else{
+      return{
+        fontSize: 13,
+        color:  "#007AFF"
       }
     }
+    }
     changeStyleLeft(){
-      if(this.state.method){
-        return {
-          flex: 1,
-          alignItems: "center",
-          backgroundColor: "#007AFF",
-          padding: 6,
-          borderWidth: 1,
-          borderColor: "#007AFF",
-          borderBottomLeftRadius: 5,
-          borderTopLeftRadius: 5
-        }
-      }else{
-        return {
+      if(!this.state.location){
+        if(this.state.method){
+          return {
             flex: 1,
             alignItems: "center",
-            backgroundColor: "#FFFFFF",
+            backgroundColor: "#007AFF",
             padding: 6,
             borderWidth: 1,
             borderColor: "#007AFF",
-            borderBottomRightRadius: 5,
-            borderTopRightRadius: 5
+            borderBottomLeftRadius: 5,
+            borderTopLeftRadius: 5
           }
-        
+        }else{
+          return {
+              flex: 1,
+              alignItems: "center",
+              backgroundColor: "#FFFFFF",
+              padding: 6,
+              borderWidth: 1,
+              borderColor: "#007AFF",
+              borderBottomRightRadius: 5,
+              borderTopRightRadius: 5
+            }
+          
+        }
+      }else{
+        return {
+          flex: 1,
+          alignItems: "center",
+          backgroundColor: "#FFFFFF",
+          padding: 6,
+          borderWidth: 1,
+          borderColor: "#007AFF",
+          borderBottomRightRadius: 5,
+          borderTopRightRadius: 5
+        }
+      
+    
       }
     }
     changeFontRight(){
-      if(!this.state.method){
-        return{
-          fontSize: 13,
-          color: "#ffffff"
+      if(!this.state.location){
+        if(!this.state.method){
+          return{
+            fontSize: 13,
+            color: "#ffffff"
+          }
+        }else{
+          return{
+            fontSize: 13,
+            color: "#007AFF"
+          }
         }
       }else{
         return{
           fontSize: 13,
-          color: "#007AFF"
+          color:  "#007AFF"
+        }
+      }
+    }
+    changeFontLocation(){
+      if(!this.state.location){
+        if(!this.state.method){
+          return{
+            fontSize: 13,
+            color: "#007AFF"
+          }
+        }else{
+          return{
+            fontSize: 13,
+            color: "#007AFF"
+          }
+        }
+      }else{
+        return{
+          fontSize: 13,
+          color:  "#ffffff"
         }
       }
     }
     changeStyleRight(){
-      if(!this.state.method){
+      if(!this.state.location){
+        if(!this.state.method){
+          return {
+            flex: 1,
+            alignItems: "center",
+            backgroundColor: "#007AFF",
+            padding: 6,
+            borderWidth: 1,
+            borderColor: "#007AFF",
+            borderBottomLeftRadius: 5,
+            borderTopLeftRadius: 5
+          }
+        }else{
+          return {
+              flex: 1,
+              alignItems: "center",
+              backgroundColor: "#FFFFFF",
+              padding: 6,
+              borderWidth: 1,
+              borderColor: "#007AFF",
+              borderBottomRightRadius: 5,
+              borderTopRightRadius: 5
+            }
+          
+        }
+      }else{
+        return {
+          flex: 1,
+          alignItems: "center",
+          backgroundColor: "#FFFFFF",
+          padding: 6,
+          borderWidth: 1,
+          borderColor: "#007AFF",
+          borderBottomRightRadius: 5,
+          borderTopRightRadius: 5
+        }
+      }
+    
+    }
+    changeStyleLocation(){
+      if(!this.state.location){
+        if(!this.state.method){
+          return {
+            flex: 1,
+            alignItems: "center",
+            backgroundColor: "#FFFFFF",
+            padding: 6,
+            borderWidth: 1,
+            borderColor: "#007AFF",
+            borderBottomLeftRadius: 5,
+            borderTopLeftRadius: 5
+          }
+        }else{
+          return {
+              flex: 1,
+              alignItems: "center",
+              backgroundColor: "#FFFFFF",
+              padding: 6,
+              borderWidth: 1,
+              borderColor: "#007AFF",
+              borderBottomRightRadius: 5,
+              borderTopRightRadius: 5
+            }
+          
+        }
+      }else{
         return {
           flex: 1,
           alignItems: "center",
@@ -184,30 +328,48 @@ class Carte extends React.Component {
           padding: 6,
           borderWidth: 1,
           borderColor: "#007AFF",
-          borderBottomLeftRadius: 5,
-          borderTopLeftRadius: 5
+          borderBottomRightRadius: 5,
+          borderTopRightRadius: 5
         }
-      }else{
-        return {
-            flex: 1,
-            alignItems: "center",
-            backgroundColor: "#FFFFFF",
-            padding: 6,
-            borderWidth: 1,
-            borderColor: "#007AFF",
-            borderBottomRightRadius: 5,
-            borderTopRightRadius: 5
-          }
-        
       }
-    
     }
 changeMethod(bool){
+  this.setState({location:false});
   this.setState({method:bool});
   this.setState({listShow:this.state.list});
   this.setState({listePlatCorrespondant:[]});
   this.setState({search:''});
+  
 }
+
+
+permissionHandle = async () => {
+
+  Geolocation.getCurrentPosition(
+    (position) => {
+    console.log(position);
+    this.setState({long: position.coords.longitude});
+    this.setState({lat: position.coords.latitude});
+    this.setState({location:true});
+   },
+   (error) => {
+    console.log('error :'+error);
+   },
+   {enableHighAccuracy: true, timeout: 20000})
+/*
+   Geocoder.init("AIzaSyA3YVpK0yL9NyQMUB6iYFbsBmvEwGngn_Q");
+   Geocoder.from(this.state.lat, this.state.long)
+		.then(json => {
+        		var addressComponent = json.results[0].address_components[0];
+			      console.log(addressComponent);
+		})
+		.catch(error => console.warn(error));
+*/
+
+}
+
+
+
 affichePlats(val){
   let id = this.state.listShow[val].id;
   let arr=[];
@@ -233,7 +395,221 @@ findNote(id){
   }
   return  ' '
 }
-        
+mapStyle = [
+  {
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#ebe3cd"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#523735"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "color": "#f5f1e6"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      {
+        "color": "#c9b2a6"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.land_parcel",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      {
+        "color": "#dcd2be"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.land_parcel",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#ae9e90"
+      }
+    ]
+  },
+  {
+    "featureType": "landscape.natural",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#dfd2ae"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#dfd2ae"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#93817c"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "color": "#a5b076"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#447530"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#f5f1e6"
+      }
+    ]
+  },
+  {
+    "featureType": "road.arterial",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#fdfcf8"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#f8c967"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      {
+        "color": "#e9bc62"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway.controlled_access",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#e98d58"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway.controlled_access",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      {
+        "color": "#db8555"
+      }
+    ]
+  },
+  {
+    "featureType": "road.local",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#806b63"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.line",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#dfd2ae"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.line",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#8f7d77"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.line",
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "color": "#ebe3cd"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.station",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#dfd2ae"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "color": "#b9d3c2"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#92998d"
+      }
+    ]
+  }
+]
   render() {
     
 
@@ -303,9 +679,6 @@ findNote(id){
           onPress={()=>this.clearSearch()}
         ></MaterialCommunityIconsIcon>
       </View>
-      <TouchableOpacity style={styles.rightIconButton} onPress={()=>this.cancelSearch()}>
-        <Text style={styles.rightButtonText}>Cancel</Text>
-      </TouchableOpacity>
     </View>
 
 
@@ -318,9 +691,12 @@ findNote(id){
         <TouchableOpacity style={this.changeStyleRight()} onPress={()=>{this.changeMethod(false)}}>
           <Text style={this.changeFontRight()}>Par plat</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={this.changeStyleLocation()} onPress={this.permissionHandle}>
+          <Text style={this.changeFontLocation()}>Localisation</Text>
+        </TouchableOpacity>
       </View>
     </View>
-
+{!this.state.location &&
     <ScrollView  style={{ width:'100%', height:'100%'}}>
 { this.state.listShow.map((l, i) =>    (
       <View style={styles.rect} key={i}>
@@ -346,7 +722,39 @@ findNote(id){
       </View>
     ))
   }
+
+
+  
   </ScrollView>
+  }
+
+{this.state.location &&
+    <MapView
+    style={{height:'80%',width:'100%'}}
+    provider={PROVIDER_GOOGLE}
+    region={{
+      latitude: this.state.lat,
+      longitude: this.state.long,
+      latitudeDelta: 0.1,
+      longitudeDelta: 0.1,
+    }}
+    customMapStyle={this.mapStyle}>
+    <Marker
+    coordinate={{ latitude :  this.state.lat , longitude :  this.state.long }}
+    title='You are here'
+        description='vous vous situez ici'
+  />
+{this.state.markers.map((marker, index) => (
+    <Marker
+      key={index}
+      coordinate={marker.latlng}
+      title={marker.title}
+      description={marker.description}
+    />
+  ))}
+
+  </MapView>
+  }
   </SafeAreaView>
 
 
@@ -413,9 +821,9 @@ const styles = StyleSheet.create({
     paddingRight: 5
   },
   inputStyle: {
-    height: 32,
+    height: 44,
     alignSelf: "flex-start",
-    fontSize: 15,
+    fontSize: 17,
     lineHeight: 15,
     color: "#000",
     flex: 1

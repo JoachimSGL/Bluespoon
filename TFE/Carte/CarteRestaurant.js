@@ -60,7 +60,7 @@ class CarteRestaurant extends React.Component {
             this.props.navigation.navigate('Home');    
         
         }
-        fetch('http://192.168.0.27:3001/plats?idRestaurant='+this.state.idRestaurant, {
+        fetch('http://192.168.0.8:3001/plats?idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
        
         headers: {
@@ -107,7 +107,7 @@ class CarteRestaurant extends React.Component {
 
 
 
-      fetch('http://192.168.0.27:3001/boissons?idRestaurant='+this.state.idRestaurant, {
+      fetch('http://192.168.0.8:3001/boissons?idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
        
         headers: {
@@ -298,7 +298,7 @@ class CarteRestaurant extends React.Component {
           this.setState({listCommande : com});
         }
         note(){
-          fetch('http://192.168.0.27:3001/notation?idRestaurant='+this.state.idRestaurant, {
+          fetch('http://192.168.0.8:3001/notation?idRestaurant='+this.state.idRestaurant, {
           method: 'GET',
         
           headers: {

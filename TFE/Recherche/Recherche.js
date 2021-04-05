@@ -74,7 +74,7 @@ class Recherche extends React.Component {
             if(data!=null){
               this.setState({id:data});
               if(Number.isInteger(parseInt(this.state.numTable)) && this.state.numTable!=0 ){
-                fetch('http://192.168.0.27:3001/table', {
+                fetch('http://192.168.0.8:3001/table', {
                   method: 'POST',
                   headers: {
                     Accept: 'application/json',
@@ -100,7 +100,7 @@ class Recherche extends React.Component {
     }
     componentDidMount(){
         
-        fetch('http://192.168.0.27:3001/plats?idRestaurant='+this.state.idRestaurant, {
+        fetch('http://192.168.0.8:3001/plats?idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
        
         headers: {
@@ -146,7 +146,7 @@ class Recherche extends React.Component {
 
 
 
-      fetch('http://192.168.0.27:3001/boissons?idRestaurant='+this.state.idRestaurant, {
+      fetch('http://192.168.0.8:3001/boissons?idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
        
         headers: {
@@ -347,7 +347,7 @@ class Recherche extends React.Component {
             this.toggleOverlay();
           }else{
             let numCommande=0;
-            fetch('http://192.168.0.27:3001/ajoutCommande', {
+            fetch('http://192.168.0.8:3001/ajoutCommande', {
               method: 'POST',
               headers: {
                 Accept: 'application/json',
@@ -384,7 +384,7 @@ class Recherche extends React.Component {
           this.setState({listCommande : com});
         }
         note(){
-          fetch('http://192.168.0.27:3001/notation?idRestaurant='+this.state.idRestaurant, {
+          fetch('http://192.168.0.8:3001/notation?idRestaurant='+this.state.idRestaurant, {
   method: 'GET',
  
   headers: {

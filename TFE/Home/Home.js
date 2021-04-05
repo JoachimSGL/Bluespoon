@@ -38,7 +38,7 @@ class Home extends React.Component {
           if(dataS==null || dataS==false){
             this.setState({id:data});
             this.setState({serveur:dataS});
-            fetch('http://192.168.0.27:3001/commandeHome?id='+this.state.id, {
+            fetch('http://192.168.0.8:3001/commandeHome?id='+this.state.id, {
               method: 'GET',
               headers: {
                   Accept: 'application/json',
@@ -74,7 +74,7 @@ class Home extends React.Component {
     }
     splitter(){
       console.log(this.state.id)
-      fetch('http://192.168.0.27:3001/commandeHome?id='+this.state.id, {
+      fetch('http://192.168.0.8:3001/commandeHome?id='+this.state.id, {
         method: 'GET',
         headers: {
             Accept: 'application/json',
