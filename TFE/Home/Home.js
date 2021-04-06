@@ -3,7 +3,6 @@ import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommun
 import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ImageBackground } from "react-native";
-//import {Permissions} from 'expo';
 class Home extends React.Component {
     constructor(props) {
         super(props);
@@ -105,18 +104,17 @@ class Home extends React.Component {
       </TouchableOpacity>
       </View>
 
-<View style={{flex:1,flexDirection: "row",width:'100%',height:'60%'}}> 
-      {this.state.commande &&
+<View style={{flex:1,flexDirection: "row",width:'100%',height:'80%'}}> 
+      
         <TouchableOpacity style={[styles.container, this.props.style]} onPress={() => {this.splitter() }}>
         <Text style={styles.recherche}>Votre commande</Text>
       </TouchableOpacity>
 
-      }
-      {!this.state.commande &&
+      
         <TouchableOpacity style={[styles.containerMauve, this.props.style]} onPress={() => { this.props.navigation.navigate('Carte'); }}>
         <Text style={styles.recherche}>Recherche de restaurant</Text>
       </TouchableOpacity>
-  }
+  
       </View>
       <Text style={styles.deco} onPress={() => { this.deco(); }}>Déconnexion</Text>
       
@@ -135,9 +133,9 @@ const styles = StyleSheet.create({
       alignItems: "center",
       flexDirection: "column",
       borderRadius: Dimensions.get('window').width*10,
-      height: '50%',
-      width: '100%',
-      marginTop:'20%',
+      height: '100%',
+      width: '50%',
+      marginTop:'0%',
       borderWidth:2,
     },
     containerMauve: {
@@ -147,7 +145,7 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         borderRadius: Dimensions.get('window').width*10,
         height: '100%',
-        width: '100%',
+        width: '50%',
         borderWidth:2,
       },
       containerJaune: {

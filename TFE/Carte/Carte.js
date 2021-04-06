@@ -1,10 +1,11 @@
-import { StyleSheet, View, TouchableOpacity, Text, Image,ScrollView,SafeAreaView, StatusBar,TextInput  } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Text, Image,ScrollView,SafeAreaView, StatusBar,TextInput,FlatList  } from "react-native";
 import React from 'react';
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Overlay,ListItem, Avatar } from 'react-native-elements';
 import Geolocation from '@react-native-community/geolocation';
 import MapView ,{PROVIDER_GOOGLE,Marker}from 'react-native-maps';
 import Geocoder from 'react-native-geocoding';
+//import { FlatList } from "react-native-gesture-handler";
 
 class Carte extends React.Component {
     constructor(props) {
@@ -24,7 +25,14 @@ class Carte extends React.Component {
             location:false,
             lat:0,
             long:0,
-            markers:[{latlng:{ latitude :  38 , longitude :  -123 },title:'Quick',description:'Nous c est le gout'},{latlng:{ latitude :  36 , longitude :  -121 },title:'MC DO',description:'Nous c est PAS le gout'}]
+            specialite:'',
+            idRestaurant:0,
+            nomRestaurant:'',
+            type:['Jap','Chinois','Fast Food','Gastronomique','Italien','Grec','Haut de gamme','fruit de mer'],
+            markersShow:[{latlng:{ latitude :  38 , longitude :  -123 },title:'Quick',description:'Nous c est le gout'},{latlng:{ latitude :  36 , longitude :  -121 },title:'MC DO',description:'Nous c est PAS le gout'}],
+            markers:[],
+            regionLat:0,
+            regionLong:0
           };
           this.changeSearch= this.changeSearch.bind(this);
     }
@@ -32,10 +40,57 @@ class Carte extends React.Component {
 
 
 
+    voirCarte(id,nom,ob){
+      this.setState({idRestaurant:id});
+      this.setState({nomRestaurant:nom});
+      this.setState({regionLat:ob.latitude});
+      this.setState({regionLong:ob.longitude});
+      
+    }
 
-
-
-
+    rechercheSpec(val){
+      this.setState({specialite:val});
+      let arr = this.state.markers;
+      let mark=[];
+      console.log(arr[0]);
+      for(let i = 0 ; i <arr.length;i++){
+        console.log(arr[i].specialite);
+        if(arr[i].specialite==val){
+          mark.push(arr[i]);
+        }
+      }
+      this.setState({markersShow:mark});
+      this.setState({idRestaurant:0});
+      this.setState({nomRestaurant:''});
+      this.setState({regionLat:this.state.lat});
+      this.setState({regionLong:this.state.long});
+    }
+changeStyle(){
+  return{
+    backgroundColor: 'rgb(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ')',
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    borderRadius: 2,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1
+    },
+    shadowOpacity: 0.35,
+    shadowRadius: 20,
+    elevation: 2,
+    minWidth: 88,
+    borderRadius:20,
+    paddingLeft: 16,
+    paddingRight: 16,
+    marginTop:5,
+    marginRight:5,
+    marginLeft:5,
+    marginBottom:5,
+    height:'95%'
+  }
+}
 
 
     
@@ -99,7 +154,7 @@ class Carte extends React.Component {
             id.push(json[i].id);
             arrPlat.push({id:json[i].id,nomPlat:json[i].nomPlat,name:json[i].nomRestaurant,commentaires:json[i].commentaires});
             arr.push({name:json[i].nomRestaurant,id : json[i].id,adresse:json[i].adresse, localisation:json[i].adresse});// changer ici qd j aurai mis la localisation
-            location.push({title:json[i].nomRestaurant,description:json[i].adresse,latlng:{longitude:json[i].longitude,latitude:json[i].latitude}})
+            location.push({title:json[i].nomRestaurant,description:json[i].adresse,id:json[i].id,specialite:json[i].specialite,latlng:{longitude:json[i].longitude,latitude:json[i].latitude}})
           }else{
             arrPlat.push({id:json[i].id,nomPlat:json[i].nomPlat,name:json[i].nomRestaurant,commentaires:json[i].commentaires});
           }
@@ -135,6 +190,7 @@ class Carte extends React.Component {
         this.setState({listShow:arr});
         this.setState({listePlat:arrPlat});
         this.setState({markers:location});
+        this.setState({markersShow:location});
       })
 
       /*
@@ -350,6 +406,8 @@ permissionHandle = async () => {
     console.log(position);
     this.setState({long: position.coords.longitude});
     this.setState({lat: position.coords.latitude});
+    this.setState({regionLat:position.coords.latitude});
+    this.setState({regionLong:position.coords.longitude});
     this.setState({location:true});
    },
    (error) => {
@@ -666,6 +724,7 @@ mapStyle = [
 
 
         <SafeAreaView style={{width:'100%', height:'100%'}} >
+        {!this.state.location &&
 <View style={[styles.containerSearch, this.props.style]}>
       <View style={styles.inputBox}>
         <MaterialCommunityIconsIcon
@@ -681,7 +740,7 @@ mapStyle = [
       </View>
     </View>
 
-
+        }
     
     <View style={[styles.containerPicker, this.props.style]}>
       <View style={styles.textWrapper}>
@@ -729,12 +788,13 @@ mapStyle = [
   }
 
 {this.state.location &&
+<View style={{backgroundColor:"#142B7F",height:'92%'}}>
     <MapView
     style={{height:'80%',width:'100%'}}
     provider={PROVIDER_GOOGLE}
     region={{
-      latitude: this.state.lat,
-      longitude: this.state.long,
+      latitude: this.state.regionLat,
+      longitude: this.state.regionLong,
       latitudeDelta: 0.1,
       longitudeDelta: 0.1,
     }}
@@ -744,16 +804,44 @@ mapStyle = [
     title='You are here'
         description='vous vous situez ici'
   />
-{this.state.markers.map((marker, index) => (
+{this.state.markersShow.map((marker, index) => (
     <Marker
       key={index}
       coordinate={marker.latlng}
       title={marker.title}
       description={marker.description}
-    />
+      onPress={()=>{this.voirCarte(marker.id,marker.title,marker.latlng)}}
+      //image={{uri: 'http://192.168.0.8:3001/image/resto2.png'}}
+      //style={{width: 10, height: 10}}
+    >
+    <Image source={{uri: 'http://192.168.0.8:3001/image/resto.png'}} style={{ width: 40, height: 50 }} />
+    </Marker>
   ))}
 
   </MapView>
+      <View style={styles.textWrapper}>
+<FlatList 
+horizontal
+pagingEnabled
+bounces={true}
+data={this.state.type}
+renderItem={({item,index})=>{return(
+  <TouchableOpacity style={this.changeStyle()} key={index} id={index} onPress={()=>{this.rechercheSpec(item)}}>
+          <Text style={styles.voirLaCarte} >{item}</Text>
+        </TouchableOpacity>
+)}}
+keyExtractor={item => item.id}
+style={{flexGrow:0,height:'100%'}}
+contentContainerStyle={{height:'100%'}}
+showsHorizontalScrollIndicator={false}
+></FlatList>
+        
+      </View>
+      <TouchableOpacity style={this.containerButtonCarte} onPress={()=>{this.props.navigation.navigate('CarteRestaurant',{idRestaurant:this.state.idRestaurant});}}>
+      <Text style={styles.specialite} > Voir la carte :{this.state.nomRestaurant} </Text>
+      </TouchableOpacity>
+   </View>
+  
   }
   </SafeAreaView>
 
@@ -767,7 +855,21 @@ mapStyle = [
 }
 
 }
+/*
+<TouchableOpacity style={[styles.containerButtonPlat, this.props.style]}>
+          <Text style={styles.voirLaCarte} >Resto Chinois</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.containerButtonPlat, this.props.style]}>
+          <Text style={styles.voirLaCarte} >Resto Jap</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.containerButtonPlat, this.props.style]}>
+          <Text style={styles.voirLaCarte} >Fast food</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.containerButtonPlat, this.props.style]}>
+          <Text style={styles.voirLaCarte} >Resto gzstronomique</Text>
+        </TouchableOpacity>
 
+*/
 
 const styles = StyleSheet.create({
   container: {
@@ -862,6 +964,25 @@ const styles = StyleSheet.create({
     paddingRight: 16,
     marginLeft:'5%'
   },
+  containerButtonCarte:{
+    backgroundColor:'#000',
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    borderRadius: 2,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1
+    },
+    shadowOpacity: 0.35,
+    shadowRadius: 5,
+    elevation: 2,
+    minWidth: 88,
+    paddingLeft: 16,
+    paddingRight: 16,
+    marginLeft:'5%'
+  },
   containerButtonPlat: {
     backgroundColor: "#2196F3",
     justifyContent: "center",
@@ -884,6 +1005,10 @@ const styles = StyleSheet.create({
   voirLaCarte: {
     color: "#fff",
     fontSize: 14
+  },
+  specialite: {
+    color: "#fff",
+    fontSize: 25
   },
   containerPicker: {
     flexDirection: "row",

@@ -4,6 +4,8 @@ import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Overlay } from 'react-native-elements';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+//import stripe from 'tipsi-stripe';
+
 class Splitter extends React.Component {
     constructor(props) {
         super(props);
@@ -108,7 +110,8 @@ toggleSplit=(num)=>{
   this.addition();
   
 }
-demandeAddition(){
+async demandeAddition(){
+  
   fetch('http://192.168.0.8:3001/demandeAddition', {
                   method: 'POST',
                   headers: {
@@ -129,6 +132,25 @@ demandeAddition(){
                       this.toggleOverlay();
                     }
                   });
+              /*
+             stripe.setOptions({
+                publishableKey: 'pk_test_51IWLThAs3sbJpSLAKBL9tAwrWaQJqYevvYTqcOB9kTOpG2Oc8FdKSYc29UNQFx4Rng3Za9bEEeM6ir9g5uBGMFPh00z1lexyT0',
+                //merchantId: 'MERCHANT_ID', // Optional
+                androidPayMode: 'test', // Android only
+              })
+
+                  try {
+                    const paymentMethod = await stripe.createPaymentMethod({
+                      card : {
+                        number : '4000002500003155',
+                        cvc : '123',
+                        expMonth : 11,
+                        expYear : 2020
+                      }
+                    })
+                  } catch (e) {
+                    // Handle error
+                  }*/
 }
 /*
 commandes=()=>{
