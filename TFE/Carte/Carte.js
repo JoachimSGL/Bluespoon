@@ -28,42 +28,62 @@ class Carte extends React.Component {
             specialite:'',
             idRestaurant:0,
             nomRestaurant:'',
-            type:['Jap','Chinois','Fast Food','Gastronomique','Italien','Grec','Haut de gamme','fruit de mer'],
+            type:['Tous les restos','Jap','Chinois','Fast Food','Gastronomique','Italien','Grec','Haut de gamme','fruit de mer'],
             markersShow:[{latlng:{ latitude :  38 , longitude :  -123 },title:'Quick',description:'Nous c est le gout'},{latlng:{ latitude :  36 , longitude :  -121 },title:'MC DO',description:'Nous c est PAS le gout'}],
             markers:[],
             regionLat:0,
-            regionLong:0
+            regionLong:0,
+            error:false,
           };
           this.changeSearch= this.changeSearch.bind(this);
     }
 
 
-
+    goToLocation(id){
+      let arr = this.state.markers;
+      for(let i = 0 ; i <arr.length;i++){
+        if(arr[i].id==id){
+          this.setState({idRestaurant:arr[i].id});
+          this.setState({nomRestaurant:arr[i].nomRestaurant});
+          this.setState({regionLat:arr[i].latlng.latitude});
+          this.setState({regionLong:arr[i].latlng.longitude});
+          this.setState({markersShow:[arr[i]]});
+        }
+      }
+      this.permissionHandle();
+    }
 
     voirCarte(id,nom,ob){
       this.setState({idRestaurant:id});
       this.setState({nomRestaurant:nom});
       this.setState({regionLat:ob.latitude});
       this.setState({regionLong:ob.longitude});
-      
     }
 
     rechercheSpec(val){
-      this.setState({specialite:val});
-      let arr = this.state.markers;
-      let mark=[];
-      console.log(arr[0]);
-      for(let i = 0 ; i <arr.length;i++){
-        console.log(arr[i].specialite);
-        if(arr[i].specialite==val){
-          mark.push(arr[i]);
+      if(val == 'Tous les restos'){
+        this.setState({markersShow:this.state.markers});
+        this.setState({idRestaurant:0});
+        this.setState({nomRestaurant:''});
+        this.setState({regionLat:this.state.lat});
+        this.setState({regionLong:this.state.long});
+      }else{
+        this.setState({specialite:val});
+        let arr = this.state.markers;
+        let mark=[];
+        console.log(arr[0]);
+        for(let i = 0 ; i <arr.length;i++){
+          console.log(arr[i].specialite);
+          if(arr[i].specialite==val){
+            mark.push(arr[i]);
+          }
         }
+        this.setState({markersShow:mark});
+        this.setState({idRestaurant:0});
+        this.setState({nomRestaurant:''});
+        this.setState({regionLat:this.state.lat});
+        this.setState({regionLong:this.state.long});
       }
-      this.setState({markersShow:mark});
-      this.setState({idRestaurant:0});
-      this.setState({nomRestaurant:''});
-      this.setState({regionLat:this.state.lat});
-      this.setState({regionLong:this.state.long});
     }
 changeStyle(){
   return{
@@ -395,12 +415,14 @@ changeMethod(bool){
   this.setState({listShow:this.state.list});
   this.setState({listePlatCorrespondant:[]});
   this.setState({search:''});
+  this.setState({error:false});
   
 }
 
 
 permissionHandle = async () => {
-
+  this.setState({loading:true});
+  this.setState({location:true});
   Geolocation.getCurrentPosition(
     (position) => {
     console.log(position);
@@ -408,10 +430,14 @@ permissionHandle = async () => {
     this.setState({lat: position.coords.latitude});
     this.setState({regionLat:position.coords.latitude});
     this.setState({regionLong:position.coords.longitude});
-    this.setState({location:true});
+    
+    this.setState({error:false});
+    this.setState({loading:false});
    },
    (error) => {
     console.log('error :'+error);
+    this.setState({loading:false});
+    this.setState({error:true});
    },
    {enableHighAccuracy: true, timeout: 20000})
 /*
@@ -767,15 +793,23 @@ mapStyle = [
           <Text style={styles.quick}>{this.findNote(l.id)}</Text>
         </View>
         {this.state.method &&
-                <Text style={styles.loremIpsum}>
-                adresse: {l.adresse}  
-                </Text>
+        <View style={{flex:1,flexDirection:'row'}}>
+                
+                <TouchableOpacity style={[styles.containerButtonVoirSurCarte, this.props.style]} onPress={()=>{this.goToLocation(l.id)}}>
+                
+                <Image source={{uri: 'http://192.168.0.8:3001/image/resto.png'}} style={{ width: 40, height: 50 }} />
+              </TouchableOpacity>
+              </View>
           }
           {!this.state.method &&
-          
+          <View style={{flex:1,flexDirection:'row',alignItems: "center"}}>
                 <TouchableOpacity style={[styles.containerButtonPlat, this.props.style]} onPress={()=>{this.affichePlats(i)}}>
                 <Text style={styles.voirLaCarte}>Voir les plats correspondants</Text>
               </TouchableOpacity>
+              <TouchableOpacity style={[styles.containerButtonVoirSurCarte, this.props.style]} onPress={()=>{this.goToLocation(l.id)}}>
+              <Image source={{uri: 'http://192.168.0.8:3001/image/resto.png'}} style={{ width: 40, height: 50 }} />
+            </TouchableOpacity>
+            </View>
               
           }
       </View>
@@ -786,7 +820,11 @@ mapStyle = [
   
   </ScrollView>
   }
-
+{this.state.error &&
+  <View style={{backgroundColor:"#142B7F",height:'92%'}}>
+    <Text style={styles.specialite} >Veuillez activer la localisation</Text>
+    </View>
+}
 {this.state.location &&
 <View style={{backgroundColor:"#142B7F",height:'92%'}}>
     <MapView
@@ -838,13 +876,16 @@ showsHorizontalScrollIndicator={false}
         
       </View>
       <TouchableOpacity style={this.containerButtonCarte} onPress={()=>{this.props.navigation.navigate('CarteRestaurant',{idRestaurant:this.state.idRestaurant});}}>
-      <Text style={styles.specialite} > Voir la carte :{this.state.nomRestaurant} </Text>
+      <Text style={styles.specialite} > Voir la carte : {this.state.nomRestaurant} </Text>
       </TouchableOpacity>
    </View>
   
   }
   </SafeAreaView>
+{this.state.loading &&
+<Image source={{uri:'http://192.168.0.8:3001/image/loading.gif'}} style={{heigth:100,width:100}}></Image>
 
+}
 
     </View>
 
@@ -855,21 +896,7 @@ showsHorizontalScrollIndicator={false}
 }
 
 }
-/*
-<TouchableOpacity style={[styles.containerButtonPlat, this.props.style]}>
-          <Text style={styles.voirLaCarte} >Resto Chinois</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.containerButtonPlat, this.props.style]}>
-          <Text style={styles.voirLaCarte} >Resto Jap</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.containerButtonPlat, this.props.style]}>
-          <Text style={styles.voirLaCarte} >Fast food</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.containerButtonPlat, this.props.style]}>
-          <Text style={styles.voirLaCarte} >Resto gzstronomique</Text>
-        </TouchableOpacity>
 
-*/
 
 const styles = StyleSheet.create({
   container: {
@@ -963,6 +990,27 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     paddingRight: 16,
     marginLeft:'5%'
+  },
+  containerButtonVoirSurCarte: {
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    borderRadius: 210,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1
+    },
+    shadowOpacity: 0.35,
+    shadowRadius: 5,
+    elevation: 2,
+    minWidth: 88,
+    paddingLeft: 16,
+    paddingRight: 16,
+    marginLeft:'5%',
+    marginTop:'1%',
+    height:'90%'
   },
   containerButtonCarte:{
     backgroundColor:'#000',
