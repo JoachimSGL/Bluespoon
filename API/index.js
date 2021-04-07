@@ -131,7 +131,7 @@ app.get('/reconnexion', function (req, res) {
     if (err) {throw err;}else{
       if(password == result[0]['password']){
         valueId = [[email]];
-        var rechsqlID = 'select id,serveur from utilisateurs where email = ?';
+        var rechsqlID = 'select id,serveur,numTable from utilisateurs where email = ?';
           db.query(rechsqlID,valueId, function (err2, result2, fields2) {
               if (err2) {res.send(JSON.stringify('no'));}else{
                 res.send(JSON.stringify(result2));
@@ -305,12 +305,12 @@ app.post('/inscriptionServeur',jsonParser, function (req, res) {
   let mdpR = req.body.mdpR;
   let nomRestaurant = req.body.nomRestaurant;
   let valuesR = [[nomRestaurant]];
-  var rechsqlR = 'select passwordRestaurant from restaurant where nomRestaurant = ?';
+  var rechsqlR = 'select id,passwordRestaurant from restaurant where nomRestaurant = ?';
   db.query(rechsqlR,valuesR, function (errR, resultR, fields) {
     if (errR) {res.send(JSON.stringify('no'));}else{
       if(mdpR == resultR[0]['passwordRestaurant']){
 
-        values=[[nom,prenom,email,0,mdp,true]];
+        values=[[nom,prenom,email,resultR[0]['id'],mdp,true]];
         var rechsql = "insert into utilisateurs(nom,prenom,email,numTable,password,serveur) values(?)";
         db.query(rechsql ,values, function (err, result, fields) {
           if (err) {res.send(JSON.stringify('no'));}else{
@@ -337,9 +337,12 @@ app.post('/inscriptionServeur',jsonParser, function (req, res) {
 app.post('/inscriptionRestaurant',jsonParser, function (req, res) {
   let nom = req.body.nom;
   let add = req.body.add;
+  let type = req.body.type;
+  let lat = req.body.lat;
+  let long = req.body.long;
   let pass = req.body.pass;
-  values=[[nom,add,pass]];
-  var rechsql = "insert into restaurant(nomRestaurant,adresse,passwordRestaurant) values(?)";
+  values=[[nom,add,pass,long,lat,type]];
+  var rechsql = "insert into restaurant(nomRestaurant,adresse,passwordRestaurant,longitude,latitude,specialite) values(?)";
   db.query(rechsql ,values, function (err, result, fields) {
     if (err) {res.send(JSON.stringify('no'));}else{
 
@@ -485,7 +488,6 @@ app.post('/modifPlat',jsonParser, function (req, res) {
 
 app.post('/image',upload.single('file'), function (req, res) {
   let file = req.file;
-  console.log(file);
   
 //fs.writeFile(file.originalname, file);
 })
@@ -495,7 +497,6 @@ app.get('/image2', function (req, res) {
   var rechsql = 'select image from plats where idPlat= ?';
   db.query(rechsql, values,function (err, result, fields) {
     if (err) {throw err;}else{
-      console.log(result[0]['image']);
       /*
       var FileReader = require('filereader')
       const fileReaderInstance = new FileReader();

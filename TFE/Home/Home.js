@@ -83,7 +83,7 @@ class Home extends React.Component {
         }).then(response => response.json())
         .then((json) => {
           if(json!=='no' && !json.addition){
-          console.log(json.idTable);
+          console.log(json.idRestaurant);
             this.props.navigation.navigate('Splitter',{numCommande : json.numCommande, idRestaurant: json.idRestaurant,numTable:json.idTable}); 
           }
         });

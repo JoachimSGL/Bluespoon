@@ -80,9 +80,9 @@ class Serveur extends React.Component {
           if(json!='no' && json!='pas autorisé'){
             this.storeToken(json[0].id,'id');
             this.storeToken(json[0].serveur,'serveur');
-            this.props.navigation.navigate('HomeServeur',{serveur:true});
+            this.props.navigation.navigate('HomeServeur',{serveur:true,numTable:json[0].numTable});
           }else{
-              
+              console.log(json);
           }
         });
     }

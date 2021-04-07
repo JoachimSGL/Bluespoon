@@ -12,7 +12,7 @@ class HomeServeur extends React.Component {
             id: 0,
             serveur:(this.props.route.params== undefined ? false  :this.props.route.params.serveur),
             makeRequest:true,
-            idRestaurant:1,
+            idRestaurant:(this.props.route.params== undefined ? 1  :this.props.route.params.numTable),
             list:[],
             listFull:[],
             listOverlay:[{nomPlat:'fez',prix:'df'}],
@@ -56,6 +56,7 @@ toggleOverlay=()=>{
     this.setState({visible : !this.state.visible});
 }
 fetched(){
+    
     fetch('http://192.168.0.8:3001/commandeRestaurant?idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
         headers: {
@@ -93,7 +94,7 @@ fetched(){
 }
     componentDidMount(){
 
-
+        console.log(this.state.idRestaurant);
 
         this.fetched();
                 

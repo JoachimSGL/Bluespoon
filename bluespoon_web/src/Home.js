@@ -7,12 +7,18 @@ class Home extends React.Component {
       id:0,
       nom:'',
       add:'',
+      long:'',
+      lat:'',
+      type:'',
       pass:'',
       pass2:'',
       };
       this.send=this.send.bind(this);
       this.onChangeNom=this.onChangeNom.bind(this);
       this.onChangeAdd=this.onChangeAdd.bind(this);
+      this.onChangeLong=this.onChangeLong.bind(this);
+      this.onChangeLat=this.onChangeLat.bind(this);
+      this.onChangeType=this.onChangeType.bind(this);
       this.onChangePass=this.onChangePass.bind(this);
       this.onChangePass2=this.onChangePass2.bind(this);
 }
@@ -27,6 +33,9 @@ class Home extends React.Component {
         body: JSON.stringify({
           nom: this.state.nom,
           add:this.state.add,
+          long:this.state.long,
+          lat:this.state.lat,
+          type:this.state.type,
           pass:this.state.pass
       })
       }).then(response => response.json())
@@ -47,6 +56,16 @@ class Home extends React.Component {
     onChangeAdd(txt){
       this.setState({add:txt.target.value});
     }
+    onChangeLong(txt){
+      this.setState({long:txt.target.value});
+    }
+    onChangeLat(txt){
+      this.setState({lat:txt.target.value});
+    }
+    onChangeType(txt){
+      console.log(txt.target.value);
+      this.setState({type:txt.target.value});
+    }
     onChangePass(txt){
       this.setState({pass:txt.target.value});
     }
@@ -63,6 +82,25 @@ class Home extends React.Component {
     </div>
       <div className='containerInput'>
       <input placeholder='adresse' className='inputText' onChange={this.onChangeAdd} value={this.state.add}/><br/>
+      </div>
+      <div className='containerInput'>
+      <input placeholder='longitude' className='inputText' onChange={this.onChangeLong} value={this.state.long}/><br/>
+      </div>
+      <div className='containerInput'>
+      <input placeholder='latitude' className='inputText' onChange={this.onChangeLat} value={this.state.lat}/><br/>
+      </div>
+      <div className='containerInput'>
+        <label for="pet-select">Type de restauration:</label>
+
+        <select name="pets" id="pet-select" onChange={this.onChangeType}>
+            <option value="">--Please choose an option--</option>
+            <option value="Fast Food">Fast Food</option>
+            <option value="Jap">Jap</option>
+            <option value="Chinois">Chinois</option>
+            <option value="Gastronomique">Gastronomique</option>
+            <option value="Italien">Italien</option>
+            <option value="Grec">Grec</option>
+        </select>
       </div>
       
       

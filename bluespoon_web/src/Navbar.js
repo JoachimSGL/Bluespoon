@@ -2,7 +2,7 @@ import './App.css';
 import { Link} from 'react-router-dom'
 function Navbar() {
   return (
-    <div className="App">
+    <div className="App" >
       <header className="App-header">
         <p>
           Bluespoon

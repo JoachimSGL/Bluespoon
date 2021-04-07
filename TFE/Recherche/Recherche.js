@@ -17,7 +17,7 @@ class Recherche extends React.Component {
             visible:false,
             nom:'Pas de plats diponible',
             commentaires:'default',
-            imagePlat:'null.jpg',
+            imagePlat:'loading.gif',
             prix:'0',
             num:0,
             place:0,

@@ -79,6 +79,7 @@ class Notation extends React.Component {
           this.setState({listPlat:arr});
           this.setState({nom:this.state.list[0].name});
           this.setState({idRestaurant:json[0].idRestaurant});
+          this.setState({list:[{name:'notez le restaurant',subtitle:'', idRestaurant:json[0].idRestaurant}]});
       
       })
     }

@@ -214,17 +214,33 @@ class Acceuil extends Component {
         document.body.appendChild(downloadLink);
         //downloadLink.click();
         document.body.removeChild(downloadLink);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <button className='Button' onClick={this.addServeur}>ajouter un compte serveur</button>
         */
         this.setState({visible:false});
       };
 
     render(){
         return (
+             
             <div className="containerA" id='base'>
             
             {this.state.chaine.map((value) => value)}
             <button className='Button' onClick={this.add}>ajouter un plat</button>
-            <button className='Button' onClick={this.addServeur}>ajouter un compte serveur</button>
             <div className='rectAMargin'>
 
             <span className='Span'>Combien de Qr-codes voulez-vous?:</span>
@@ -241,6 +257,9 @@ class Acceuil extends Component {
            
            </div>
             </div>
+
+
+            
         );
     };
 }

@@ -15,7 +15,7 @@ class CarteRestaurant extends React.Component {
             numTable: (this.props.route.params== undefined ? 1  :this.props.route.params.numero),
             visible:false,
             nom:'Pas de plats diponible',
-            imagePlat:'null.jpg',
+            imagePlat:'loading.gif',
             commentaires:'default',
             prix:'0',
             num:0,

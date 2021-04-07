@@ -3,6 +3,22 @@
     background-color: rgba(157,204,227,1);
   height: 100%;
   width: 100%;
+  background-image: url('http://192.168.0.8:3001/image/acceuil.jpg');
+  background-repeat: repeat;
+  background-size: 100% 1000px;
+}
+.containerB{
+  background-color: rgb(63, 31, 116);
+height: 100%;
+width: 50%;
+}
+
+.container{
+  background-color: rgba(157,204,227,0.5);
+height: 100%;
+width: 50%;
+flex-direction: column;
+    display: flex;
 }
 .autreContainer{
     display: flex;
@@ -16,6 +32,8 @@
     background-color: rgba(168,245,230,1);
     flex-direction: row;
     display: flex;
+    border-radius: 10px;
+    margin-top: 5px;
 }
 .rectAMargin{
   width: 100%;
@@ -24,6 +42,7 @@
     flex-direction: row;
     display: flex;
     margin-top: 2%;
+    border-radius: 10px;
 }
 .inputDiv{
     height: 50%;
@@ -41,8 +60,9 @@
   padding-top: 16px;
   padding-bottom: 8px;
   color: #000;
-  opacity: 0.5;
+  opacity: 1;
   align-self: flex-start;
+  border-radius: 10px;
 }
 .Input{
     font-family: Roboto;
@@ -58,6 +78,7 @@
   border: none;
   background: transparent;
   display: flex;
+  border-radius: 100;
   flex-direction: column;
 }
 .Button{

@@ -71,9 +71,7 @@ class Carte extends React.Component {
         this.setState({specialite:val});
         let arr = this.state.markers;
         let mark=[];
-        console.log(arr[0]);
         for(let i = 0 ; i <arr.length;i++){
-          console.log(arr[i].specialite);
           if(arr[i].specialite==val){
             mark.push(arr[i]);
           }
@@ -205,14 +203,17 @@ changeStyle(){
           compteur=0;
       }
       this.setState({noteRestaurant:noteRestaurant});
+      this.setState({list:arr});
+      this.setState({listShow:arr});
+      this.setState({listePlat:arrPlat});
+      this.setState({markers:location});
+      this.setState({markersShow:location});
+      this.sortRestaurant();
       })
-        this.setState({list:arr});
-        this.setState({listShow:arr});
-        this.setState({listePlat:arrPlat});
-        this.setState({markers:location});
-        this.setState({markersShow:location});
+        
+        
       })
-
+      
       /*
       setInterval(() => {
         Geolocation.getCurrentPosition(
@@ -228,6 +229,50 @@ changeStyle(){
          {enableHighAccuracy: true, timeout: 20000})
       }, 20000);
 */
+    }
+    sortRestaurant(){
+      let arr = this.state.list;
+      let idSorted=[];
+      let arrSorted=[];
+      for(let i =0;i<arr.length;i++){
+        let note=this.findNoteChiffre(arr[i].id);
+        if(note==-1){
+          idSorted.push({id:arr[i].id,note:note})
+        }else{
+          
+          let len = idSorted.length;
+          for(let j = 0 ; j <len;j++){
+            
+            if(note<=idSorted[j].note && j==idSorted.length-1 ){
+              idSorted.push({id:arr[i].id,note:note})
+            }else if(note>=idSorted[j].note && j==0){
+              idSorted.splice(0, 0, {id:arr[i].id,note:note});
+              console.log('gfigougfiugfou')
+            }else if(note<=idSorted[j].note && note>=idSorted[j+1].note ){
+              idSorted.splice(j, 0, {id:arr[i].id,note:note});
+              console.log('gfigougfiugfou')
+            }
+
+
+            
+          }
+
+
+          if(idSorted.length==0){
+            idSorted.push({id:arr[i].id,note:note});
+          }
+        }
+      }
+      for(let i =0;i<idSorted.length;i++){
+        for(let j = 0 ; j <arr.length;j++){
+          if(arr[j].id==idSorted[i].id){
+            arrSorted.push(arr[j])
+          }
+        }
+      }
+      console.log(idSorted);
+      this.setState({list:arrSorted});
+      this.setState({listShow:arrSorted});
     }
     changeFontLeft(){
       if(!this.state.location){
@@ -467,7 +512,6 @@ affichePlats(val){
 }
 findNote(id){
   let arr=  this.state.noteRestaurant;
-  console.log(arr);
   for(let i = 0 ; i <arr.length;i++){
     if(id==arr[i].idRestaurant){
       if(!isNaN(arr[i].note)){
@@ -478,6 +522,19 @@ findNote(id){
     }
   }
   return  ' '
+}
+findNoteChiffre(id){
+  let arr=  this.state.noteRestaurant;
+  for(let i = 0 ; i <arr.length;i++){
+    if(id==arr[i].idRestaurant){
+      if(!isNaN(arr[i].note)){
+        return arr[i].note
+      }else{
+        return -1
+      }
+    }
+  }
+  return  -1
 }
 mapStyle = [
   {
@@ -788,13 +845,12 @@ mapStyle = [
         <View style={styles.quickRow}>
           <Text style={styles.quick}>{l.name}</Text>
           <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>{this.props.navigation.navigate('CarteRestaurant',{idRestaurant:l.id})}}>
-            <Text style={styles.voirLaCarte}>Voir la carte</Text>
+            <Text style={styles.voirLaCarte}>Voir le menu</Text>
           </TouchableOpacity>
-          <Text style={styles.quick}>{this.findNote(l.id)}</Text>
         </View>
         {this.state.method &&
         <View style={{flex:1,flexDirection:'row'}}>
-                
+                <Text style={styles.quick}>{this.findNote(l.id)}</Text>
                 <TouchableOpacity style={[styles.containerButtonVoirSurCarte, this.props.style]} onPress={()=>{this.goToLocation(l.id)}}>
                 
                 <Image source={{uri: 'http://192.168.0.8:3001/image/resto.png'}} style={{ width: 40, height: 50 }} />
