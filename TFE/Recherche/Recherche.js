@@ -1,4 +1,4 @@
-import { StyleSheet, View, TouchableOpacity, Text, Image,ScrollView,SafeAreaView, Animated ,Easing } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Text, Image,ScrollView,SafeAreaView, Animated ,Easing,TextInput } from "react-native";
 import React from 'react';
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Overlay,ListItem } from 'react-native-elements';
@@ -292,7 +292,7 @@ class Recherche extends React.Component {
             }
           }
           if(bool){
-            arr.push([this.state.nom,this.state.commentaires,this.state.prix,this.state.idPlat,1]);
+            arr.push([this.state.nom,this.state.commentaires,this.state.prix,this.state.idPlat,1,false,'']);
           }
           this.fadeIn();
           //this.fadeOut();
@@ -373,6 +373,16 @@ class Recherche extends React.Component {
 
           }
           
+        }
+        addCom(key){
+          let com = this.state.listCommande;
+          com[key][5]=!com[key][5];
+          this.setState({listCommande:com})
+        }
+        addCommentaires(key,txt){
+          let com = this.state.listCommande;
+          com[key][6]=txt.nativeEvent.text;
+          this.setState({listCommande:com})
         }
         supprimer=(key)=>{
           let com = this.state.listCommande;
@@ -768,8 +778,18 @@ class Recherche extends React.Component {
               <ListItem.Title>{l[0]} (x{l[4]})</ListItem.Title>
               <ListItem.Subtitle>{l[1]}</ListItem.Subtitle>
               <ListItem.Subtitle>prix : {l[2]} €</ListItem.Subtitle>
-              
+              {l[5] &&
+              <TextInput
+              placeholder="Commentaires"
+             //style={styles.inputStyle}
+              multiline={false}
+              onChange={(txt)=>{this.addCommentaires(i,txt)}}
+                >{l[6]}</TextInput>
+              }
               </ListItem.Content>
+              <TouchableOpacity style={[styles.containerTrash, this.props.style]} onPress={()=>this.addCom(i)}>
+                <Icon name="restaurant-sharp" style={styles.iconTrash}></Icon>
+              </TouchableOpacity>
               <TouchableOpacity style={[styles.containerTrash, this.props.style]} onPress={()=>this.supprimer(i)}>
                 <Icon name="ios-trash" style={styles.iconTrash}></Icon>
               </TouchableOpacity>

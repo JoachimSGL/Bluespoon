@@ -12,8 +12,8 @@ class Carte extends React.Component {
         super(props);
         this.state = {
             id: 1,
-            list:[{name:'Quick'},{name:'Mc Do'},{name:'Mc Do'},{name:'Mc Do'},{name:'Mc Do'},{name:'Mc Do'},{name:'Mc Do'}],
-            listShow:[{name:'Quick'},{name:'Mc Do'},{name:'Mc Do'},{name:'Mc Do'},{name:'Mc Do'},{name:'Mc Do'},{name:'Mc Do'}],
+            list:[{name:'Loading'}],
+            listShow:[{name:'Loading'}],
             listAdresse:[{adresse:'default'}],
             visible:false,
             search:'',
@@ -241,20 +241,25 @@ changeStyle(){
         }else{
           
           let len = idSorted.length;
+          let position = -1;
           for(let j = 0 ; j <len;j++){
             
             if(note<=idSorted[j].note && j==idSorted.length-1 ){
-              idSorted.push({id:arr[i].id,note:note})
+              //idSorted.push({id:arr[i].id,note:note})
+              position=len;
             }else if(note>=idSorted[j].note && j==0){
-              idSorted.splice(0, 0, {id:arr[i].id,note:note});
-              console.log('gfigougfiugfou')
+              //idSorted.splice(0, 0, {id:arr[i].id,note:note});
+              position=0;
             }else if(note<=idSorted[j].note && note>=idSorted[j+1].note ){
-              idSorted.splice(j, 0, {id:arr[i].id,note:note});
-              console.log('gfigougfiugfou')
+              //idSorted.splice(j, 0, {id:arr[i].id,note:note});
+              position=j+1
             }
 
 
             
+          }
+          if(position!==-1){
+            idSorted.splice(position, 0, {id:arr[i].id,note:note});
           }
 
 
@@ -270,7 +275,6 @@ changeStyle(){
           }
         }
       }
-      console.log(idSorted);
       this.setState({list:arrSorted});
       this.setState({listShow:arrSorted});
     }

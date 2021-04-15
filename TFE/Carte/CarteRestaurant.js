@@ -1,4 +1,4 @@
-import { StyleSheet, View, TouchableOpacity, Text, Image,ScrollView,SafeAreaView, StatusBar  } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Text, Image,ScrollView,SafeAreaView, StatusBar,Animated ,FlatList,Dimensions } from "react-native";
 import React from 'react';
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Overlay,ListItem } from 'react-native-elements';
@@ -25,15 +25,21 @@ class CarteRestaurant extends React.Component {
             idPlat:0,
             listBoissons : [[{name:'Pas de boissons disponible',subtitle:'default',prix:0,idPlat:0 }]],
             list : [[{name:'Pas de plats disponible',subtitle:'default',prix:0,idPlat:0 }]],
+            listFlat : [[{name:'Pas de plats disponible',subtitle:'default',prix:0,idPlat:0 }]],
+            listBoissonFlat: [[{name:'Pas de boissons disponible',subtitle:'default',prix:0,idPlat:0 }]],
             listCommande:[],
-
-
-
+            loading:true,
+            test:['f','d','g','s','q'],
 
             listNote:[[{name:'Eric Cartman',subtitle:'default',note:0,idNotation:0 }]],
             notes:false,
             visibleNote:false,
-            placeNote:0
+            placeNote:0,
+            scrollX:new Animated.Value(0),
+            viewabilityConfig : {
+              itemVisiblePercentThreshold: 50
+            }
+            
 
           };
     }
@@ -72,20 +78,25 @@ class CarteRestaurant extends React.Component {
       .then((json) => {
         let arr = [];
         let arrCinq = [];
+        let compteurId=1;
+        let arrFlat=[{name:false,subtitle:'',prix:0,idPlat:0,imagePlat:'null.jpg'}];
         let compteur=0;
         let bool = true;
         for(let i = 0 ; i < json.length; i++){
           if(compteur<4){
-            arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat});
+            arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat,id:compteurId});
             compteur++;
             bool = true;
           }else{
-            arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat});
+            arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat,id:compteurId});
             arr.push(arrCinq);
             arrCinq = [];
             compteur=0;
             bool = false;
           }
+          
+          arrFlat.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat,id:compteurId});
+          compteurId=compteurId+1;
         }
         if(bool){
           console.log(compteur);
@@ -96,12 +107,14 @@ class CarteRestaurant extends React.Component {
         }
         if(json.length!==0){
         this.setState({list : arr});
+        this.setState({listFlat : arrFlat});
         this.setState({panier : 0});
         this.setState({nom : arr[0][0].name});
         this.setState({prix : arr[0][0].prix});
         this.setState({commentaires : arr[0][0].subtitle});
         this.setState({idPlat : arr[0][0].idPlat});
         this.setState({imagePlat : arr[0][0].imagePlat});
+        this.setState({loading:false})
         }
       });
 
@@ -121,19 +134,23 @@ class CarteRestaurant extends React.Component {
         let arrCinq = [];
         let compteur=0;
         let bool = true;
+        let compteurId=1;
+        let arrFlat=[{name:false,subtitle:'',prix:0,idPlat:0,imagePlat:'null.jpg'}];
         for(let i = 0 ; i < json.length; i++){
           if(compteur<4){
-          arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat});
+          arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat,id:compteurId});
             compteur++;
             bool = true;
           }else{
-            arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat});
+            arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat,id:compteurId});
             arr.push(arrCinq);
             arrCinq=[];
             compteur=0;
             bool = false;
           }
           compteur++;
+          arrFlat.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat,id:compteurId});
+          compteurId=compteurId+1;
         }
         if(bool){
           for(let i = compteur;i<5;i++){
@@ -143,8 +160,13 @@ class CarteRestaurant extends React.Component {
         }
         if(json.length!==0){
           this.setState({listBoissons : arr});
+          this.setState({listBoissonFlat : arrFlat});
         }
       });
+
+
+
+
       /*
       fetch('http://192.168.0.8:3001/image?idPlat=8', {
         method: 'GET',
@@ -267,6 +289,8 @@ class CarteRestaurant extends React.Component {
             this.setState({placeNote:0});
             this.setState({place:0});
             this.setState({placeBoissons:0});
+            console.log(this.state.list[this.state.place][val].id);
+            this.flatListRef.scrollToIndex({animated: true, index: this.state.list[this.state.place][val].id});
           }
         }
         changerBoisson=(val)=>{
@@ -286,6 +310,7 @@ class CarteRestaurant extends React.Component {
             this.setState({placeNote:0});
             this.setState({place:0});
             this.setState({placeBoissons:0});
+            this.flatListRef.scrollToIndex({animated: true, index: this.state.list[this.state.placeBoissons][val].id});
           }
       }
       changerNote=(val)=>{
@@ -297,7 +322,7 @@ class CarteRestaurant extends React.Component {
           com.splice(key,1);
           this.setState({listCommande : com});
         }
-        note(){
+        note(idPlat){
           fetch('http://192.168.0.8:3001/notation?idRestaurant='+this.state.idRestaurant, {
           method: 'GET',
         
@@ -313,7 +338,7 @@ class CarteRestaurant extends React.Component {
                 let compteur=0;
                 let bool = true;
                 for(let i = 0 ; i < json.length; i++){
-                  if(this.state.idPlat==json[i].idPlat){
+                  if(idPlat==json[i].idPlat){
                     if(compteur<3){
                       arrCinq.push({name :json[i].prenom+' '+json[i].nom,subtitle : json[i].commentairesNotation,note : json[i].note,idPlat:json[i].idPlat});
                       compteur++;
@@ -342,9 +367,18 @@ class CarteRestaurant extends React.Component {
 });
           
         }
+        getItem(e){
+          let offset = e.nativeEvent.contentOffset.y;
+          const { width, height } = Dimensions.get('window')
+          let index = parseInt(offset/width );   // your cell height
+          console.log("now index is " + index)
+        }
   render() {
-    
-
+    const { width, height } = Dimensions.get('window');
+    const SPACING = 0.01;
+    const ITEM_SIZE = width * 0.95;
+    const EMPTY_ITEM_SIZE = (width - ITEM_SIZE)/2 ;
+    const BACKDROP_HEIGHT = height * 0.9;
     return (
       <View className='container'>
 
@@ -404,46 +438,113 @@ class CarteRestaurant extends React.Component {
             {this.state.panier == 0 &&
         <View style={styles.rect}>
                         <View style={styles.materialButtonPrimary1Row}>
-                                    <View style={[styles.containerImage, this.props.style]}>
-                                        <Image
-                                            source={{uri: "http://192.168.0.8:3001/image/"+this.state.imagePlat}}
-                                            style={styles.cardItemImagePlace}
-                                        ></Image>
-                                               <View style={styles.cardBodyTop}>
-                                                    <View style={styles.bodyContent}>
-                                                    <Text style={styles.titleStyle}>
-                                                        {this.state.nom}
-                                                    </Text>
-                                                    <Text style={styles.subtitleStyle}>
-                                                    {this.state.commentaires}
-                                                    </Text>
-                                                    </View>
-                                                    
-                                                </View>
-                                                <View style={styles.cardBody}>
-                                                    
-                                                    <View style={styles.actionBody}>
-                                                    <TouchableOpacity style={styles.actionButton1}>
-                                                        <Text style={styles.actionText1}>
-                                                        Prix :
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                    <TouchableOpacity style={styles.actionButton2}>
-                                                        <Text style={styles.actionText2}>
-                                                        {this.state.prix} €
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                    </View>
-                                                    
+                        
+                                  {this.state.loading &&
+                                    <Image
+                                    source={{uri: "http://192.168.0.8:3001/image/loading2.gif"}}
+                                    style={styles.imageLoading}
+                                ></Image>
+                                  }
 
-                                                </View>
-                                    </View>
+                                    <Animated.FlatList
+                                          showsHorizontalScrollIndicator={false}
+                                          data={this.state.listFlat}
+                                          keyExtractor={(item) => item.id}
+                                          horizontal
+                                          bounces={false}
+                                          decelerationRate={0.98}
+                                          renderToHardwareTextureAndroid
+                                          contentContainerStyle={{ alignItems: 'center' }}
+                                          snapToInterval={width*0.95}
+                                          snapToAlignment='start'
+                                          onScroll={Animated.event(
+                                            [{ nativeEvent: { contentOffset: { x: this.state.scrollX } } }],
+                                            { useNativeDriver: false }
+                                          )}
+
+
+                                          ref={(ref) => { this.flatListRef = ref; }}
+                                          scrollEventThrottle={16}
+                                          renderItem={({ item, index }) => {
+                                            
+                                            if (!item.name) {
+                                              return <View style={{ width: EMPTY_ITEM_SIZE }} />;
+                                            }
+                                            const inputRange = [
+                                              (index - 2) * ITEM_SIZE,
+                                              (index - 1) * ITEM_SIZE,
+                                              index * ITEM_SIZE,
+                                            ];
+
+                                            const translateY = this.state.scrollX.interpolate({
+                                              inputRange,
+                                              outputRange: [100, 50, 100],
+                                              extrapolate: 'clamp',
+                                            });
+
+                                            return (
+                                              <View style={{ width: ITEM_SIZE,height:'100%' }}>
+                                                
+                                                  <Animated.View  style={[styles.containerImage, this.props.style,{
+                                                    marginHorizontal: SPACING/40,
+                                                    alignItems: 'center',
+                                                    transform: [{ translateY }],
+                                                    backgroundColor:"rgba(159,218,215,1)",
+                                                    borderRadius: 34,
+                                                    marginBottom:'30%'
+                                                  }]} >
+                                                        <Image
+                                                            source={{uri: "http://192.168.0.8:3001/image/"+item.imagePlat}}
+                                                            style={styles.cardItemImagePlace}
+                                                        ></Image>
+                                                              <View style={styles.cardBodyTop}>
+                                                                    <View style={styles.bodyContent}>
+                                                                    <Text style={styles.titleStyle}>
+                                                                        {item.name}
+                                                                    </Text>
+                                                                    <Text style={styles.subtitleStyle}>
+                                                                    {item.subtitle}
+                                                                    </Text>
+                                                                    </View>
+                                                                    
+                                                                </View>
+                                                                <View style={styles.cardBody}>
+                                                                    
+                                                                    <View style={styles.actionBody}>
+                                                                    <TouchableOpacity style={styles.actionButton1}>
+                                                                        <Text style={styles.actionText1}>
+                                                                        Prix :
+                                                                        </Text>
+                                                                    </TouchableOpacity>
+                                                                    <TouchableOpacity style={styles.actionButton2}>
+                                                                        <Text style={styles.actionText2}>
+                                                                        {item.prix} €
+                                                                        </Text>
+                                                                    </TouchableOpacity>
+                                                                    <TouchableOpacity style={[styles.containerButtonNote, this.props.style]} onPress={()=>this.note(item.idPlat)}>
+                                                                    <Text style={styles.captionNote}>Notes</Text>
+                                                                    </TouchableOpacity>
+                                                                    </View>
+                                                                    
+                                                                </View>
+                                                    </Animated.View>
+
+
+                                                  
+                                              </View>
+                                            );
+                                          }}
+                                        />
+
+
+
+
+                            
+                                    
 
                         </View>
               <View style={{flex:1,width:'100%',height:'100%',backgroundColor:"rgba(159,218,215,1)"}}>
-              <TouchableOpacity style={[styles.containerButtonNote, this.props.style]} onPress={()=>this.note()}>
-              <Text style={styles.captionNote}>Notes</Text>
-              </TouchableOpacity>
+              
               <TouchableOpacity style={[styles.containerButtonMauve, this.props.style]} onPress={this.toggleOverlay}>
               <Text style={styles.captionMauve}>Catalogue</Text>
               </TouchableOpacity>
@@ -511,46 +612,100 @@ class CarteRestaurant extends React.Component {
             {this.state.panier == 2 &&
         <View style={styles.rect}>
                         <View style={styles.materialButtonPrimary1Row}>
-                                    <View style={[styles.containerImage, this.props.style]}>
                                     
-                                        <Image
-                                            source={{uri: "http://192.168.0.8:3001/image/"+this.state.imagePlat}}
-                                            style={styles.cardItemImagePlace}
-                                        ></Image>
-                                        <View style={styles.cardBodyTop}>
-                                                    <View style={styles.bodyContent}>
-                                                    <Text style={styles.titleStyle}>
-                                                        {this.state.nom}
-                                                    </Text>
-                                                    <Text style={styles.subtitleStyle}>
-                                                    {this.state.commentaires}
-                                                    </Text>
-                                                    </View>
-                                                    
-                                                </View>
-                                                <View style={styles.cardBody}>
-                                                    
-                                                    <View style={styles.actionBody}>
-                                                    <TouchableOpacity style={styles.actionButton1}>
-                                                        <Text style={styles.actionText1}>
-                                                        Prix :
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                    <TouchableOpacity style={styles.actionButton2}>
-                                                        <Text style={styles.actionText2}>
-                                                        {this.state.prix} €
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                    </View>
-                                                    
-                                                </View>
-                                    </View>
+
+                                    <Animated.FlatList
+                                          showsHorizontalScrollIndicator={false}
+                                          data={this.state.listBoissonFlat}
+                                          keyExtractor={(item) => item.id}
+                                          horizontal
+                                          bounces={false}
+                                          decelerationRate={0.98}
+                                          renderToHardwareTextureAndroid
+                                          contentContainerStyle={{ alignItems: 'center' }}
+                                          snapToInterval={width*0.95}
+                                          snapToAlignment='start'
+                                          onScroll={Animated.event(
+                                            [{ nativeEvent: { contentOffset: { x: this.state.scrollX } } }],
+                                            { useNativeDriver: false }
+                                          )}
+
+
+                                          ref={(ref) => { this.flatListRef = ref; }}
+                                          scrollEventThrottle={16}
+                                          renderItem={({ item, index }) => {
+                                            
+                                            if (!item.name) {
+                                              return <View style={{ width: EMPTY_ITEM_SIZE }} />;
+                                            }
+                                            const inputRange = [
+                                              (index - 2) * ITEM_SIZE,
+                                              (index - 1) * ITEM_SIZE,
+                                              index * ITEM_SIZE,
+                                            ];
+
+                                            const translateY = this.state.scrollX.interpolate({
+                                              inputRange,
+                                              outputRange: [100, 50, 100],
+                                              extrapolate: 'clamp',
+                                            });
+
+                                            return (
+                                              <View style={{ width: ITEM_SIZE,height:'100%' }}>
+                                                
+                                                  <Animated.View  style={[styles.containerImage, this.props.style,{
+                                                    marginHorizontal: SPACING/40,
+                                                    alignItems: 'center',
+                                                    transform: [{ translateY }],
+                                                    backgroundColor:"rgba(159,218,215,1)",
+                                                    borderRadius: 34,
+                                                    marginBottom:'30%'
+                                                  }]} >
+                                                        <Image
+                                                            source={{uri: "http://192.168.0.8:3001/image/"+item.imagePlat}}
+                                                            style={styles.cardItemImagePlace}
+                                                        ></Image>
+                                                              <View style={styles.cardBodyTop}>
+                                                                    <View style={styles.bodyContent}>
+                                                                    <Text style={styles.titleStyle}>
+                                                                        {item.name}
+                                                                    </Text>
+                                                                    <Text style={styles.subtitleStyle}>
+                                                                    {item.subtitle}
+                                                                    </Text>
+                                                                    </View>
+                                                                    
+                                                                </View>
+                                                                <View style={styles.cardBody}>
+                                                                    
+                                                                    <View style={styles.actionBody}>
+                                                                    <TouchableOpacity style={styles.actionButton1}>
+                                                                        <Text style={styles.actionText1}>
+                                                                        Prix :
+                                                                        </Text>
+                                                                    </TouchableOpacity>
+                                                                    <TouchableOpacity style={styles.actionButton2}>
+                                                                        <Text style={styles.actionText2}>
+                                                                        {item.prix} €
+                                                                        </Text>
+                                                                    </TouchableOpacity>
+                                                                    <TouchableOpacity style={[styles.containerButtonNote, this.props.style]} onPress={()=>this.note(item.idPlat)}>
+                                                                    <Text style={styles.captionNote}>Notes</Text>
+                                                                    </TouchableOpacity>
+                                                                    </View>
+                                                                    
+                                                                </View>
+                                                    </Animated.View>
+
+
+                                                  
+                                              </View>
+                                            );
+                                          }}
+                                        />
 
                         </View>
             <View style={{flex:1,width:'100%',height:'100%',backgroundColor:"rgba(159,218,215,1)"}}>
-            <TouchableOpacity style={[styles.containerButtonNote, this.props.style]} onPress={()=>this.note()}>
-            <Text style={styles.captionNote}>Notes</Text>
-            </TouchableOpacity>
             <TouchableOpacity style={[styles.containerButtonMauve, this.props.style]} onPress={this.toggleOverlay}>
             <Text style={styles.captionMauve}>Catalogue</Text>
             </TouchableOpacity>
@@ -760,6 +915,15 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
         backgroundColor: "rgba(159,218,215,1)",
       },
+      imageLoading: {
+        backgroundColor: "rgba(159,218,215,1)",
+        flex: 1,
+        minHeight: '100%',
+        width: '100%',
+        resizeMode: 'contain',
+        backgroundColor: "rgba(159,218,215,1)",
+        marginLeft:'20%'
+      },
       cardBody: {
         position: "absolute",
         bottom: 0,
@@ -819,7 +983,7 @@ const styles = StyleSheet.create({
         opacity: 0.9
       },
       materialButtonPrimary1Row: {
-        height: '70%',
+        height: '90%',
         flexDirection: "row",
         marginTop: '2%',
         marginLeft: '0%',
@@ -890,7 +1054,7 @@ const styles = StyleSheet.create({
         minWidth: 88,
         paddingLeft: 16,
         paddingRight: 16,
-        height: '50%',
+        height: '100%',
         width: '100%',
         marginLeft:'0%'
       },
@@ -915,9 +1079,9 @@ const styles = StyleSheet.create({
         minWidth: 88,
         paddingLeft: 16,
         paddingRight: 16,
-        height: '50%',
-        width: '100%',
-        marginLeft:'0%'
+        height: '100%',
+        width: '50%',
+        marginLeft:'5%'
       },
       captionNote: {
         color: "#000",

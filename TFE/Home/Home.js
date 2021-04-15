@@ -98,17 +98,21 @@ class Home extends React.Component {
         <View style={styles.containerBig}>
       <Text style={styles.bluespoon}>Bluespoon</Text>
       <View style={styles.containerSmall}>
-        
+        {!this.state.commande &&
       <TouchableOpacity style={[styles.containerJaune, this.props.style]} onPress={() => { this.props.navigation.navigate('QR'); }} >
         <ImageBackground style={[styles.containerJauneImage, this.props.style]} source={{uri: "http://192.168.0.8:3001/image/loupe.png"}}></ImageBackground>
       </TouchableOpacity>
+        }
+        {this.state.commande &&
+          <TouchableOpacity style={[styles.containerJaune, this.props.style]} onPress={() => { this.splitter(); }} >
+          <ImageBackground style={[styles.containerJauneImage, this.props.style]} source={{uri: "http://192.168.0.8:3001/image/foodIcone.png"}}></ImageBackground>
+        </TouchableOpacity>
+        }
       </View>
 
 <View style={{flex:1,flexDirection: "row",width:'100%',height:'80%'}}> 
       
-        <TouchableOpacity style={[styles.container, this.props.style]} onPress={() => {this.splitter() }}>
-        <Text style={styles.recherche}>Votre commande</Text>
-      </TouchableOpacity>
+        
 
       
         <TouchableOpacity style={[styles.containerMauve, this.props.style]} onPress={() => { this.props.navigation.navigate('Carte'); }}>
@@ -145,7 +149,7 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         borderRadius: Dimensions.get('window').width*10,
         height: '100%',
-        width: '50%',
+        width: '100%',
         borderWidth:2,
       },
       containerJaune: {

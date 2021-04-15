@@ -223,7 +223,6 @@ app.post('/table',jsonParser, function (req, res) {
 app.post('/demandeAddition',jsonParser, function (req, res) {
   let addition = req.body.addition;
   let idUtilisateur = req.body.idUtilisateur;
-  let numCommande = req.body.numCommande;
   let value=[[idUtilisateur]];
   if(!addition){
       //var rechsql = "delete from commandes where numCommande = "+numCommande+ " and idUtilisateur = "+idUtilisateur;
@@ -399,8 +398,8 @@ app.post('/ajoutCommande',jsonParser, function (req, res) {
 
         for(let i =0 ; i<commande.length;i++ ){
           for(let j = 0;j<commande[i][4];j++){
-            let values = [[commande[i][3],idRestaurant,id,numCommande,idTable,contact]];
-            var rechsql = "insert into commandes(idPlat,idRestaurant,idUtilisateur,numCommande,idTable,contact) values(?)";
+            let values = [[commande[i][3],idRestaurant,id,numCommande,idTable,contact,commande[i][6]]];
+            var rechsql = "insert into commandes(idPlat,idRestaurant,idUtilisateur,numCommande,idTable,contact,commentaire) values(?)";
       
             db.query(rechsql,values, function (err, result, fields) { 
               if (err) {throw err;}else{

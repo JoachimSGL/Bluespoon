@@ -9,7 +9,6 @@ class Notation extends React.Component {
         super(props);
         this.state = {
             id: (this.props.route.params==undefined ? 1 : this.props.route.params.id),
-            numCommande:(this.props.route.params==undefined ? 1 : this.props.route.params.numCommande),
             idRestaurant:(this.props.route.params==undefined ? 1 : this.props.route.params.idRestaurant),
 
 
@@ -20,7 +19,7 @@ class Notation extends React.Component {
             type:0,
             commentairesNotation:'',
             visible:false,
-            list:[{name:'Quick',subtitle:'', idRestaurant:1}],
+            list:[{name:'Notez le restaurant',subtitle:'', idRestaurant:0}],
             listPlat:[[{name:'Pas de plats diponible',subtitle:'',idPlat:0 }]],
             showPlat:1
           };
@@ -104,7 +103,10 @@ class Notation extends React.Component {
         }).then(response => response.json())
         .then((json) => {
           if(json=='done'){
-            this.setState({type:1});
+            this.setState({type:0});
+            this.setState({note:4});
+            this.setState({nom:this.state.list[0].name});
+            this.setState({commentairesNotation:''});
             this.toggleOverlay();
           }
         });
@@ -127,7 +129,10 @@ class Notation extends React.Component {
         }).then(response => response.json())
         .then((json) => {
           if(json=='done'){
-            this.setState({type:1});
+            this.setState({type:0});
+            this.setState({note:4});
+            this.setState({nom:this.state.list[0].name});
+            this.setState({commentairesNotation:''});
             this.toggleOverlay();
           }
         });
@@ -282,6 +287,9 @@ class Notation extends React.Component {
         <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>this.toggleOverlay()}>
         <Text style={styles.caption}>Noter un plat</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>this.props.navigation.replace('Home')}>
+        <Text style={styles.caption}>Retourner à l'acceuil</Text>
+        </TouchableOpacity>
       </View>
 
      
@@ -362,7 +370,7 @@ const styles = StyleSheet.create({
         paddingLeft: 16,
         paddingRight: 16,
         width:'100%',
-        height:'20%',
+        height:'8%',
         marginTop:'2%'
       },
       containerButtonOverlay: {

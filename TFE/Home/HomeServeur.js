@@ -166,40 +166,52 @@ fetched(){
         let full = this.state.listAddition;
         let prix = 0;
         let plat=[];
+        //peut y avoir des probs si 2 utils sont a la mm table avec dif payement
         for(let i = 0 ; i<full.length;i++){
-            if(cle.contact==null){
-                if(full[i].idUtilisateur==cle.idUtilisateur && full[i].contact==null){
-                    if(!plat.includes(full[i].idPlat)){
-                        full[i].nombre=1;
-                        arr.push(full[i]);
-                        prix= prix+full[i].prix;
-                        plat.push(full[i].idPlat);
-                    }else{
-                        for(let j=0;j<arr.length;j++){
-                            if(arr[j].idPlat==full[i].idPlat){
-                                
-                                prix= prix+full[i].prix;
-                                arr[j].nombre=arr[j].nombre+1;
+            if(cle.payement==0){
+                if(cle.contact==null){
+                    if(full[i].idUtilisateur==cle.idUtilisateur && full[i].contact==null){
+                        if(!plat.includes(full[i].idPlat)){
+                            full[i].nombre=1;
+                            arr.push(full[i]);
+                            prix= prix+full[i].prix;
+                            plat.push(full[i].idPlat);
+                        }else{
+                            for(let j=0;j<arr.length;j++){
+                                if(arr[j].idPlat==full[i].idPlat){
+                                    
+                                    prix= prix+full[i].prix;
+                                    arr[j].nombre=arr[j].nombre+1;
+                                }
+                            }
+                        }
+                    }
+                }else{
+                    if(full[i].contact==cle.contact && full[i].idUtilisateur==cle.idUtilisateur ){
+                        if(!plat.includes(full[i].idPlat)){
+                            full[i].nombre=1;
+                            arr.push(full[i]);
+                            prix= prix+full[i].prix;
+                            plat.push(full[i].idPlat);
+                        }else{
+                            for(let j=0;j<arr.length;j++){
+                                if(arr[j].idPlat==full[i].idPlat){
+                                    
+                                    prix= prix+full[i].prix;
+                                    arr[j].nombre=arr[j].nombre+1;
+                                }
                             }
                         }
                     }
                 }
             }else{
-                if(full[i].contact==cle.contact && full[i].idUtilisateur==cle.idUtilisateur ){
-                    if(!plat.includes(full[i].idPlat)){
-                        full[i].nombre=1;
-                        arr.push(full[i]);
-                        prix= prix+full[i].prix;
-                        plat.push(full[i].idPlat);
-                    }else{
-                        for(let j=0;j<arr.length;j++){
-                            if(arr[j].idPlat==full[i].idPlat){
-                                
-                                prix= prix+full[i].prix;
-                                arr[j].nombre=arr[j].nombre+1;
-                            }
-                        }
-                    }
+                //A CONTINUER PLUS TARD
+                if(!plat.includes(full[i].idPlat)){
+                    arr.push(full[i]);
+                    prix= prix+full[i].prix;
+                    plat.push(full[i].idPlat);
+                }else{
+
                 }
             }
         }
