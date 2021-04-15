@@ -367,18 +367,12 @@ class CarteRestaurant extends React.Component {
 });
           
         }
-        getItem(e){
-          let offset = e.nativeEvent.contentOffset.y;
-          const { width, height } = Dimensions.get('window')
-          let index = parseInt(offset/width );   // your cell height
-          console.log("now index is " + index)
-        }
+        
   render() {
     const { width, height } = Dimensions.get('window');
     const SPACING = 0.01;
     const ITEM_SIZE = width * 0.95;
     const EMPTY_ITEM_SIZE = (width - ITEM_SIZE)/2 ;
-    const BACKDROP_HEIGHT = height * 0.9;
     return (
       <View className='container'>
 
@@ -905,7 +899,7 @@ const styles = StyleSheet.create({
         elevation: 3,
         overflow: "hidden",
         width: '100%',
-        height:'100%'
+        height:'95%'
       },
       cardItemImagePlace: {
         backgroundColor: "rgba(159,218,215,1)",
@@ -922,7 +916,7 @@ const styles = StyleSheet.create({
         width: '100%',
         resizeMode: 'contain',
         backgroundColor: "rgba(159,218,215,1)",
-        marginLeft:'20%'
+        marginLeft:'30%'
       },
       cardBody: {
         position: "absolute",

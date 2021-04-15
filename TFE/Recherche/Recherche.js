@@ -1,4 +1,4 @@
-import { StyleSheet, View, TouchableOpacity, Text, Image,ScrollView,SafeAreaView, Animated ,Easing,TextInput } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Text, Image,ScrollView,SafeAreaView, Animated ,Easing,TextInput,Dimensions } from "react-native";
 import React from 'react';
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Overlay,ListItem } from 'react-native-elements';
@@ -27,8 +27,13 @@ class Recherche extends React.Component {
             listBoissons : [[{name:'Pas de boissons disponible',subtitle:'default',prix:0,idPlat:0 }]],
             list : [[{name:'Pas de plats disponible',subtitle:'default',prix:0,idPlat:0 }]],
             listCommande:[],
-
-
+            listFlat : [[{name:'Pas de plats disponible',subtitle:'default',prix:0,idPlat:0 }]],
+            listBoissonFlat: [[{name:'Pas de boissons disponible',subtitle:'default',prix:0,idPlat:0 }]],
+            loading:true,
+            scrollX:new Animated.Value(0),
+            viewabilityConfig : {
+              itemVisiblePercentThreshold: 50
+            },
             listNote:[[{name:'Eric Cartman',subtitle:'default',note:0,idNotation:0 }]],
             notes:false,
             visibleNote:false,
@@ -42,10 +47,16 @@ class Recherche extends React.Component {
           
 
           };
+          this._updateIndex = this._updateIndex.bind(this);
     }
     onPress(){
       
     }
+    _updateIndex({ viewableItems }) {
+        let currentIndex = viewableItems[0].index;
+        this.setState({idPlat:currentIndex+1});
+
+      }
     fadeIn = () => {
       // Will change fadeAnim value to 1 in 5 seconds
       Animated.sequence([
@@ -57,7 +68,7 @@ class Recherche extends React.Component {
       }),
       Animated.timing(this.state.fadeAnim, {
         toValue: 0,
-        duration: 1200,
+        duration: 400,
         useNativeDriver: true
       }),
     ]
@@ -114,18 +125,23 @@ class Recherche extends React.Component {
         let arrCinq = [];
         let compteur=0;
         let bool = true;
+        let compteurId=1;
+        let arrFlat=[{name:false,subtitle:'',prix:0,idPlat:0,imagePlat:'null.jpg'}];
+        
         for(let i = 0 ; i < json.length; i++){
           if(compteur<4){
-            arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat});
+            arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat,id:compteurId});
             compteur++;
             bool = true;
           }else{
-            arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat});
+            arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat,id:compteurId});
             arr.push(arrCinq);
             arrCinq = [];
             compteur=0;
             bool = false;
           }
+          arrFlat.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat,id:compteurId});
+          compteurId=compteurId+1;
         }
         if(bool){
           for(let i = compteur;i<5;i++){
@@ -135,12 +151,14 @@ class Recherche extends React.Component {
         }
         if(json.length!==0){
         this.setState({list : arr});
+        this.setState({listFlat : arrFlat});
         this.setState({panier : 0});
         this.setState({nom : arr[0][0].name});
         this.setState({prix : arr[0][0].prix});
         this.setState({commentaires : arr[0][0].subtitle});
         this.setState({idPlat : arr[0][0].idPlat});
         this.setState({imagePlat : arr[0][0].imagePlat});
+        this.setState({loading:false})
         }
       });
 
@@ -160,19 +178,24 @@ class Recherche extends React.Component {
         let arrCinq = [];
         let compteur=0;
         let bool = true;
+        let compteurId=1;
+        let arrFlat=[{name:false,subtitle:'',prix:0,idPlat:0,imagePlat:'null.jpg'}];
         for(let i = 0 ; i < json.length; i++){
           if(compteur<4){
-          arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat});
+          arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat,id:compteurId});
             compteur++;
             bool = true;
           }else{
-            arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat});
+            arrCinq.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat,id:compteurId});
             arr.push(arrCinq);
             arrCinq=[];
             compteur=0;
             bool = false;
+            
           }
           compteur++;
+          arrFlat.push({name :json[i].nomPlat,subtitle : json[i].commentaires,prix : json[i].prix, idPlat : json[i].idPlat,imagePlat:json[i].imagePlat,id:compteurId});
+            compteurId=compteurId+1;
         }
         if(bool){
           for(let i = compteur;i<5;i++){
@@ -182,6 +205,8 @@ class Recherche extends React.Component {
         }
         if(json.length!==0){
           this.setState({listBoissons : arr});
+          this.setState({listBoissonFlat : arrFlat});
+          this.setState({loading:false})
         }
       });
       /*
@@ -285,14 +310,20 @@ class Recherche extends React.Component {
           
           let arr = this.state.listCommande;
           let bool=true;
+          let idPlat=this.state.listFlat[this.state.idPlat].idPlat
           for(let i = 0 ; i<arr.length;i++){
-            if(arr[i][3]==this.state.idPlat){
+            if(arr[i][3]==idPlat){
               arr[i][4]=arr[i][4]+1;
               bool=false;
             }
           }
           if(bool){
-            arr.push([this.state.nom,this.state.commentaires,this.state.prix,this.state.idPlat,1,false,'']);
+            if(this.state.panier==0){
+            arr.push([this.state.listFlat[this.state.idPlat].name,this.state.listFlat[this.state.idPlat].subtitle,this.state.listFlat[this.state.idPlat].prix,idPlat,1,false,'']);
+            }else if(this.state.panier==2){
+              arr.push([this.state.listBoissonFlat[this.state.idPlat].name,this.state.listBoissonFlat[this.state.idPlat].subtitle,this.state.listBoissonFlat[this.state.idPlat].prix,idPlat,1,false,'']);
+
+            }
           }
           this.fadeIn();
           //this.fadeOut();
@@ -318,6 +349,8 @@ class Recherche extends React.Component {
             this.setState({placeNote:0});
             this.setState({placeBoissons:0});
             this.setState({place:0});
+            this.flatListRef.scrollToIndex({animated: true, index: this.state.list[this.state.place][val].id});
+
           }
         }
         changerBoisson=(val)=>{
@@ -336,6 +369,8 @@ class Recherche extends React.Component {
             this.setState({placeNote:0});
             this.setState({placeBoissons:0});
             this.setState({place:0});
+            this.flatListRef.scrollToIndex({animated: true, index: this.state.list[this.state.placeBoissons][val].id});
+
           }
       }
       changerNote=(val)=>{
@@ -393,7 +428,7 @@ class Recherche extends React.Component {
           }
           this.setState({listCommande : com});
         }
-        note(){
+        note(idPlat){
           fetch('http://192.168.0.8:3001/notation?idRestaurant='+this.state.idRestaurant, {
   method: 'GET',
  
@@ -409,7 +444,7 @@ class Recherche extends React.Component {
         let compteur=0;
         let bool = true;
         for(let i = 0 ; i < json.length; i++){
-          if(this.state.idPlat==json[i].idPlat){
+          if(idPlat==json[i].idPlat){
             if(compteur<3){
               arrCinq.push({name :json[i].prenom+' '+json[i].nom,subtitle : json[i].commentairesNotation,note : json[i].note,idPlat:json[i].idPlat});
               compteur++;
@@ -438,7 +473,10 @@ class Recherche extends React.Component {
           
         }
   render() {
-    
+    const { width, height } = Dimensions.get('window');
+    const SPACING = 0.01;
+    const ITEM_SIZE = width * 0.95;
+    const EMPTY_ITEM_SIZE = (width - ITEM_SIZE)/2 ;
 
     return (
       <View className='container'>
@@ -526,6 +564,7 @@ class Recherche extends React.Component {
             {this.state.panier == 0 &&
         <View style={styles.rect}>
                         <View style={styles.materialButtonPrimary1Row}>
+                          {/*
                                     <View style={[styles.containerImage, this.props.style]}>
                                         <Image
                                             source={{uri: "http://192.168.0.8:3001/image/"+this.state.imagePlat}}
@@ -576,6 +615,122 @@ class Recherche extends React.Component {
                                                     </TouchableOpacity>
                                                 </View>
                                     </View>
+                                                  */}
+
+
+
+                                    {this.state.loading &&
+                                    <Image
+                                    source={{uri: "http://192.168.0.8:3001/image/loading2.gif"}}
+                                    style={styles.imageLoading}
+                                ></Image>
+                                  }
+
+                                    <Animated.FlatList
+                                          showsHorizontalScrollIndicator={false}
+                                          data={this.state.listFlat}
+                                          keyExtractor={(item) => item.id}
+                                          horizontal
+                                          bounces={false}
+                                          decelerationRate={0.98}
+                                          renderToHardwareTextureAndroid
+                                          contentContainerStyle={{ alignItems: 'center' }}
+                                          snapToInterval={width*0.95}
+                                          snapToAlignment='start'
+                                          onViewableItemsChanged={this._updateIndex}
+                                          viewabilityConfig={this.viewabilityConfig}
+                                          onScroll={Animated.event(
+                                            [{ nativeEvent: { contentOffset: { x: this.state.scrollX } } }],
+                                            { useNativeDriver: false }
+                                          )}
+
+
+                                          ref={(ref) => { this.flatListRef = ref; }}
+                                          scrollEventThrottle={16}
+                                          renderItem={({ item, index }) => {
+                                            
+                                            if (!item.name) {
+                                              return <View style={{ width: EMPTY_ITEM_SIZE }} />;
+                                            }
+                                            const inputRange = [
+                                              (index - 2) * ITEM_SIZE,
+                                              (index - 1) * ITEM_SIZE,
+                                              index * ITEM_SIZE,
+                                            ];
+
+                                            const translateY = this.state.scrollX.interpolate({
+                                              inputRange,
+                                              outputRange: [100, 50, 100],
+                                              extrapolate: 'clamp',
+                                            });
+
+                                            return (
+                                              <View style={{ width: ITEM_SIZE,height:'100%' }}>
+                                                
+                                                  <Animated.View  style={[styles.containerImage, this.props.style,{
+                                                    marginHorizontal: SPACING/40,
+                                                    alignItems: 'center',
+                                                    transform: [{ translateY }],
+                                                    backgroundColor:"rgba(159,218,215,1)",
+                                                    borderRadius: 34,
+                                                    marginBottom:'30%'
+                                                  }]} >
+                                                        <Image
+                                                            source={{uri: "http://192.168.0.8:3001/image/"+item.imagePlat}}
+                                                            style={styles.cardItemImagePlace}
+                                                        ></Image>
+                                                              <View style={styles.cardBodyTop}>
+                                                                    <View style={styles.bodyContent}>
+                                                                    <Text style={styles.titleStyle}>
+                                                                        {item.name}
+                                                                    </Text>
+                                                                    <Text style={styles.subtitleStyle}>
+                                                                        {item.subtitle}
+                                                                    </Text>
+                                                                    </View>
+                                                                    
+                                                                </View>
+
+                                                                <Animated.View style={[styles.cardBodyAnimated,{opacity: this.state.fadeAnim, transform: [
+                            
+                                                                      {
+                                                                          translateY: this.state.fadeAnim.interpolate({
+                                                                              inputRange: [0, 1],
+                                                                              outputRange: [0, 25]
+                                                                          })
+                                                                      }]}]} >
+                                                                      <View style={styles.actionBody}>
+                                                                      <Text style={styles.titleStyleAnimated}>Ajouté à la commande</Text>
+                                                                      </View>
+                                                                      </Animated.View>
+
+                                                                <View style={styles.cardBody}>
+                                                                    
+                                                                    <View style={styles.actionBody}>
+                                                                    <TouchableOpacity style={styles.actionButton1}>
+                                                                        <Text style={styles.actionText1}>
+                                                                        Prix :
+                                                                        </Text>
+                                                                    </TouchableOpacity>
+                                                                    <TouchableOpacity style={styles.actionButton2}>
+                                                                        <Text style={styles.actionText2}>
+                                                                        {item.prix} €
+                                                                        </Text>
+                                                                    </TouchableOpacity>
+                                                                    <TouchableOpacity style={[styles.containerButtonNote, this.props.style]} onPress={()=>this.note(item.idPlat)}>
+                                                                    <Text style={styles.captionNote}>Notes</Text>
+                                                                    </TouchableOpacity>
+                                                                    </View>
+                                                                    
+                                                                </View>
+                                                    </Animated.View>
+
+
+                                                  
+                                              </View>
+                                            );
+                                          }}
+                                        />
 
                         </View>
             <View style={{flex:1,width:'100%',height:'100%'}}>
@@ -649,6 +804,7 @@ class Recherche extends React.Component {
             {this.state.panier == 2 &&
         <View style={styles.rect}>
                         <View style={styles.materialButtonPrimary1Row}>
+                          {/*
                                     <View style={[styles.containerImage, this.props.style]}>
                                         <Image
                                             source={{uri: "http://192.168.0.8:3001/image/"+this.state.imagePlat}}
@@ -695,7 +851,121 @@ class Recherche extends React.Component {
                                                     <Text style={styles.captionNote}>Notes</Text>
                                                     </TouchableOpacity>
                                                 </View>
-                                    </View>
+                                                  </View>*/}
+                                                  
+                                                  
+                                    {this.state.loading &&
+                                    <Image
+                                    source={{uri: "http://192.168.0.8:3001/image/loading2.gif"}}
+                                    style={styles.imageLoading}
+                                ></Image>
+                                  }
+
+                                    <Animated.FlatList
+                                          showsHorizontalScrollIndicator={false}
+                                          data={this.state.listBoissonFlat}
+                                          keyExtractor={(item) => item.id}
+                                          horizontal
+                                          bounces={false}
+                                          decelerationRate={0.98}
+                                          renderToHardwareTextureAndroid
+                                          contentContainerStyle={{ alignItems: 'center' }}
+                                          snapToInterval={width*0.95}
+                                          snapToAlignment='start'
+                                          onViewableItemsChanged={this._updateIndex}
+                                          viewabilityConfig={this.viewabilityConfig}
+                                          onScroll={Animated.event(
+                                            [{ nativeEvent: { contentOffset: { x: this.state.scrollX } } }],
+                                            { useNativeDriver: false }
+                                          )}
+
+
+                                          ref={(ref) => { this.flatListRef = ref; }}
+                                          scrollEventThrottle={16}
+                                          renderItem={({ item, index }) => {
+                                            
+                                            if (!item.name) {
+                                              return <View style={{ width: EMPTY_ITEM_SIZE }} />;
+                                            }
+                                            const inputRange = [
+                                              (index - 2) * ITEM_SIZE,
+                                              (index - 1) * ITEM_SIZE,
+                                              index * ITEM_SIZE,
+                                            ];
+
+                                            const translateY = this.state.scrollX.interpolate({
+                                              inputRange,
+                                              outputRange: [100, 50, 100],
+                                              extrapolate: 'clamp',
+                                            });
+
+                                            return (
+                                              <View style={{ width: ITEM_SIZE,height:'100%' }}>
+                                                
+                                                  <Animated.View  style={[styles.containerImage, this.props.style,{
+                                                    marginHorizontal: SPACING/40,
+                                                    alignItems: 'center',
+                                                    transform: [{ translateY }],
+                                                    backgroundColor:"rgba(159,218,215,1)",
+                                                    borderRadius: 34,
+                                                    marginBottom:'30%'
+                                                  }]} >
+                                                        <Image
+                                                            source={{uri: "http://192.168.0.8:3001/image/"+item.imagePlat}}
+                                                            style={styles.cardItemImagePlace}
+                                                        ></Image>
+                                                              <View style={styles.cardBodyTop}>
+                                                                    <View style={styles.bodyContent}>
+                                                                    <Text style={styles.titleStyle}>
+                                                                        {item.name}
+                                                                    </Text>
+                                                                    <Text style={styles.subtitleStyle}>
+                                                                        {item.subtitle}
+                                                                    </Text>
+                                                                    </View>
+                                                                    
+                                                                </View>
+
+                                                                <Animated.View style={[styles.cardBodyAnimated,{opacity: this.state.fadeAnim, transform: [
+                            
+                                                                      {
+                                                                          translateY: this.state.fadeAnim.interpolate({
+                                                                              inputRange: [0, 1],
+                                                                              outputRange: [0, 25]
+                                                                          })
+                                                                      }]}]} >
+                                                                      <View style={styles.actionBody}>
+                                                                      <Text style={styles.titleStyleAnimated}>Ajouté à la commande</Text>
+                                                                      </View>
+                                                                      </Animated.View>
+
+                                                                <View style={styles.cardBody}>
+                                                                    
+                                                                    <View style={styles.actionBody}>
+                                                                    <TouchableOpacity style={styles.actionButton1}>
+                                                                        <Text style={styles.actionText1}>
+                                                                        Prix :
+                                                                        </Text>
+                                                                    </TouchableOpacity>
+                                                                    <TouchableOpacity style={styles.actionButton2}>
+                                                                        <Text style={styles.actionText2}>
+                                                                        {item.prix} €
+                                                                        </Text>
+                                                                    </TouchableOpacity>
+                                                                    <TouchableOpacity style={[styles.containerButtonNote, this.props.style]} onPress={()=>this.note(item.idPlat)}>
+                                                                    <Text style={styles.captionNote}>Notes</Text>
+                                                                    </TouchableOpacity>
+                                                                    </View>
+                                                                    
+                                                                </View>
+                                                    </Animated.View>
+
+
+                                                  
+                                              </View>
+                                            );
+                                          }}
+                                        />
 
                         </View>
             <View style={{flex:1,width:'100%',height:'100%'}}>
@@ -917,7 +1187,7 @@ const styles = StyleSheet.create({
         elevation: 3,
         overflow: "hidden",
         width: '100%',
-        height:'100%'
+        height:'95%'
       },
       cardItemImagePlace: {
         backgroundColor: "#ccc",
@@ -943,14 +1213,16 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(159,218,215,1)",
         left: 0,
         right: 14,
-        width:'100%',
-        height:'25%'
+        width:'50%',
+        height:'25%',
+        marginLeft:'25%',
+        borderRadius:30,
 
       },
       titleStyleAnimated: {
         fontSize: 20,
         color: "#FFF",
-        marginLeft: '10%',
+        marginLeft: '20%',
         marginTop:'8%'
       },
       cardBodyTop: {
@@ -1098,7 +1370,7 @@ const styles = StyleSheet.create({
         minWidth: 88,
         paddingLeft: 16,
         paddingRight: 16,
-        height: '40%',
+        height: '100%',
         width: '50%',
         marginLeft:'0%'
       },
@@ -1272,7 +1544,16 @@ const styles = StyleSheet.create({
         iconTrash: {
           color: "#000",
           fontSize: 24
-        }
+        },
+        imageLoading: {
+          backgroundColor: "rgba(159,218,215,1)",
+          flex: 1,
+          minHeight: '100%',
+          width: '100%',
+          resizeMode: 'contain',
+          backgroundColor: "rgba(159,218,215,1)",
+          marginLeft:'35%'
+        },
       
   });
   
