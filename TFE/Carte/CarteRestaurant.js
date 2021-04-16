@@ -340,11 +340,11 @@ class CarteRestaurant extends React.Component {
                 for(let i = 0 ; i < json.length; i++){
                   if(idPlat==json[i].idPlat){
                     if(compteur<3){
-                      arrCinq.push({name :json[i].prenom+' '+json[i].nom,subtitle : json[i].commentairesNotation,note : json[i].note,idPlat:json[i].idPlat});
+                      arrCinq.push({name :json[i].prenom+' '+json[i].nom.split('_')[0],subtitle : json[i].commentairesNotation,note : json[i].note,idPlat:json[i].idPlat});
                       compteur++;
                       bool = true;
                     }else{
-                      arrCinq.push({name :json[i].prenom+' '+json[i].nom,subtitle : json[i].commentairesNotation,note : json[i].note,idPlat:json[i].idPlat});
+                      arrCinq.push({name :json[i].prenom+' '+json[i].nom.split('_')[0],subtitle : json[i].commentairesNotation,note : json[i].note,idPlat:json[i].idPlat});
                       arr.push(arrCinq);
                       arrCinq=[];
                       compteur=0;
@@ -443,7 +443,7 @@ class CarteRestaurant extends React.Component {
                                     <Animated.FlatList
                                           showsHorizontalScrollIndicator={false}
                                           data={this.state.listFlat}
-                                          keyExtractor={(item) => item.id}
+                                          keyExtractor={(item) => item.idPlat}
                                           horizontal
                                           bounces={false}
                                           decelerationRate={0.98}

@@ -310,7 +310,12 @@ class Recherche extends React.Component {
           
           let arr = this.state.listCommande;
           let bool=true;
-          let idPlat=this.state.listFlat[this.state.idPlat].idPlat
+          let idPlat=-1
+          if(this.state.panier==0){
+            idPlat=this.state.listFlat[this.state.idPlat].idPlat
+          }else if(this.state.panier==2){
+            idPlat=this.state.listBoissonFlat[this.state.idPlat].idPlat
+          }
           for(let i = 0 ; i<arr.length;i++){
             if(arr[i][3]==idPlat){
               arr[i][4]=arr[i][4]+1;
@@ -446,11 +451,11 @@ class Recherche extends React.Component {
         for(let i = 0 ; i < json.length; i++){
           if(idPlat==json[i].idPlat){
             if(compteur<3){
-              arrCinq.push({name :json[i].prenom+' '+json[i].nom,subtitle : json[i].commentairesNotation,note : json[i].note,idPlat:json[i].idPlat});
+              arrCinq.push({name :json[i].prenom+' '+json[i].nom.split('_')[0],subtitle : json[i].commentairesNotation,note : json[i].note,idPlat:json[i].idPlat});
               compteur++;
               bool = true;
             }else{
-              arrCinq.push({name :json[i].prenom+' '+json[i].nom,subtitle : json[i].commentairesNotation,note : json[i].note,idPlat:json[i].idPlat});
+              arrCinq.push({name :json[i].prenom+' '+json[i].nom.split('_')[0],subtitle : json[i].commentairesNotation,note : json[i].note,idPlat:json[i].idPlat});
               arr.push(arrCinq);
               arrCinq=[];
               compteur=0;

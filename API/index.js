@@ -45,9 +45,10 @@ app.get('/', function (req, res) {
 });
 
 app.get('/commande', function (req, res) {
-  let id = req.query['id'];
-  let value=[[id]];
-  var rechsql = 'select * from commandes join plats on commandes.idPlat=plats.idPlat join utilisateurs on commandes.idUtilisateur = utilisateurs.id where commandes.idUtilisateur= ?';
+  let idTable = req.query['idTable'];
+  let idRestaurant = req.query['idRestaurant'];
+  let value=[[idTable],[idRestaurant]];
+  var rechsql = 'select * from commandes join plats on commandes.idPlat=plats.idPlat join utilisateurs on commandes.idUtilisateur = utilisateurs.id where commandes.idTable= ? and commandes.idRestaurant = ?';
   db.query(rechsql,value, function (err, result, fields) {
     if (err) {throw err;}else{
       res.send(JSON.stringify(result));
@@ -175,7 +176,7 @@ app.get('/personnes', function (req, res) {
   db.query(rechsql,values, function (err, result, fields) {
     if (err) {throw err;}else{
       var values2 = [[result[0].numTable]]
-      var rechsql2 = 'select id , nom , prenom , nomPlat, prix ,contact,payement from commandes join plats on commandes.idPlat=plats.idPlat join utilisateurs on commandes.idUtilisateur = utilisateurs.id where idTable = ?';
+      var rechsql2 = 'select id , nom , prenom ,idTable, nomPlat, prix ,contact,payement from commandes join plats on commandes.idPlat=plats.idPlat join utilisateurs on commandes.idUtilisateur = utilisateurs.id where idTable = ?';
       db.query(rechsql2,values2, function (err2, result2, fields2) {
         if (err2) {throw err2;}else{
           res.send(JSON.stringify(result2));
@@ -237,6 +238,7 @@ app.post('/demandeAddition',jsonParser, function (req, res) {
     var rechsql = "select * from commandes where idUtilisateur = ?";
     db.query(rechsql,value, function (err, result, fields) {
       if (err) {throw err;}else{
+        /*
         let bool =true;
         for(let i = 0 ; i<result.length;i++){
           if(result[i].servi==false){
@@ -245,7 +247,7 @@ app.post('/demandeAddition',jsonParser, function (req, res) {
             break;
           }
         }
-        if(bool){
+        if(bool){*/
           let value2=[[addition],[idUtilisateur]];
             var rechsql = "update commandes set addition = ? where idUtilisateur = ?";
             db.query(rechsql,value2, function (err2, result2, fields2) {
@@ -255,7 +257,7 @@ app.post('/demandeAddition',jsonParser, function (req, res) {
           })
         }
           
-      }
+      //}
   })
   }
 });
@@ -276,23 +278,34 @@ app.post('/addition',jsonParser, function (req, res) {
 
 app.post('/inscription',jsonParser, function (req, res) {
   let nom = req.body.nom;
-  let prenom = req.body.prenom;
-  let email = req.body.email;
-  let mdp = req.body.mdp;
-  values=[[nom,prenom,email,0,mdp]];
-  var rechsql = "insert into utilisateurs(nom,prenom,email,numTable,password) values(?)";
-  db.query(rechsql ,values, function (err, result, fields) {
-    if (err) {res.send(JSON.stringify('no'));}else{
+  let numTable=req.body.numTable;
+  
+  var rechsqlID = 'select id from utilisateurs';
+        db.query(rechsqlID, function (error, resu) {
+          if (error) {res.send(JSON.stringify('no'));}else{
+            nom = nom+'_'+(resu[resu.length-1].id+1).toString();
+            console.log(nom);
+            let values=[[nom,numTable]];
+          var rechsql = "insert into utilisateurs(nom,numTable) values(?)";
+          db.query(rechsql ,values, function (err, result, fields) {
+            if (err) {
+              console.log(err);
+              res.send(JSON.stringify('no'));
+            }else{
 
-      valueId = [[email]];
-      var rechsqlID = 'select id,serveur from utilisateurs where email = ?';
-        db.query(rechsqlID,valueId, function (err2, result2, fields2) {
-            if (err2) {res.send(JSON.stringify('no'));}else{
-              res.send(JSON.stringify(result2));
+              let valueId = [[nom]];
+              var rechsqlID = 'select id,serveur from utilisateurs where nom = ?';
+                db.query(rechsqlID,valueId, function (err2, result2, fields2) {
+                    if (err2) {
+                      res.send(JSON.stringify('no'));
+                  }else{
+                      res.send(JSON.stringify(result2));
+                    }
+                })
+              
             }
         })
-      
-     }
+      }
 })
 });
 
@@ -398,7 +411,12 @@ app.post('/ajoutCommande',jsonParser, function (req, res) {
 
         for(let i =0 ; i<commande.length;i++ ){
           for(let j = 0;j<commande[i][4];j++){
-            let values = [[commande[i][3],idRestaurant,id,numCommande,idTable,contact,commande[i][6]]];
+            let values=[];
+            if(commande[i][5]){
+              values = [[commande[i][3],idRestaurant,id,numCommande,idTable,contact,commande[i][6]]];
+            }else{
+              values = [[commande[i][3],idRestaurant,id,numCommande,idTable,contact,'']];
+            }
             var rechsql = "insert into commandes(idPlat,idRestaurant,idUtilisateur,numCommande,idTable,contact,commentaire) values(?)";
       
             db.query(rechsql,values, function (err, result, fields) { 

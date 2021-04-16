@@ -322,6 +322,7 @@ fetched(){
                     <ListItem key={i} bottomDivider onPress={() => this.toggleOverlay()} >
                         <ListItem.Content>
                         <ListItem.Title>{l.nomPlat} (x{l.nombre}) : {l.prix*l.nombre} € </ListItem.Title>
+                        <ListItem.Subtitle>{l.commentaire} </ListItem.Subtitle>
                         </ListItem.Content>
                     </ListItem>
                     

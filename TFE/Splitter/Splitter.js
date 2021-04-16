@@ -24,8 +24,9 @@ class Splitter extends React.Component {
             listeContact:[{prenom:'default', nom:'' , prix: 0 , id : 1}],
             noms:[],
             addition:false,
+            method:false,
             listeCommande:[{nom:'test',prenom:'zfdsfs',plats:[{nomPlat:'fuizjf',prix:123}],prix:123}]
-
+            
           };
           this.toggleOverlay= this.toggleOverlay.bind(this);
           this.ajoutPersonne= this.ajoutPersonne.bind(this);
@@ -38,28 +39,19 @@ class Splitter extends React.Component {
         
         if(data!=null){
           this.setState({id:data});
-          /*
-          fetch('http://192.168.0.8:3001/commande?id='+this.state.id, {
-              method: 'GET',
-            
-              headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': 'true'
-              }
-            }).then(response => response.json())
-            .then((json) => {
-            this.setState({ channel: 'commandes' });
-            const test = [];
-            this.setState({ cle: 1 });
-            for(let i=0; i<json.length;i++){
-              test.push(<View style={styles.rect} key={this.state.cle} ><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>{json[i]['nomPlat']}</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Prix: {json[i]['prix']}€</Text></View></View>);
-              this.setState({ cle: this.state.cle+1 });
-            }
-
-            this.setState({ chaine: test });
-          });
-          */
+          fetch('http://192.168.0.8:3001/table', {
+                method: 'POST',
+                headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/json',
+                  //'Access-Control-Allow-Origin': 'true'
+                },
+                body: JSON.stringify({
+                    numero: this.state.numTable,
+                    id:this.state.id,
+                })
+              });
+         
           this.contacts();
         }else{
           this.props.navigation.replace('Home')
@@ -127,7 +119,7 @@ toggleSplit=(num)=>{
                 }).then(response => response.json())
                 .then((json) => {
                     if(json=='done'){
-                    this.props.navigation.replace('Notation',{id :this.state.id,idRestaurant:this.state.idRestaurant});
+                    this.props.navigation.replace('Notation',{id :this.state.id,idRestaurant:this.state.idRestaurant,numTable:this.state.numTable});
                     }else{
                       this.toggleOverlay();
                     }
@@ -207,6 +199,7 @@ commandes=()=>{
 }
 */
 contacts=()=>{
+    this.setState({method:true});
     fetch('http://192.168.0.8:3001/personnes?id='+this.state.id, {
       method: 'GET',
      
@@ -217,27 +210,61 @@ contacts=()=>{
       }
     }).then(response => response.json())
     .then((json) => {
-      let nombrePersonne = [];
-      let prix = [];
-      let prixTable=0;
-      this.setState({split:json[0].payement});
-      if(this.state.split==0){
-        for(let i = 0 ; i < json.length; i++){
-          //if(json[i].idTable==this.state.numTable){
-                if(json[i].contact==null){
-                  
-                if(!nombrePersonne.includes(json[i].id)){
-                  
-                  nombrePersonne.push(json[i].id);
-                  prix.push({id :json[i].id , nom : json[i].nom , prenom : json[i].prenom , prix : json[i].prix,contact:json[i].contact});
-                  
+      
+      if(json[0]==undefined){
+        this.setState({split:0});
+        this.setState({ channel: 'contacts' });
+        this.setState({type:0});
+        this.setState({addition:false});
+        this.setState({listeContact: [{prenom: 'Ma' , nom: 'Commande' , prix: 0 , id : this.state.id, contact:''}]});
+      }else{
+        let nombrePersonne = [];
+        let prix = [];
+        let prixTable=0;
+        this.setState({split:json[0].payement});
+        if(this.state.split==0){
+          for(let i = 0 ; i < json.length; i++){
+            if(json[i].idTable==this.state.numTable){
+                  if(json[i].contact==null){
+                    
+                  if(!nombrePersonne.includes(json[i].id)){
+                    
+                    nombrePersonne.push(json[i].id);
+                    prix.push({id :json[i].id , nom : json[i].nom , prenom : json[i].prenom , prix : json[i].prix,contact:json[i].contact});
+                    
+                  }else{
+                    for(let j = 0 ; j < prix.length;j++){
+                      if(prix[j].id == json[i].id){
+                        prix[j].prix = prix[j].prix + json[i].prix;
+                      }
+                    }
+                    
+                  }
+                }else if(json[i].contact=='Table'){
+                  prixTable= prixTable+json[i].prix;
+                  this.setState({prixTable:prixTable});
                 }else{
-                  for(let j = 0 ; j < prix.length;j++){
-                    if(prix[j].id == json[i].id){
-                      prix[j].prix = prix[j].prix + json[i].prix;
+                  if(!nombrePersonne.includes(json[i].contact)){
+                    nombrePersonne.push(json[i].contact);
+                    prix.push({id : -1 , nom : '' , prenom : json[i].contact , prix : json[i].prix, contact:json[i].contact});
+                  }else{
+                    for(let j = 0 ; j < prix.length;j++){
+                      if(prix[j].id == -1 && prix[j].nom=='' && prix[j].prenom ==json[i].contact){
+                        prix[j].prix = prix[j].prix + json[i].prix;
+                      }
                     }
                   }
-                  
+                }
+              }
+          }
+        }else if(this.state.split==1){
+          let prixTotal = 0;
+          let prixTable=0;
+          for(let i = 0 ; i < json.length; i++){
+              if(json[i].contact==null){
+                if(!nombrePersonne.includes(json[i].id)){
+                  nombrePersonne.push(json[i].id);
+                  prix.push({id :json[i].id , nom : json[i].nom , prenom : json[i].prenom , prix : 0});
                 }
               }else if(json[i].contact=='Table'){
                 prixTable= prixTable+json[i].prix;
@@ -246,82 +273,61 @@ contacts=()=>{
                 if(!nombrePersonne.includes(json[i].contact)){
                   nombrePersonne.push(json[i].contact);
                   prix.push({id : -1 , nom : '' , prenom : json[i].contact , prix : json[i].prix, contact:json[i].contact});
-                }else{
-                  for(let j = 0 ; j < prix.length;j++){
-                    if(prix[j].id == -1 && prix[j].nom=='' && prix[j].prenom ==json[i].contact){
-                      prix[j].prix = prix[j].prix + json[i].prix;
-                    }
-                  }
                 }
               }
-            //}
-        }
-      }else if(this.state.split==1){
-        let prixTotal = 0;
-        let prixTable=0;
-        for(let i = 0 ; i < json.length; i++){
-          //if(json[i].idTable==this.state.numTable){
-            if(json[i].contact==null){
-              if(!nombrePersonne.includes(json[i].id)){
-                nombrePersonne.push(json[i].id);
-                prix.push({id :json[i].id , nom : json[i].nom , prenom : json[i].prenom , prix : 0});
-              }
-            }else if(json[i].contact=='Table'){
-              prixTable= prixTable+json[i].prix;
-              this.setState({prixTable:prixTable});
-            }else{
-              if(!nombrePersonne.includes(json[i].contact)){
-                nombrePersonne.push(json[i].contact);
-                prix.push({id : -1 , nom : '' , prenom : json[i].contact , prix : json[i].prix, contact:json[i].contact});
-              }
+              prixTotal = prixTotal + json[i].prix;
             }
-            prixTotal = prixTotal + json[i].prix;
-          }
-          prixTotal = prixTotal/prix.length;
-          prixTotal= prixTotal.toFixed(2)
-          for(let i = 0 ; i < prix.length; i++){
-            prix[i].prix = prixTotal;
-          }
-      //}
-      }else{
-        //if(json[i].idTable==this.state.numTable){
-          let prixTotal = 0;
-          for(let i = 0 ; i < json.length; i++){
-            if(json[i].contact!==null){
-              if(nombrePersonne.length==0){
-                nombrePersonne.push(json[i].id);
-                prix.push({id :json[i].id , nom : json[i].nom , prenom : json[i].prenom , prix : 0});
-              }
+            prixTotal = prixTotal/prix.length;
+            prixTotal= prixTotal.toFixed(2)
+            for(let i = 0 ; i < prix.length; i++){
+              prix[i].prix = prixTotal;
             }
-            prixTotal = prixTotal + json[i].prix;
-          }
-          prix[0].prix=prixTotal;
-        //}
-      }
-
-
-      this.setState({ cle: 1 });
-      const test = [];
-      let arr = [];
-      for(let i = 0 ; i < prix.length;i++){
-        if(this.state.id == prix[i].id){
-          arr.push('Ma Commande');
-          test.push({prenom: 'Ma' , nom: 'Commande' , prix: prix[i].prix , id : prix[i].id, contact:prix[i].contact});
-          //test.push(<View style={styles.rect} key={this.state.cle}><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>Ma commande:</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Total: {prix[i].prix}€</Text><TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant}); }}><Text style={styles.texte}>Recommander</Text></TouchableOpacity></View></View>);
-          this.setState({ cle: this.state.cle+1 });
+        
         }else{
-          arr.push(prix[i].prenom +' '+ prix[i].nom);
-          test.push({prenom: prix[i].prenom , nom: prix[i].nom , prix: prix[i].prix , id : prix[i].id, contact:prix[i].contact});
-          //test.push(<View style={styles.rect} key={this.state.cle}><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>{prix[i].prenom} {prix[i].nom}</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Total: {prix[i].prix}€</Text></View></View>);
-          this.setState({ cle: this.state.cle+1 });
+          
+            let prixTotal = 0;
+            for(let i = 0 ; i < json.length; i++){
+                if(json[i].contact==null){
+                  if(nombrePersonne.length==0 && json[i].id==this.state.id){
+                    nombrePersonne.push(json[i].id);
+                    prix.push({id :json[i].id , nom : json[i].nom , prenom : json[i].prenom , prix : 0});
+                  }
+                }
+              prixTotal = prixTotal + json[i].prix;
+            
+            }
+            console.log(prix);
+            prix[0].prix=prixTotal;
+          
         }
-      }
-      this.setState({ chaine: []});
-      this.setState({listeContact: test});
-      this.setState({noms:arr});
-      this.setState({ channel: 'contacts' });
-      this.setState({type:0});
-      this.setState({addition:false});
+
+
+        
+        const test = [];
+        let arr = [];
+        for(let i = 0 ; i < prix.length;i++){
+          if(this.state.id == prix[i].id){
+            arr.push('Ma Commande');
+            test.push({prenom: 'Ma' , nom: 'Commande' , prix: prix[i].prix , id : prix[i].id, contact:prix[i].contact});
+            //test.push(<View style={styles.rect} key={this.state.cle}><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>Ma commande:</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Total: {prix[i].prix}€</Text><TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant}); }}><Text style={styles.texte}>Recommander</Text></TouchableOpacity></View></View>);
+            this.setState({ cle: this.state.cle+1 });
+          }else{
+            arr.push(prix[i].prenom +' '+ prix[i].nom);
+            test.push({prenom: prix[i].prenom , nom: prix[i].nom.split('_')[0] , prix: prix[i].prix , id : prix[i].id, contact:prix[i].contact});
+            //test.push(<View style={styles.rect} key={this.state.cle}><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>{prix[i].prenom} {prix[i].nom}</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Total: {prix[i].prix}€</Text></View></View>);
+            this.setState({ cle: this.state.cle+1 });
+          }
+        }
+        if(!nombrePersonne.includes(this.state.id)){
+          test.splice(0,0,{prenom: 'Ma' , nom: 'Commande' , prix: 0 , id : this.state.id, contact:null})
+        }
+        this.setState({ chaine: []});
+        this.setState({listeContact: test});
+        this.setState({noms:arr});
+        this.setState({ channel: 'contacts' });
+        this.setState({type:0});
+        this.setState({addition:false});
+    }
     });
 
 
@@ -338,9 +344,13 @@ ajoutPersonne(){
   arr.push({prenom:'Nouveau',nom:'contact', prix:0,id:0});
   this.setState({listeContact : arr});
 }
-rechercheContact(val){
-  let txt = this.state.noms[val]; 
-  this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant,contact:txt});
+rechercheContact(val,id){
+  if(id==0){
+    let txt = this.state.noms[val]; 
+    this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant,contact:txt});
+  }else{
+    this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant});
+  }
 }
 changeNom(val,txt){
   let arr = this.state.noms;
@@ -352,7 +362,7 @@ addition=()=>{
   
     
 
-      fetch('http://192.168.0.8:3001/commande?id='+this.state.id, {
+      fetch('http://192.168.0.8:3001/commande?idTable='+this.state.numTable+'&&idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
        
         headers: {
@@ -373,10 +383,11 @@ addition=()=>{
           let prenom='';
 
           for(let i = 0 ; i<json.length;i++){
-            if(json[i].contact==null){
+            
+            if(json[i].contact==null && json[i].id==this.state.id){
               prix = prix+json[i]['prix'];
               prenom=json[i].prenom;
-              nom=json[i].nom;
+              nom=json[i].nom.split('_')[0];
               if(!plats.includes(json[i].nomPlat)){
                 autre.push({nomPlat:json[i].nomPlat,prix:json[i].prix,nombre:1});
                 plats.push(json[i].nomPlat);
@@ -389,14 +400,18 @@ addition=()=>{
               }
               
             }else{
-              if(!listeContact.includes(json[i].contact)){
-                listeContact.push(json[i].contact);
+              if(!listeContact.includes(json[i].id) && json[i].contact==null){
+                listeContact.push(json[i].id);
+              }else{
+                if(!listeContact.includes(json[i].contact)&& json[i].contact!==null){
+                  listeContact.push(json[i].contact);
+                }
               }
+            
             }
 
           }
           test.push({nom:nom,prenom:prenom,prix:prix,plats:autre});
-
           let detailContact=[];
           let detailTable=[];
           for(let i = 0 ; i<listeContact.length;i++){
@@ -418,7 +433,8 @@ addition=()=>{
 
                 }
               }
-            }else{
+            }else if(isNaN(listeContact[i])){
+              if(this.state.method){
               let platsC=[];
               let prixC=0
               for(let j = 0 ; j<json.length;j++){
@@ -441,6 +457,33 @@ addition=()=>{
               test.push({nom:'',prenom:listeContact[i],prix:prixC,plats:detailContact});
               detailContact=[];
             }
+            }else{
+              if(this.state.method){
+              let platsC=[];
+              let prixC=0;
+              let nom = '';
+
+              for(let j = 0 ; j<json.length;j++){
+                if(listeContact[i]==json[j].id && json[j].contact==null){
+                  prixC=prixC+json[j].prix;
+                  nom=json[j].nom.split('_')[0];
+                  if(!platsC.includes(json[j].nomPlat)){
+                    detailContact.push({nomPlat:json[j].nomPlat,prix:json[j].prix,nombre:1});
+                    platsC.push(json[j].nomPlat);
+                  }else{
+                    for(let k = 0;k<detailContact.length;k++){
+                      if(detailContact[k].nomPlat==json[j].nomPlat){
+                        detailContact[k].nombre=detailContact[k].nombre+1;
+                      }
+                    }
+                  }
+
+                }
+              }
+              test.push({nom:nom,prenom:'',prix:prixC,plats:detailContact});
+              detailContact=[];
+            }
+          }
           }
 
           for(let i = 0 ; i<detailTable.length;i++){
@@ -475,7 +518,9 @@ addition=()=>{
                   }
                 }
               }
-
+              if( this.state.id!==json[i].id && !contacts.includes(json[i].id) &&json[i].contact==null){
+                contacts.push(json[i].id);
+              }
               if(json[i].contact!==null && json[i].contact!=='Table' && !contacts.includes(json[i].contact)){
                 contacts.push(json[i].contact);
               }
@@ -520,30 +565,116 @@ addition=()=>{
 }
 
 payement=()=>{
-  if(this.state.channel!='payement'){
     this.setState({ channel: 'payement' });
     this.setState({type:1});
     this.setState({addition:false});
+    this.setState({method:true});
     
-    /*
-    const test = [];
-    test.push(<View key={1}><TouchableOpacity style={[styles.typePayement, this.props.style]}><Text style={styles.payement}>par plats</Text></TouchableOpacity><TouchableOpacity style={[styles.typePayement, this.props.style]}><Text style={styles.payement}>Divisé</Text></TouchableOpacity></View>);
-    this.setState({ chaine: test });
-    */
+}
+changeFontLeft(){
+    if(this.state.method){
+      return{
+        fontSize: 13,
+        color: "#ffffff"
+      }
+    }else{
+      return{
+        fontSize: 13,
+        color: "#007AFF"
+      }
+    }
+}
+changeFontRight(){
+  if(this.state.method){
+    return{
+      fontSize: 13,
+      color: "#007AFF"
+    }
   }else{
-    /*
-    const test = [];
-    test.push(<View key={1}><TouchableOpacity style={[styles.typePayement, this.props.style]}><Text style={styles.payement}>par plats</Text></TouchableOpacity><TouchableOpacity style={[styles.typePayement, this.props.style]}><Text style={styles.payement}>Divisé</Text></TouchableOpacity></View>);
-    this.setState({ chaine: test });
-    */
+    return{
+      fontSize: 13,
+      color: "#ffffff"
+    }
   }
 }
+changeStyleRight(){
+    if(!this.state.method){
+      return {
+        flex: 1,
+        alignItems: "center",
+        backgroundColor: "#007AFF",
+        padding: 6,
+        borderWidth: 1,
+        borderColor: "#007AFF",
+        borderBottomLeftRadius: 5,
+        borderTopLeftRadius: 5
+      }
+    }else{
+      return {
+          flex: 1,
+          alignItems: "center",
+          backgroundColor: "#FFFFFF",
+          padding: 6,
+          borderWidth: 1,
+          borderColor: "#007AFF",
+          borderBottomRightRadius: 5,
+          borderTopRightRadius: 5
+        }
+      
+    }
+  
+
+}
+changeStyleLeft(){
+  if(!this.state.method){
+    return {
+      flex: 1,
+      alignItems: "center",
+      backgroundColor: "#FFFFFF",
+      padding: 6,
+      borderWidth: 1,
+      borderColor: "#007AFF",
+      borderBottomLeftRadius: 5,
+      borderTopLeftRadius: 5
+    }
+  }else{
+    return {
+        flex: 1,
+        alignItems: "center",
+        backgroundColor: "#007AFF",
+        padding: 6,
+        borderWidth: 1,
+        borderColor: "#007AFF",
+        borderBottomRightRadius: 5,
+        borderTopRightRadius: 5
+      }
+    
+  }
 
 
+}
+changeMethod(bool){
+  this.setState({method:bool});
+  this.addition();
+  
+}
   render() {
     return (
       
       <SafeAreaView style={{flex: 1,paddingTop: StatusBar.currentHeight}} >
+        {(this.state.channel=='addition' && this.state.split==0) && 
+        <View style={[styles.containerPicker, this.props.style]}>
+          <View style={styles.textWrapper}>
+          <TouchableOpacity style={this.changeStyleLeft()} onPress={()=>{this.changeMethod(true)}}>
+              <Text style={this.changeFontLeft()}>addition de la table</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={this.changeStyleRight()} onPress={()=>{this.changeMethod(false)}}>
+              <Text style={this.changeFontRight()} >Mon addition</Text>
+            </TouchableOpacity>
+            
+          </View>
+        </View>
+  }
         {this.state.type == 0 &&
       <ScrollView  style={styles.container}>
 
@@ -555,6 +686,7 @@ payement=()=>{
 
 
 <View style={[styles.containerAddition, this.props.style]} key='1'>
+  
   <View style={styles.bodyContent}><Text style={styles.titleGoesHere}>
     Addition
     </Text>
@@ -611,14 +743,14 @@ payement=()=>{
     <View style={styles.prixRow}>
       <Text style={styles.prix}>Total: {l.prix}€</Text>
 
-      {(l.id == this.state.id || l.id==-1)&&
+      {((l.id == this.state.id || l.id==-1)&& l.prix!==0 )&&
       <TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant,contact:l.contact}); }}>
         <Text style={styles.texte}>Recommander</Text>
       </TouchableOpacity>
   }
 
-{l.id == 0 &&
-      <TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.rechercheContact(i); }}>
+{(l.id == 0 || l.prix==0)&&
+      <TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.rechercheContact(i,l.id); }}>
         <Text style={styles.texte}>Commander</Text>
       </TouchableOpacity>
   }
@@ -706,30 +838,6 @@ payement=()=>{
 
 }
 
-/*
-  <TouchableOpacity style={styles.btnWrapper1} onPress={this.commandes}>
-        <MaterialCommunityIconsIcon
-          name={this.props.icon || "food"}
-          style={[
-            styles.icon,
-            {
-              color: this.props.active ? "#007AFF" : "#616161"
-            }
-          ]}
-          
-        ></MaterialCommunityIconsIcon>
-        <Text
-          style={[
-            styles.btn1Caption,
-            {
-              color: this.props.active ? "#007AFF" : "#9E9E9E"
-            }
-          ]}
-        >
-          Commandes
-        </Text>
-      </TouchableOpacity>
-*/
 
 
 const styles = StyleSheet.create({
@@ -1004,7 +1112,22 @@ const styles = StyleSheet.create({
       payement:{
         color: "#fff",
         fontSize: 17
-      }
+      },
+      containerPicker: {
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: "#FFF",
+        backgroundColor: "rgba(180,238,239,1)",
+        width:'100%',
+        height:'8%'
+      },
+      textWrapper: {
+        height: 29,
+        flex: 1,
+        paddingLeft: 30,
+        paddingRight: 30,
+        flexDirection: "row"
+      },
   });
  
 export default Splitter;

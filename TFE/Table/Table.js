@@ -9,17 +9,24 @@ class Table extends React.Component {
         this.getToken();
         this.state = {
             id: 0,
-            idRestaurant:(this.props.route.params== undefined ? 1  :this.props.route.params.idRestaurant),
-            numero:1,
-            active:true,
+            idRestaurant:(this.props.route.params== undefined ? 0  :this.props.route.params.idRestaurant),
+            numTable:(this.props.route.params== undefined ? 0  :this.props.route.params.numTable),
+            nom:'',
           };
-          this.changeNum= this.changeNum.bind(this);
+          this.changeNom= this.changeNom.bind(this);
     }
-    changeNum(txt){
-        this.setState({numero:txt.nativeEvent.text});
+    changeNom(txt){
+        this.setState({nom:txt.nativeEvent.text});
     }
     changeBackground(){
       this.setState({active:!this.state.active});
+    }
+    async storeToken(m,p) {
+      try {
+         await AsyncStorage.setItem(p, JSON.stringify(m));
+      } catch (error) {
+        console.log("Something went wrong", error);
+      }
     }
     async getToken() {
         try {
@@ -28,16 +35,16 @@ class Table extends React.Component {
           let data = JSON.parse(userData);
           
           if(data!=null){
-            console.log(data);
-            this.setState({id:data});
+            this.props.navigation.replace('Splitter',{idRestaurant:this.state.idRestaurant, numTable:this.state.numTable});
           }
         } catch (error) {
             console.log("Something went wrong", error);
     }
 }
     Carte(){
-        if(Number.isInteger(parseInt(this.state.numero)) && this.state.numero!=0){
-            fetch('http://192.168.0.8:3001/table', {
+      console.log(this.state.nom);
+        if(this.state.nom!==''){
+            fetch('http://192.168.0.8:3001/inscription', {
               method: 'POST',
               headers: {
                 Accept: 'application/json',
@@ -45,12 +52,21 @@ class Table extends React.Component {
                 //'Access-Control-Allow-Origin': 'true'
               },
               body: JSON.stringify({
-                  numero: this.state.numero,
+                  numTable: this.state.numTable,
+                  nom:this.state.nom,
+                  idRestaurant:this.state.idRestaurant,
                   id :this.state.id,
               })
             }).then(response => response.json())
             .then((json) => {
-              this.props.navigation.navigate('Recherche',{numero:this.state.numero, idRestaurant:this.state.idRestaurant});
+              console.log(json);
+              if(json!='no' && json!='pas autorisé'){
+              this.storeToken(json[0].id,'id');
+              this.storeToken(json[0].serveur,'serveur');
+              this.props.navigation.navigate('Splitter',{numTable:this.state.numTable, idRestaurant:this.state.idRestaurant});
+              }else{
+                this.props.navigation.replace('Home');
+              }
             });
 
 
@@ -64,9 +80,47 @@ let table = this.props.active ? require('./Table.png') : require('./Table2.png')
     return (
       <SafeAreaView style={{width:'100%', height:'100%'}} >
         <View style={styles.containerBig}>
-      <Text style={styles.bluespoon} >Indiquez le numéro de votre table:</Text>
-      
-      <ScrollView  style={{ width:'100%', height:'100%',flex:1}} >
+      <Text style={styles.bluespoon} >Vous êtes à la table numéro: {this.state.numTable}</Text>
+      <View style={[styles.container, this.props.style]}>
+                        <Text style={styles.label}>Veuillez indiquer votre nom:</Text>
+                        <TextInput
+                            placeholder="Nom"
+                            style={styles.inputStyle}
+                            onChange={this.changeNom}
+                        >{this.state.nom}</TextInput>
+                    </View>
+                    
+        <TouchableOpacity style={[styles.containerMauve, this.props.style]} onPress={() => { this.Carte(); }} >
+        <Text style={styles.confirmer}>Confirmer</Text>
+      </TouchableOpacity>
+      </View>
+      </SafeAreaView>
+    );
+}
+
+}
+/*
+<View style={[styles.container, this.props.style]}>
+                        <Text style={styles.label}>Numéro de votre table:</Text>
+                        <TextInput
+                            placeholder="Numéro"
+                            style={styles.inputStyle}
+                            onChange={this.changeNum}
+                            keyboardType="numeric"
+                        />
+                        <Text style={styles.helper}>Si vous ne savez pas, demandez au serveur</Text>
+                    </View>
+
+
+
+
+
+
+
+
+
+
+          <ScrollView  style={{ width:'100%', height:'100%',flex:1}} >
         {this.state.active &&
                     <ImageBackground
                         source={require("./Table.png")}
@@ -112,27 +166,6 @@ let table = this.props.active ? require('./Table.png') : require('./Table2.png')
                         ><TouchableOpacity style={{ width:'100%', height:'100%'}} onPress={()=>this.changeBackground()}><Text style={styles.numero} >n°1</Text></TouchableOpacity></ImageBackground>
          }
                     </ScrollView>
-                    
-        <TouchableOpacity style={[styles.containerMauve, this.props.style]} onPress={() => { this.Carte(); }} >
-        <Text style={styles.confirmer}>Confirmer</Text>
-      </TouchableOpacity>
-      </View>
-      </SafeAreaView>
-    );
-}
-
-}
-/*
-<View style={[styles.container, this.props.style]}>
-                        <Text style={styles.label}>Numéro de votre table:</Text>
-                        <TextInput
-                            placeholder="Numéro"
-                            style={styles.inputStyle}
-                            onChange={this.changeNum}
-                            keyboardType="numeric"
-                        />
-                        <Text style={styles.helper}>Si vous ne savez pas, demandez au serveur</Text>
-                    </View>
 */
 const styles = StyleSheet.create({
     

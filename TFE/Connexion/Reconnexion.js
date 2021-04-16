@@ -82,7 +82,7 @@ class Reconnexion extends React.Component {
         <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>this.connexion()}>
         <Text style={styles.caption}>Se connecter</Text>
         </TouchableOpacity>
-        <Text style={styles.lien} onPress={()=>this.props.navigation.navigate('Connexion')}>Pas encore de compte?</Text>
+        
         <Text style={styles.lien} onPress={()=>this.props.navigation.navigate('Serveur')}>Créer un compte serveur?</Text>
       </View>
     );

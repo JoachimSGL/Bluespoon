@@ -252,7 +252,7 @@ class Acceuil extends Component {
             </div>
             <div>
             {this.state.liste.map((l, i) =>    (
-            <QRCode className='qr' id={'qr'+l} value={"http://127.0.0.1:19002/Splitter/"+this.state.id+"/"+l} />
+            <QRCode className='qr' id={'qr'+l} value={"http://127.0.0.1:19002/Table/"+this.state.id+"/"+l} />
             ))} 
            
            </div>

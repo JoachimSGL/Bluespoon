@@ -10,7 +10,7 @@ class QR extends Component {
   onSuccess = e => {
     console.log(e.data);
     console.log(e.data.split("/"));
-    if(e.data.split("/")[3]=='Splitter'){
+    if(e.data.split("/")[3]=='Table'){
       this.props.navigation.replace(e.data.split("/")[3], { idRestaurant: parseInt(e.data.split("/")[4]),numTable: parseInt(e.data.split("/")[5]) });
     }
   };

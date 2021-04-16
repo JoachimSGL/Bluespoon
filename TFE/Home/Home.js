@@ -9,10 +9,11 @@ class Home extends React.Component {
         this.getToken();
         this.state = {
             id: 0,
-            serveur:(this.props.route.params== undefined ? false  :this.props.route.params.serveur),
+            serveur:false,
             numCommande:9,
             idRestaurant:1,
-            commande:true
+            commande:true,
+            addition: false,
           };
     }
     onPress(){
@@ -46,30 +47,97 @@ class Home extends React.Component {
               }
               }).then(response => response.json())
               .then((json) => {
-                if(json!=='no' && !json.addition){
-                  this.setState({commande:true});
-                }else{
+                console.log(json);
+                if(json=='no' ){
                   this.setState({commande:false});
+                  this.setState({addition:false});
+                }else{
+                  if(json.addition){
+                    this.setState({commande:false});
+                    this.setState({addition:true});
+                  }else{
+                    this.setState({commande:true});
+                    this.setState({addition:false});
+                  }
                 }
               });
           }else{
             this.props.navigation.navigate('HomeServeur');
           }
         }else{
-          this.props.navigation.replace('Reconnexion');
+          this.setState({commande:false});
         }
       } catch (error) {
           console.log("Something went wrong", error);
-          this.props.navigation.replace('Reconnexion');
+          this.setState({commande:false});
   }
 }
+
+QR(){
+  if(!this.state.addition){
+  if(false){
+    this.props.navigation.navigate('Table',{numTable:18, idRestaurant:1});
+  }else{
+  this.props.navigation.navigate('QR');
+  }
+}else{
+  fetch('http://192.168.0.8:3001/commandeHome?id='+this.state.id, {
+              method: 'GET',
+              headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/json',
+                  //'Access-Control-Allow-Origin': 'true'
+              }
+              }).then(response => response.json())
+              .then((json) => {
+                console.log(json);
+                if(json=='no' ){
+                  this.setState({commande:false});
+                  this.setState({addition:false});
+                }else{
+                  if(json.addition){
+                    this.setState({commande:false});
+                    this.setState({addition:true});
+                  }else{
+                    this.setState({commande:true});
+                    this.setState({addition:false});
+                  }
+                }
+              });
+}
+}
     componentDidMount(){
-      
+      /*
+      setInterval(() => {
+          fetch('http://192.168.0.8:3001/commandeHome?id='+this.state.id, {
+                  method: 'GET',
+                  headers: {
+                      Accept: 'application/json',
+                      'Content-Type': 'application/json',
+                      //'Access-Control-Allow-Origin': 'true'
+                  }
+                  }).then(response => response.json())
+                  .then((json) => {
+                    console.log(json);
+                    if(json=='no' ){
+                      this.setState({commande:false});
+                      this.setState({addition:false});
+                    }else{
+                      if(json.addition){
+                        this.setState({commande:false});
+                        this.setState({addition:true});
+                      }else{
+                        this.setState({commande:true});
+                        this.setState({addition:false});
+                      }
+                    }
+                  });
+            }, 5000)*/
     }
     deco(){
       this.storeToken(null,'id');
       this.storeToken(null,'serveur');
-      this.props.navigation.replace('Reconnexion');
+      this.props.navigation.navigate('Reconnexion');
     }
     splitter(){
       console.log(this.state.id)
@@ -94,12 +162,12 @@ class Home extends React.Component {
 
     return (
       <View style={{flex:1,flexDirection: "column"}}>
-    <ImageBackground style={[styles.containerImage, this.props.style]} source={{uri: "http://192.168.0.8:3001/image/acceuil.jpg"}}>
+    <ImageBackground style={[styles.containerImage, this.props.style]} source={{uri: "http://192.168.0.8:3001/image/acceuil2.jpg"}}>
         <View style={styles.containerBig}>
       <Text style={styles.bluespoon}>Bluespoon</Text>
       <View style={styles.containerSmall}>
         {!this.state.commande &&
-      <TouchableOpacity style={[styles.containerJaune, this.props.style]} onPress={() => { this.props.navigation.navigate('QR'); }} >
+      <TouchableOpacity style={[styles.containerJaune, this.props.style]} onPress={() => { this.QR() }} >
         <ImageBackground style={[styles.containerJauneImage, this.props.style]} source={{uri: "http://192.168.0.8:3001/image/loupe.png"}}></ImageBackground>
       </TouchableOpacity>
         }
@@ -107,6 +175,9 @@ class Home extends React.Component {
           <TouchableOpacity style={[styles.containerJaune, this.props.style]} onPress={() => { this.splitter(); }} >
           <ImageBackground style={[styles.containerJauneImage, this.props.style]} source={{uri: "http://192.168.0.8:3001/image/foodIcone.png"}}></ImageBackground>
         </TouchableOpacity>
+        }
+        {this.state.addition &&
+          <Text style={styles.additionTxt}>Vous devez payer votre addition avant de recommander</Text>
         }
       </View>
 
@@ -120,7 +191,7 @@ class Home extends React.Component {
       </TouchableOpacity>
   
       </View>
-      <Text style={styles.deco} onPress={() => { this.deco(); }}>Déconnexion</Text>
+      <Text style={styles.deco} onPress={() => { this.deco(); }}>Compte serveur</Text>
       
       </View>
       
@@ -207,7 +278,18 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         fontSize: 30,
-        marginTop: 80,
+        marginTop: '20%',
+        //marginLeft: 93
+      },
+      additionTxt: {
+        //fontFamily: "Georgian",
+        color: "#fff",
+        textDecorationLine: "underline",
+        textAlign: "center",
+        justifyContent: "center",
+        alignItems: "center",
+        fontSize: 15,
+        marginTop: 2,
         //marginLeft: 93
       },
       deco: {
@@ -218,7 +300,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         fontSize: 20,
-        marginTop: 80,
+        marginTop: '5%',
         backgroundColor: "rgba(191,209,249,0.5)"
         //marginLeft: 93
       }

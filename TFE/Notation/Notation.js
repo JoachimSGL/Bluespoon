@@ -10,9 +10,9 @@ class Notation extends React.Component {
         this.state = {
             id: (this.props.route.params==undefined ? 1 : this.props.route.params.id),
             idRestaurant:(this.props.route.params==undefined ? 1 : this.props.route.params.idRestaurant),
+            numTable:(this.props.route.params==undefined ? 1 : this.props.route.params.numTable),
 
-
-            nom:'',
+            nom:'Notez le restaurant',
             note:4,
             idPlat:0,
             place : 0,
@@ -28,7 +28,7 @@ class Notation extends React.Component {
     }
     // idPlat attention
     componentDidMount(){
-      fetch('http://192.168.0.8:3001/commande?id='+this.state.id, {
+      fetch('http://192.168.0.8:3001/commande?numTable='+this.state.numTable, {
         method: 'GET',
       
         headers: {
@@ -77,13 +77,12 @@ class Notation extends React.Component {
         
           this.setState({listPlat:arr});
           this.setState({nom:this.state.list[0].name});
-          this.setState({idRestaurant:json[0].idRestaurant});
-          this.setState({list:[{name:'notez le restaurant',subtitle:'', idRestaurant:json[0].idRestaurant}]});
+          this.setState({idRestaurant:this.state.idRestaurant});
+          this.setState({list:[{name:'Notez le restaurant',subtitle:'', idRestaurant:this.state.idRestaurant}]});
       
       })
     }
 
-// a faire: fetch le nom du resto
     valider(){
       if(this.state.nom==this.state.list[0].name){
         fetch('http://192.168.0.8:3001/ajoutNotation', {
