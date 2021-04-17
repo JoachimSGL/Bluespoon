@@ -124,7 +124,7 @@ class Acceuil extends Component {
         body:formData,
       });
       /*
-      fetch('http://192.168.0.27:3001/image', {
+      fetch('http://192.168.0.8:3001/image', {
         method: 'POST',
         headers: {
           Accept: 'application/json',

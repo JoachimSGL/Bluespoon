@@ -1,4 +1,4 @@
-import { StyleSheet, View, TouchableOpacity, Text,SafeAreaView,ScrollView } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Text,SafeAreaView,ScrollView,ImageBackground } from "react-native";
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -24,6 +24,7 @@ class HomeServeur extends React.Component {
             textDelete:"Commande Servie",
             textAddition:"Addition envoyée",
             prixAddition:0,
+            
           };
     }
     onPress(){
@@ -57,7 +58,7 @@ toggleOverlay=()=>{
 }
 fetched(){
     
-    fetch('http://192.168.0.8:3001/commandeRestaurant?idRestaurant='+this.state.idRestaurant, {
+    fetch('http://192.168.0.27:3001/commandeRestaurant?idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
         headers: {
             Accept: 'application/json',
@@ -66,30 +67,42 @@ fetched(){
         }
         }).then(response => response.json())
         .then((json) => {
-            let arr = [];
-            let arrComplet=[];
-            let id=[];
-            let arrAddition =[];
-            for(let i = 0 ; i<json.length;i++){
-                if(!json[i].servi){   
-                    if(this.findValue(id,json[i].numCommande,json[i].idUtilisateur)){
-                        arr.push(json[i]);
-                        id.push({num :json[i].numCommande,id:json[i].idUtilisateur,addition:false});
-                    }
-                    arrComplet.push(json[i]);
-                }else{
-                    if(json[i].addition){
-                        if(this.findValueAddition(id,json[i].idUtilisateur,json[i].contact)){
-                            arr.push(json[i]);
-                            id.push({num :json[i].contact,id:json[i].idUtilisateur,addition:true});
-                        }
-                        arrAddition.push(json[i]);
+            if(true){
+                let arrComplet=[];
+                let numTable=[];
+                for(let i = 0 ; i<json.length;i++){
+                    if(!numTable.includes(json[i].idTable)){
+                        numTable.push(json[i].idTable);
+                        arrComplet.push({idTable:json[i].idTable,active:true});
                     }
                 }
+                this.setState({listFull : arrComplet});
+            }else{
+                let arr = [];
+                let arrComplet=[];
+                let id=[];
+                let arrAddition =[];
+                for(let i = 0 ; i<json.length;i++){
+                    if(!json[i].servi){   
+                        if(this.findValue(id,json[i].numCommande,json[i].idUtilisateur)){
+                            arr.push(json[i]);
+                            id.push({num :json[i].numCommande,id:json[i].idUtilisateur,addition:false});
+                        }
+                        arrComplet.push(json[i]);
+                    }else{
+                        if(json[i].addition){
+                            if(this.findValueAddition(id,json[i].idUtilisateur,json[i].contact)){
+                                arr.push(json[i]);
+                                id.push({num :json[i].contact,id:json[i].idUtilisateur,addition:true});
+                            }
+                            arrAddition.push(json[i]);
+                        }
+                    }
+                }
+                this.setState({list : arr});
+                this.setState({listFull : arrComplet});
+                this.setState({listAddition : arrAddition});
             }
-            this.setState({list : arr});
-            this.setState({listFull : arrComplet});
-            this.setState({listAddition : arrAddition});
         });
 }
     componentDidMount(){
@@ -168,7 +181,7 @@ fetched(){
         let plat=[];
         //peut y avoir des probs si 2 utils sont a la mm table avec dif payement
         for(let i = 0 ; i<full.length;i++){
-            if(cle.payement==0){
+            if((cle.payement==0)||true){
                 if(cle.contact==null){
                     if(full[i].idUtilisateur==cle.idUtilisateur && full[i].contact==null){
                         if(!plat.includes(full[i].idPlat)){
@@ -224,7 +237,7 @@ fetched(){
     
     ack(num,id,addition){
         if(!this.findValue(this.state.vue,num,id) && !addition){
-            fetch('http://192.168.0.8:3001/addition', {
+            fetch('http://192.168.0.27:3001/addition', {
                   method: 'POST',
                   headers: {
                     Accept: 'application/json',
@@ -249,7 +262,7 @@ fetched(){
             t.push({num:num,id:id});
             this.setState({vue:t});
         }else{
-            fetch('http://192.168.0.8:3001/demandeAddition', {
+            fetch('http://192.168.0.27:3001/demandeAddition', {
                 method: 'POST',
                 headers: {
                   Accept: 'application/json',
@@ -264,6 +277,10 @@ fetched(){
               })
               this.fetched();
         }
+    }
+    changeBackground(m){
+        console.log(m);
+        this.props.navigation.navigate('TableServeur',{idTable:m.idTable,idRestaurant:this.state.idRestaurant})
     }
     rectStyle(val,id,addition){
         if(!this.findValue(this.state.vue,val,id) && !addition){
@@ -337,8 +354,25 @@ fetched(){
     }
 
 </Overlay>
+<SafeAreaView style={{width:'100%', height:'100%'}} >
+<ScrollView  style={{ width:'100%', height:'100%'}} >
+    
+        
+{this.state.listFull.map((m, i) => (
+    <ImageBackground
+    source={m.active?{uri: "http://192.168.0.27:3001/image/Table2.png"}:{uri: "http://192.168.0.27:3001/image/Table.png"}}
+        style={styles.cardItemImagePlace}
+        key={i}
+        
+    ><TouchableOpacity style={{ width:'100%', height:'100%',flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}} onPress={()=>this.changeBackground(m)}><Text style={styles.numero} >n°{m.idTable}</Text></TouchableOpacity></ImageBackground>
+
+))}
 
 
+                    </ScrollView>
+                    </SafeAreaView>
+
+{/*
 
       <View style={styles.rect2}>
         <Text style={styles.commandes}>Commandes:</Text>
@@ -375,7 +409,7 @@ fetched(){
       
         </ScrollView>
         </SafeAreaView>
-
+        */}
     </View>
     );
 }
@@ -411,7 +445,7 @@ const styles = StyleSheet.create({
       container: {
         width: '100%',
         height: '100%',
-        backgroundColor: "rgba(94,110,171,1)"
+        backgroundColor: "blue"
       },
       rect2: {
         width: '100%',
@@ -455,7 +489,23 @@ const styles = StyleSheet.create({
         marginTop: 22,
         marginLeft: 37,
         marginRight: 47
-      }
+      },
+      cardItemImagePlace: {
+        flex:1,
+        marginBottom:5,
+        height: 300,
+        width: '100%',
+        flexDirection: "row",
+        alignItems: "flex-start",
+      },
+      numero: {
+        color: "#fff",
+        textDecorationLine: "underline",
+        textAlign: "center",
+        fontSize: 30,
+        marginLeft:'0%',
+        marginTop: '0%',
+      },
   });
   
 export default HomeServeur;

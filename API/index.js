@@ -264,10 +264,12 @@ app.post('/demandeAddition',jsonParser, function (req, res) {
 
 app.post('/addition',jsonParser, function (req, res) {
   let servi = req.body.servi;
-  let numCommande = req.body.numCommande;
-  let idUtilisateur = req.body.idUtilisateur;
-  let values=[[servi],[numCommande],[idUtilisateur]];
-      var rechsql = "update commandes set servi = ? where numCommande = ? and idUtilisateur = ?";
+  let addition = req.body.addition;
+  let idTable = req.body.idTable;
+  let idRestaurant = req.body.idRestaurant;
+  let idPlat= req.body.idPlat;
+  let values=[[servi],[addition],[idTable],[idRestaurant],[idPlat]];
+      var rechsql = "update commandes set servi = ? and addition = ? where idRestaurant = ? and idTable = ? and idPlat= ?";
       db.query(rechsql,values, function (err, result, fields) {
         if (err) {throw err;}else{
           res.send(JSON.stringify('done'));

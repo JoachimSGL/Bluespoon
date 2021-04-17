@@ -44,7 +44,7 @@ class Table extends React.Component {
     Carte(){
       console.log(this.state.nom);
         if(this.state.nom!==''){
-            fetch('http://192.168.0.8:3001/inscription', {
+            fetch('http://192.168.0.27:3001/inscription', {
               method: 'POST',
               headers: {
                 Accept: 'application/json',
@@ -63,7 +63,7 @@ class Table extends React.Component {
               if(json!='no' && json!='pas autorisé'){
               this.storeToken(json[0].id,'id');
               this.storeToken(json[0].serveur,'serveur');
-              this.props.navigation.navigate('Splitter',{numTable:this.state.numTable, idRestaurant:this.state.idRestaurant});
+              this.props.navigation.replace('Splitter',{numTable:this.state.numTable, idRestaurant:this.state.idRestaurant});
               }else{
                 this.props.navigation.replace('Home');
               }

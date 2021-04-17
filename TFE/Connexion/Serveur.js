@@ -59,7 +59,7 @@ class Serveur extends React.Component {
         }
       }
      inscription(){
-        fetch('http://192.168.0.8:3001/inscriptionServeur', {
+        fetch('http://192.168.0.27:3001/inscriptionServeur', {
             method: 'POST',
             body: JSON.stringify({
                 nom:this.state.nom,

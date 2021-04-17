@@ -39,7 +39,7 @@ class Splitter extends React.Component {
         
         if(data!=null){
           this.setState({id:data});
-          fetch('http://192.168.0.8:3001/table', {
+          fetch('http://192.168.0.27:3001/table', {
                 method: 'POST',
                 headers: {
                   Accept: 'application/json',
@@ -88,7 +88,7 @@ componentDidMount(){
 toggleSplit=(num)=>{
   this.setState({split: num});
   
-  fetch('http://192.168.0.8:3001/payement', {
+  fetch('http://192.168.0.27:3001/payement', {
                 method: 'POST',
                 headers: {
                   Accept: 'application/json',
@@ -105,7 +105,7 @@ toggleSplit=(num)=>{
 }
  demandeAddition(bool){
   if(bool){
-  fetch('http://192.168.0.8:3001/demandeAddition', {
+  fetch('http://192.168.0.27:3001/demandeAddition', {
                   method: 'POST',
                   headers: {
                     Accept: 'application/json',
@@ -200,7 +200,7 @@ commandes=()=>{
 */
 contacts=()=>{
     this.setState({method:true});
-    fetch('http://192.168.0.8:3001/personnes?id='+this.state.id, {
+    fetch('http://192.168.0.27:3001/personnes?id='+this.state.id, {
       method: 'GET',
      
       headers: {
@@ -347,9 +347,9 @@ ajoutPersonne(){
 rechercheContact(val,id){
   if(id==0){
     let txt = this.state.noms[val]; 
-    this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant,contact:txt});
+    this.props.navigation.navigate('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant,contact:txt});
   }else{
-    this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant});
+    this.props.navigation.navigate('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant});
   }
 }
 changeNom(val,txt){
@@ -362,7 +362,7 @@ addition=()=>{
   
     
 
-      fetch('http://192.168.0.8:3001/commande?idTable='+this.state.numTable+'&&idRestaurant='+this.state.idRestaurant, {
+      fetch('http://192.168.0.27:3001/commande?idTable='+this.state.numTable+'&&idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
        
         headers: {
@@ -744,7 +744,7 @@ changeMethod(bool){
       <Text style={styles.prix}>Total: {l.prix}€</Text>
 
       {((l.id == this.state.id || l.id==-1)&& l.prix!==0 )&&
-      <TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant,contact:l.contact}); }}>
+      <TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.props.navigation.navigate('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant,contact:l.contact}); }}>
         <Text style={styles.texte}>Recommander</Text>
       </TouchableOpacity>
   }
@@ -759,7 +759,7 @@ changeMethod(bool){
         ))
     }
     {this.state.channel=='contacts' &&
-    <TouchableOpacity style={[styles.rectGroup, this.props.style,{flex:1,flexDirection:'row',alignItems:'center', justifyContent: "center",}]} onPress={()=>{this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant,contact:'Table'}); }}>
+    <TouchableOpacity style={[styles.rectGroup, this.props.style,{flex:1,flexDirection:'row',alignItems:'center', justifyContent: "center",}]} onPress={()=>{this.props.navigation.navigate('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant,contact:'Table'}); }}>
       {this.state.split==0 &&
           <Text numberOfLines={1} style={styles.commandeGroupe}>Commandes groupées : (Total: {this.state.prixTable} €)</Text>
       }
