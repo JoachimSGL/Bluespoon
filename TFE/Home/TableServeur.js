@@ -20,6 +20,8 @@ class TableServeur extends React.Component {
             serviAddition : [],
             nonServi : [],
             nonServiAddition : [],
+            additionOverlay:[],
+            commandeOverlay:[]
           };
     }
     
@@ -30,7 +32,6 @@ class TableServeur extends React.Component {
         let data = JSON.parse(userData);
         let serveurData = await AsyncStorage.getItem("serveur");
         let dataS = JSON.parse(serveurData);
-        console.log(dataS);
         if(data!=null && data!=0){
           if(dataS!==null || dataS==true){
             this.setState({id:data});
@@ -48,24 +49,43 @@ class TableServeur extends React.Component {
   }
 }
 
-ack(plat,servi,addition){
+ack(plat,servi,addition,bool=false){
   if(!addition){
-      fetch('http://192.168.0.27:3001/addition', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          //'Access-Control-Allow-Origin': 'true'
-        },
-        body: JSON.stringify({
-            servi: servi,
-            addition:addition,
-            idTable: this.state.idTable,
-            idRestaurant: this.state.idRestaurant,
-            idPlat:plat.idPlat
-        })
-      })
+      if(!bool){
+        fetch('http://192.168.0.27:3001/addition', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            //'Access-Control-Allow-Origin': 'true'
+          },
+          body: JSON.stringify({
+              servi: servi,
+              addition:addition,
+              idTable: this.state.idTable,
+              idRestaurant: this.state.idRestaurant,
+              idPlat:plat.idPlat
+          })
+        }).then(()=>{this.componentDidMount()})
+      }else{
+        fetch('http://192.168.0.27:3001/additionAll', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            //'Access-Control-Allow-Origin': 'true'
+          },
+          body: JSON.stringify({
+              servi: servi,
+              addition:addition,
+              idTable: this.state.idTable,
+              idRestaurant: this.state.idRestaurant
+          })
+        }).then(()=>{this.componentDidMount()})
+      }
     }else{
+      if(!bool){
+        console.log(plat.id)
         fetch('http://192.168.0.27:3001/demandeAddition', {
           method: 'POST',
           headers: {
@@ -75,9 +95,25 @@ ack(plat,servi,addition){
           },
           body: JSON.stringify({
               addition: false,
-              idUtilisateur: plat.id
+              idUtilisateur: plat.idPlat,
+              idRestaurant:this.state.idRestaurant
           })
-        })
+        }).then(()=>{this.componentDidMount()})
+      }else{
+        fetch('http://192.168.0.27:3001/demandeAdditionAll', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            //'Access-Control-Allow-Origin': 'true'
+          },
+          body: JSON.stringify({
+              addition: false,
+              idTable: this.state.idTable,
+              idRestaurant:this.state.idRestaurant
+          })
+        }).then(()=>{this.componentDidMount()})
+      }
 }
 }
     componentDidMount(){
@@ -95,36 +131,90 @@ ack(plat,servi,addition){
             let serviAddition = [];
             let nonServi = [];
             let nonServiAddition = [];
+            let prix = 0;
+            let payement=0;
+            let boolServi=true;
             for(let i = 0 ; i <json.length;i++){
+              if(json[i].addition){
+                if(json[i].payement==0){
+                  payement=0;
+                  if(json[i].contact==null){
+                    if(this.isNotIn(json[i].id,nonServiAddition)){
+                        nonServiAddition.push({nom:json[i].nom,prix:json[i].prix,idTable:json[i].idTable,idPlat:json[i].id,servi:json[i].servi,contact:false});
+                    }else{
+                      nonServiAddition = this.addPrix(json[i].id,nonServiAddition,json[i].prix,json[i].servi);
+                    }
+                  }else if(json[i].contact=='Table'){
+                    prix =prix + json[i].prix;
+                  }else{
+                      if(this.isNotIn(json[i].contact,nonServiAddition)){
+                        nonServiAddition.push({nom:json[i].contact,prix:json[i].prix,idTable:json[i].idTable,idPlat:json[i].contact,contact:true,servi:json[i].servi});
+                      }else{
+                        nonServiAddition = this.addPrix(json[i].contact,nonServiAddition,json[i].prix,json[i].servi);
+                      }
+                  }
+                }else if(json[i].payement==1){
+                  payement=1;
+                  if(json[i].contact==null){
+                    if(this.isNotIn(json[i].id,nonServiAddition)){
+                      nonServiAddition.push({nom:json[i].nom,prix:json[i].prix,idTable:json[i].idTable,idPlat:json[i].id,servi:json[i].servi,contact:false});
+                    }
+                  }else if(json[i].contact=='Table'){
+                  }else{
+                      if(this.isNotIn(json[i].contact,nonServiAddition)){
+                        nonServiAddition.push({nom:json[i].contact,prix:json[i].prix,idTable:json[i].idTable,idPlat:json[i].contact,contact:true,servi:json[i].servi});
+                        
+                      }
+                  }
+                  prix=prix+json[i].prix;
+                  boolServi=boolServi || json[i].servi;
+
+                }
+            }
+            if(json[i].payement==1){
+              for(let i = 0;i<nonServiAddition.length;i++){
+                nonServiAddition[i].servi=boolServi;
+              }
+            }
+              
                 if(json[i].servi){
                     if(json[i].addition){
-                      if(this.isNotIn(json[i].idPlat,serviAddition)){
-                        serviAddition.push({nomPlat:json[i].nomPlat,commentaire:json[i].commentaire,prix:json[i].prix,idTable:json[i].idTable,idPlat:json[i].idPlat,nombre:1});
-                      }else{
-                        this.addNumber(json[i].idPlat,serviAddition);
-                      }
+                      
                     }else{
                       if(this.isNotIn(json[i].idPlat,servi)){
                         servi.push({nomPlat:json[i].nomPlat,commentaire:json[i].commentaire,prix:json[i].prix,idTable:json[i].idTable,idPlat:json[i].idPlat,nombre:1});
                       }else{
-                        this.addNumber(json[i].idPlat,servi);
+                        servi = this.addNumber(json[i].idPlat,servi);
                       }
                     }
                 }else{
                     if(json[i].addition){
-                      if(this.isNotIn(json[i].idPlat,nonServiAddition)){
-                        nonServiAddition.push({nomPlat:json[i].nomPlat,commentaire:json[i].commentaire,prix:json[i].prix,idTable:json[i].idTable,idPlat:json[i].idPlat,nombre:1});
-                      }else{
-                        this.addNumber(json[i].idPlat,nonServiAddition);
-                      }
+                      
                     }else{
                       if(this.isNotIn(json[i].idPlat,nonServi)){
                         nonServi.push({nomPlat:json[i].nomPlat,commentaire:json[i].commentaire,prix:json[i].prix,idTable:json[i].idTable,idPlat:json[i].idPlat,nombre:1});
                       }else{
-                        this.addNumber(json[i].idPlat,nonServi);
+                        nonServi = this.addNumber(json[i].idPlat,nonServi);
                       }
                     }
                 }
+            }
+            /*
+            for(let i = 0 ; i<serviAddition.length;i++){
+              if(payement==0){
+              serviAddition[i].prix=(serviAddition[i].prix+(prix/serviAddition.length)).toFixed(2)
+              }else if(payement==1){
+                serviAddition[i].prix=(prix/serviAddition.length).toFixed(2)
+              }
+            }*/
+            for(let i = 0 ; i<nonServiAddition.length;i++){
+              if(payement==0){
+                nonServiAddition[i].prix=(nonServiAddition[i].prix+(prix/nonServiAddition.length)).toFixed(2)
+                serviAddition.push(nonServiAddition[i]);
+              }else if(payement==1){
+                nonServiAddition[i].prix=(prix/nonServiAddition.length).toFixed(2)
+                serviAddition.push(nonServiAddition[i]);
+              }
             }
             this.setState({servi:servi});
             this.setState({serviAddition:serviAddition});
@@ -136,18 +226,61 @@ ack(plat,servi,addition){
     isNotIn(id,arr){
       for(let i = 0;i<arr.length;i++){
         if(id==arr[i].idPlat){
-          return false
+          return false;
         }
       }
-      return true
+      return true;
     }
-    addNumber(id,arr){
+    addNumber(id,arr,nombre=1){
       for(let i = 0;i<arr.length;i++){
         if(id==arr[i].idPlat){
-          arr[i].nombre=arr[i].nombre+1
+          arr[i].nombre=arr[i].nombre+nombre;
         }
       }
+      return arr;
     }
+    addPrix(id,arr,prix,servi){
+      for(let i = 0;i<arr.length;i++){
+        if(id==arr[i].idPlat){
+          arr[i].prix=arr[i].prix+prix;
+          arr[i].servi=arr[i].servi&&servi;
+        }
+      }
+      return arr;
+    }
+    commande(arr){
+      console.log(arr);
+      fetch('http://192.168.0.27:3001/additionSpecifique?idTable='+this.state.idTable+'&&idRestaurant='+this.state.idRestaurant+'&&id='+arr.idPlat+'&&contact='+arr.contact+'&&servi=true', {
+            method: 'GET',
+           
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': 'true'
+            }
+          }).then(response => response.json())
+          .then((json) => {
+            console.log(json);
+            this.setState({commandeOverlay:json})
+          })
+    }
+    addition(arr){
+      console.log(arr.contact);
+      fetch('http://192.168.0.27:3001/additionSpecifique?idTable='+this.state.idTable+'&&idRestaurant='+this.state.idRestaurant+'&&id='+arr.idPlat+'&&contact='+arr.contact+'&&servi=false', {
+            method: 'GET',
+           
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': 'true'
+            }
+          }).then(response => response.json())
+          .then((json) => {
+            console.log(json);
+            this.setState({additionOverlay:json})
+          })
+    }
+   
   render() {
     
 
@@ -158,14 +291,31 @@ ack(plat,servi,addition){
         {this.state.nonServiAddition.length>0 &&
         <View style={{flex:1,flexDirection:'row'}}>
         <Text style={styles.texteSection}>Demande d'addition et de plat :</Text>
-        <TouchableOpacity style={styles.boutonValider}><Text style={{color:'#fff',fontSize:15}}>Tout valider</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.boutonValider}><Text style={{color:'#fff',fontSize:15}} onPress={()=>{this.ack(this.state.nonServiAddition,true,true,true)}}>Tout valider</Text></TouchableOpacity>
         </View>
         }
 {this.state.nonServiAddition.map((l, i) => (
             <ListItem key={i} bottomDivider >
-                <ListItem.Content onPress={()=>{this.ack(l,true,true)}}>
-                <ListItem.Title >{l.nomPlat} (x{l.nombre})</ListItem.Title>
-                <ListItem.Subtitle>{l.prix}</ListItem.Subtitle>
+                <ListItem.Content >
+                <View style={{flex:1,flexDirection:'row'}}>
+                <View style={{flex:1,flexDirection:'column'}}>
+                <ListItem.Title >{l.nom.split('_')[0]} </ListItem.Title>
+                <ListItem.Subtitle>{l.prix} €</ListItem.Subtitle>
+                </View>
+
+
+                <View style={{flex:1,flexDirection:'column'}}>
+
+
+                  {l.servi==true &&
+                <TouchableOpacity onPress={()=>{this.commande(l)}}>
+                  <Text>Voir la commande</Text>
+                  </TouchableOpacity>
+                  }
+                <TouchableOpacity onPress={()=>{this.addition(l)}}><Text>Voir l'addition</Text></TouchableOpacity>
+                </View>
+
+                </View>
                 </ListItem.Content>
             </ListItem>
         ))}
@@ -174,46 +324,46 @@ ack(plat,servi,addition){
         {this.state.nonServi.length>0 &&
         <View style={{flex:1,flexDirection:'row'}}>
         <Text style={styles.texteSection}>Demande de plat:</Text>
-        <TouchableOpacity style={styles.boutonValider}><Text style={{color:'#fff',fontSize:15}}>Tout valider</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.boutonValider}onPress={()=>{this.ack(this.state.nonServi,true,false,true)}}><Text style={{color:'#fff',fontSize:15}}>Tout valider</Text></TouchableOpacity>
         </View>
         }
         {this.state.nonServi.map((l, i) => (
-            <ListItem key={i} bottomDivider>
-                <ListItem.Content onPress={()=>{this.ack(l,true,false)}}>
+            <ListItem key={i} bottomDivider onPress={()=>{this.ack(l,true,false)}}>
+                <ListItem.Content >
                 <ListItem.Title>{l.nomPlat} (x{l.nombre})</ListItem.Title>
-                <ListItem.Subtitle>{l.prix}</ListItem.Subtitle>
+                <ListItem.Subtitle>{l.commentaire}</ListItem.Subtitle>
                 </ListItem.Content>
             </ListItem>
         ))}
 
 
-        {this.state.serviAddition.length>0 &&
+        {(this.state.serviAddition.length>0 && this.state.nonServiAddition.length==0) &&
+        <View>
         <View style={{flex:1,flexDirection:'row'}}>
         <Text style={styles.texteSection}>Demande d'addition :</Text>
-        <TouchableOpacity style={styles.boutonValider}><Text style={{color:'#fff',fontSize:15}}>Tout valider</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.boutonValider}><Text style={{color:'#fff',fontSize:15}} onPress={()=>{this.ack(this.state.serviAddition,true,true,true)}}>Tout valider</Text></TouchableOpacity>
         </View>
-        }
+        <View>
 {this.state.serviAddition.map((l, i) => (
-            <ListItem key={i} bottomDivider>
-                <ListItem.Content onPress={()=>{this.ack(l,true,true)}}>
-                <ListItem.Title>{l.nomPlat} (x{l.nombre})</ListItem.Title>
-                <ListItem.Subtitle>{l.prix}</ListItem.Subtitle>
+            <ListItem key={i} bottomDivider onPress={()=>{this.ack(l,true,true)}}>
+                <ListItem.Content >
+                <ListItem.Title>{l.nom.split('_')[0]} :</ListItem.Title>
+                <ListItem.Subtitle>{l.prix} €</ListItem.Subtitle>
                 </ListItem.Content>
             </ListItem>
         ))}
-
+        </View>
+        </View>
+}
 
 {this.state.servi.length>0 &&
-  <View style={{flex:1,flexDirection:'row'}}>
 <Text style={styles.texteSection}>Déja servi :</Text>
-        <TouchableOpacity style={styles.boutonValider}><Text style={{color:'#fff',fontSize:15}}>Tout valider</Text></TouchableOpacity>
-        </View>
   }
 {this.state.servi.map((l, i) => (
             <ListItem key={i} bottomDivider>
                 <ListItem.Content >
                 <ListItem.Title>{l.nomPlat} (x{l.nombre})</ListItem.Title>
-                <ListItem.Subtitle>{l.prix}</ListItem.Subtitle>
+                <ListItem.Subtitle>{l.commentaire}</ListItem.Subtitle>
                 </ListItem.Content>
             </ListItem>
         ))}

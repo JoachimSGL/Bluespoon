@@ -114,7 +114,8 @@ toggleSplit=(num)=>{
                   },
                   body: JSON.stringify({
                       addition: true,
-                      idUtilisateur: this.state.id
+                      idUtilisateur: this.state.id,
+                      idRestaurant:this.state.idRestaurant
                   })
                 }).then(response => response.json())
                 .then((json) => {
@@ -736,7 +737,7 @@ changeMethod(bool){
           <Text numberOfLines={1} style={styles.commande}>{l.prenom} {l.nom}:</Text>
           }
           {l.id==0 &&
-            <TextInput numberOfLines={1} style={styles.commande} onChange={(text)=>this.changeNom(i,text)}>{l.prenom} {l.nom}:</TextInput>
+            <TextInput numberOfLines={1} placeholder='Nouveau contact' style={styles.commande} onChange={(text)=>this.changeNom(i,text)}></TextInput>
           }
       </View>
     

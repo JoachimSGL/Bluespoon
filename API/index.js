@@ -207,6 +207,35 @@ app.get('/notationRestaurant', function (req, res) {
 })
 });
 
+app.get('/additionSpecifique', function (req, res) {
+  let idRestaurant = req.query['idRestaurant'];
+  let idTable = req.query['idTable'];
+  let id = req.query['id'];
+  let contact=req.query["contact"];
+  let servi=req.query["servi"];
+
+  let values = [[idRestaurant],[idTable],[id]];
+  var rechsql = '';
+  if(servi=='true'){
+    if(contact=='true'){
+      rechsql = 'select * from commandes join plats on commandes.idPlat=plats.idPlat where commandes.idRestaurant=? and idTable= ? and contact=? and servi=true';
+    }else{
+      rechsql='select * from commandes join plats on commandes.idPlat=plats.idPlat where commandes.idRestaurant=? and idTable= ? and idUtilisateur=? and contact is null and servi=true'
+    }
+  }else{
+  if(contact=='true'){
+    rechsql = 'select * from commandes join plats on commandes.idPlat=plats.idPlat where commandes.idRestaurant=? and idTable= ? and contact=? ';
+  }else{
+    rechsql='select * from commandes join plats on commandes.idPlat=plats.idPlat where commandes.idRestaurant=? and idTable= ? and idUtilisateur=? and contact is null'
+  }
+}
+  db.query(rechsql,values, function (err, result, fields) {
+    if (err) {throw err;}else{
+      res.send(JSON.stringify(result));
+     }
+})
+});
+
 
 
 app.post('/table',jsonParser, function (req, res) {
@@ -224,18 +253,19 @@ app.post('/table',jsonParser, function (req, res) {
 app.post('/demandeAddition',jsonParser, function (req, res) {
   let addition = req.body.addition;
   let idUtilisateur = req.body.idUtilisateur;
-  let value=[[idUtilisateur]];
+  let idRestaurant = req.body.idRestaurant;
+  let value=[[idUtilisateur],[idRestaurant]];
   if(!addition){
       //var rechsql = "delete from commandes where numCommande = "+numCommande+ " and idUtilisateur = "+idUtilisateur;
       
-      var rechsql = "delete from commandes where idUtilisateur = ?";
+      var rechsql = "delete from commandes where idUtilisateur = ? and idRestaurant = ?";
       db.query(rechsql,value, function (err, result, fields) {
         if (err) {throw err;}else{
           res.send(JSON.stringify('done'));
         }
     })
   }else{
-    var rechsql = "select * from commandes where idUtilisateur = ?";
+    var rechsql = "select * from commandes where idUtilisateur = ? and idRestaurant = ?";
     db.query(rechsql,value, function (err, result, fields) {
       if (err) {throw err;}else{
         /*
@@ -248,8 +278,8 @@ app.post('/demandeAddition',jsonParser, function (req, res) {
           }
         }
         if(bool){*/
-          let value2=[[addition],[idUtilisateur]];
-            var rechsql = "update commandes set addition = ? where idUtilisateur = ?";
+          let value2=[[addition],[idUtilisateur],[idRestaurant]];
+            var rechsql = "update commandes set addition = ? where idUtilisateur = ? and idRestaurant = ?";
             db.query(rechsql,value2, function (err2, result2, fields2) {
               if (err2) {throw err2;}else{
                 res.send(JSON.stringify('done'));
@@ -261,6 +291,20 @@ app.post('/demandeAddition',jsonParser, function (req, res) {
   })
   }
 });
+app.post('/demandeAdditionAll',jsonParser, function (req, res) {
+  let addition = req.body.addition;
+  let idTable = req.body.idTable;
+  let value=[[idTable]];
+  if(!addition){
+      
+      var rechsql = "delete from commandes where idTable = ? and addition=true";
+      db.query(rechsql,value, function (err, result, fields) {
+        if (err) {throw err;}else{
+          res.send(JSON.stringify('done'));
+        }
+    })
+  }
+});
 
 app.post('/addition',jsonParser, function (req, res) {
   let servi = req.body.servi;
@@ -268,8 +312,23 @@ app.post('/addition',jsonParser, function (req, res) {
   let idTable = req.body.idTable;
   let idRestaurant = req.body.idRestaurant;
   let idPlat= req.body.idPlat;
-  let values=[[servi],[addition],[idTable],[idRestaurant],[idPlat]];
+  let values=[[servi],[addition],[idRestaurant],[idTable],[idPlat]];
       var rechsql = "update commandes set servi = ? and addition = ? where idRestaurant = ? and idTable = ? and idPlat= ?";
+      db.query(rechsql,values, function (err, result, fields) {
+        if (err) {throw err;}else{
+          res.send(JSON.stringify('done'));
+        }
+    })
+  
+});
+
+app.post('/additionAll',jsonParser, function (req, res) {
+  let servi = req.body.servi;
+  let addition = req.body.addition;
+  let idTable = req.body.idTable;
+  let idRestaurant = req.body.idRestaurant;
+  let values=[[servi],[addition],[idRestaurant],[idTable]];
+      var rechsql = "update commandes set servi = ? and addition = ? where idRestaurant = ? and idTable = ? and servi= false and addition = false";
       db.query(rechsql,values, function (err, result, fields) {
         if (err) {throw err;}else{
           res.send(JSON.stringify('done'));
