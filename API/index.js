@@ -218,9 +218,9 @@ app.get('/additionSpecifique', function (req, res) {
   var rechsql = '';
   if(servi=='true'){
     if(contact=='true'){
-      rechsql = 'select * from commandes join plats on commandes.idPlat=plats.idPlat where commandes.idRestaurant=? and idTable= ? and contact=? and servi=true';
+      rechsql = 'select * from commandes join plats on commandes.idPlat=plats.idPlat where commandes.idRestaurant=? and idTable= ? and contact=? and servi=false';
     }else{
-      rechsql='select * from commandes join plats on commandes.idPlat=plats.idPlat where commandes.idRestaurant=? and idTable= ? and idUtilisateur=? and contact is null and servi=true'
+      rechsql='select * from commandes join plats on commandes.idPlat=plats.idPlat where commandes.idRestaurant=? and idTable= ? and idUtilisateur=? and contact is null and servi=false'
     }
   }else{
   if(contact=='true'){
@@ -294,10 +294,11 @@ app.post('/demandeAddition',jsonParser, function (req, res) {
 app.post('/demandeAdditionAll',jsonParser, function (req, res) {
   let addition = req.body.addition;
   let idTable = req.body.idTable;
-  let value=[[idTable]];
+  let idRestaurant=req.body.idRestaurant;
+  let value=[[idTable],[idRestaurant]];
   if(!addition){
       
-      var rechsql = "delete from commandes where idTable = ? and addition=true";
+      var rechsql = "delete from commandes where idTable = ? and addition=true and idRestaurant=?";
       db.query(rechsql,value, function (err, result, fields) {
         if (err) {throw err;}else{
           res.send(JSON.stringify('done'));

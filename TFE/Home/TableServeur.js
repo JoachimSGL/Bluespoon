@@ -1,5 +1,6 @@
 import { StyleSheet, View, TouchableOpacity, Text ,Dimensions} from "react-native";
-import { ListItem } from 'react-native-elements';
+import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
+import { ListItem ,Overlay} from 'react-native-elements';
 import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ImageBackground } from "react-native";
@@ -21,7 +22,9 @@ class TableServeur extends React.Component {
             nonServi : [],
             nonServiAddition : [],
             additionOverlay:[],
-            commandeOverlay:[]
+            commandeOverlay:[],
+            isVisible:false,
+            place:0,
           };
     }
     
@@ -52,7 +55,7 @@ class TableServeur extends React.Component {
 ack(plat,servi,addition,bool=false){
   if(!addition){
       if(!bool){
-        fetch('http://192.168.0.27:3001/addition', {
+        fetch('http://192.168.0.8:3001/addition', {
           method: 'POST',
           headers: {
             Accept: 'application/json',
@@ -66,9 +69,12 @@ ack(plat,servi,addition,bool=false){
               idRestaurant: this.state.idRestaurant,
               idPlat:plat.idPlat
           })
-        }).then(()=>{this.componentDidMount()})
+        }).then(()=>{()=>{
+          this.componentDidMount();
+        }
+        })
       }else{
-        fetch('http://192.168.0.27:3001/additionAll', {
+        fetch('http://192.168.0.8:3001/additionAll', {
           method: 'POST',
           headers: {
             Accept: 'application/json',
@@ -86,7 +92,7 @@ ack(plat,servi,addition,bool=false){
     }else{
       if(!bool){
         console.log(plat.id)
-        fetch('http://192.168.0.27:3001/demandeAddition', {
+        fetch('http://192.168.0.8:3001/demandeAddition', {
           method: 'POST',
           headers: {
             Accept: 'application/json',
@@ -100,7 +106,7 @@ ack(plat,servi,addition,bool=false){
           })
         }).then(()=>{this.componentDidMount()})
       }else{
-        fetch('http://192.168.0.27:3001/demandeAdditionAll', {
+        fetch('http://192.168.0.8:3001/demandeAdditionAll', {
           method: 'POST',
           headers: {
             Accept: 'application/json',
@@ -117,7 +123,7 @@ ack(plat,servi,addition,bool=false){
 }
 }
     componentDidMount(){
-        fetch('http://192.168.0.27:3001/commande?idTable='+this.state.idTable+'&&idRestaurant='+this.state.idRestaurant, {
+        fetch('http://192.168.0.8:3001/commande?idTable='+this.state.idTable+'&&idRestaurant='+this.state.idRestaurant, {
             method: 'GET',
            
             headers: {
@@ -140,7 +146,7 @@ ack(plat,servi,addition,bool=false){
                   payement=0;
                   if(json[i].contact==null){
                     if(this.isNotIn(json[i].id,nonServiAddition)){
-                        nonServiAddition.push({nom:json[i].nom,prix:json[i].prix,idTable:json[i].idTable,idPlat:json[i].id,servi:json[i].servi,contact:false});
+                        nonServiAddition.push({nom:json[i].nom,prix:json[i].prix,idTable:json[i].idTable,idPlat:json[i].id,servi:json[i].servi,contact:false,payement:json[i].payement});
                     }else{
                       nonServiAddition = this.addPrix(json[i].id,nonServiAddition,json[i].prix,json[i].servi);
                     }
@@ -148,7 +154,7 @@ ack(plat,servi,addition,bool=false){
                     prix =prix + json[i].prix;
                   }else{
                       if(this.isNotIn(json[i].contact,nonServiAddition)){
-                        nonServiAddition.push({nom:json[i].contact,prix:json[i].prix,idTable:json[i].idTable,idPlat:json[i].contact,contact:true,servi:json[i].servi});
+                        nonServiAddition.push({nom:json[i].contact,prix:json[i].prix,idTable:json[i].idTable,idPlat:json[i].contact,contact:true,servi:json[i].servi,payement:json[i].payement});
                       }else{
                         nonServiAddition = this.addPrix(json[i].contact,nonServiAddition,json[i].prix,json[i].servi);
                       }
@@ -157,12 +163,12 @@ ack(plat,servi,addition,bool=false){
                   payement=1;
                   if(json[i].contact==null){
                     if(this.isNotIn(json[i].id,nonServiAddition)){
-                      nonServiAddition.push({nom:json[i].nom,prix:json[i].prix,idTable:json[i].idTable,idPlat:json[i].id,servi:json[i].servi,contact:false});
+                      nonServiAddition.push({nom:json[i].nom,prix:json[i].prix,idTable:json[i].idTable,idPlat:json[i].id,servi:json[i].servi,contact:false,payement:json[i].payement});
                     }
                   }else if(json[i].contact=='Table'){
                   }else{
                       if(this.isNotIn(json[i].contact,nonServiAddition)){
-                        nonServiAddition.push({nom:json[i].contact,prix:json[i].prix,idTable:json[i].idTable,idPlat:json[i].contact,contact:true,servi:json[i].servi});
+                        nonServiAddition.push({nom:json[i].contact,prix:json[i].prix,idTable:json[i].idTable,idPlat:json[i].contact,contact:true,servi:json[i].servi,payement:json[i].payement});
                         
                       }
                   }
@@ -216,6 +222,7 @@ ack(plat,servi,addition,bool=false){
                 serviAddition.push(nonServiAddition[i]);
               }
             }
+            nonServiAddition.push({nomPlat:'Commandes pour la table',nom:'Commandes pour la table',prix:0,idTable:this.state.idTable,nombre:1,contact:true,idPlat:'Table'})
             this.setState({servi:servi});
             this.setState({serviAddition:serviAddition});
             this.setState({nonServiAddition:nonServiAddition});
@@ -250,7 +257,7 @@ ack(plat,servi,addition,bool=false){
     }
     commande(arr){
       console.log(arr);
-      fetch('http://192.168.0.27:3001/additionSpecifique?idTable='+this.state.idTable+'&&idRestaurant='+this.state.idRestaurant+'&&id='+arr.idPlat+'&&contact='+arr.contact+'&&servi=true', {
+      fetch('http://192.168.0.8:3001/additionSpecifique?idTable='+this.state.idTable+'&&idRestaurant='+this.state.idRestaurant+'&&id='+arr.idPlat+'&&contact='+arr.contact+'&&servi=true', {
             method: 'GET',
            
             headers: {
@@ -262,11 +269,14 @@ ack(plat,servi,addition,bool=false){
           .then((json) => {
             console.log(json);
             this.setState({commandeOverlay:json})
+            
+            this.setState({isVisible:true});
+            this.setState({additionOverlay:[]});
           })
     }
     addition(arr){
       console.log(arr.contact);
-      fetch('http://192.168.0.27:3001/additionSpecifique?idTable='+this.state.idTable+'&&idRestaurant='+this.state.idRestaurant+'&&id='+arr.idPlat+'&&contact='+arr.contact+'&&servi=false', {
+      fetch('http://192.168.0.8:3001/additionSpecifique?idTable='+this.state.idTable+'&&idRestaurant='+this.state.idRestaurant+'&&id='+arr.idPlat+'&&contact='+arr.contact+'&&servi=false', {
             method: 'GET',
            
             headers: {
@@ -278,9 +288,25 @@ ack(plat,servi,addition,bool=false){
           .then((json) => {
             console.log(json);
             this.setState({additionOverlay:json})
+            this.setState({isVisible:true});
+            this.setState({commandeOverlay:[]});
           })
     }
-   
+    toggleOverlay=()=>{
+      this.setState({isVisible : !this.state.isVisible});
+  }
+  changePlace=(bool)=>{
+    if(bool){
+        if(this.state.commandeOverlay.length-1>this.state.place){
+          this.setState({place : this.state.place+1});
+        }
+      }else{
+        if(this.state.place>0){
+          this.setState({place : this.state.place-1})
+        }
+      }
+
+  }
   render() {
     
 
@@ -294,25 +320,140 @@ ack(plat,servi,addition,bool=false){
         <TouchableOpacity style={styles.boutonValider}><Text style={{color:'#fff',fontSize:15}} onPress={()=>{this.ack(this.state.nonServiAddition,true,true,true)}}>Tout valider</Text></TouchableOpacity>
         </View>
         }
+{(this.state.additionOverlay.length==0) &&
+<Overlay isVisible={this.state.isVisible} onBackdropPress={this.toggleOverlay}  >
+                <Text>  Commande:                                                      </Text>
+               
+                {
+                    this.state.commandeOverlay.map((l, i) => (
+                      
+                    <ListItem key={i} bottomDivider  onPress={() => this.toggleOverlay()}>
+                        <ListItem.Content>
+                        <ListItem.Title>{l.nomPlat}</ListItem.Title>
+                        <ListItem.Subtitle>{l.commentaire}</ListItem.Subtitle>
+                        <ListItem.Subtitle>{l.prix} €</ListItem.Subtitle>
+                        </ListItem.Content>
+                    </ListItem>
+                    
+                    ))
+                }
+                
+                <View style={[styles.containerStepper, this.props.style]}>
+                    <TouchableOpacity
+                      style={[
+                        styles.leftStepper,
+                        {
+                          backgroundColor: "rgba(0, 122, 255,0.1)"
+                        }
+                      ]}
+                      onPress={()=>this.changePlace(false)}
+                    >
+                      <MaterialCommunityIconsIcon
+                        name="arrow-left"
+                        style={styles.leftIcon}
+                      ></MaterialCommunityIconsIcon>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.rightStepper,
+                        {
+                          backgroundColor: "rgba(0, 122, 255,0.1)"
+                        }
+                      ]}
+                      onPress={()=>this.changePlace(true)}
+                    >
+                      <MaterialCommunityIconsIcon
+                        name="arrow-right"
+                        style={styles.rightIcon}
+                      ></MaterialCommunityIconsIcon>
+                    </TouchableOpacity>
+                  </View>
+            </Overlay>
+  }
+
+{(this.state.additionOverlay.length!==0) &&
+<Overlay isVisible={this.state.isVisible} onBackdropPress={this.toggleOverlay}  >
+                <Text>  Addition:                                                      </Text>
+               
+                {
+                    this.state.additionOverlay.map((l, i) => (
+                      
+                    <ListItem key={i} bottomDivider  onPress={() => this.toggleOverlay()}>
+                        <ListItem.Content>
+                        <ListItem.Title>{l.nomPlat}</ListItem.Title>
+                        <ListItem.Subtitle>{l.prix} €</ListItem.Subtitle>
+                        </ListItem.Content>
+                    </ListItem>
+                    
+                    ))
+                }
+                
+                <View style={[styles.containerStepper, this.props.style]}>
+                    <TouchableOpacity
+                      style={[
+                        styles.leftStepper,
+                        {
+                          backgroundColor: "rgba(0, 122, 255,0.1)"
+                        }
+                      ]}
+                      onPress={()=>this.changePlace(false)}
+                    >
+                      <MaterialCommunityIconsIcon
+                        name="arrow-left"
+                        style={styles.leftIcon}
+                      ></MaterialCommunityIconsIcon>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.rightStepper,
+                        {
+                          backgroundColor: "rgba(0, 122, 255,0.1)"
+                        }
+                      ]}
+                      onPress={()=>this.changePlace(true)}
+                    >
+                      <MaterialCommunityIconsIcon
+                        name="arrow-right"
+                        style={styles.rightIcon}
+                      ></MaterialCommunityIconsIcon>
+                    </TouchableOpacity>
+                  </View>
+            </Overlay>
+  }
+
+
+                    
 {this.state.nonServiAddition.map((l, i) => (
             <ListItem key={i} bottomDivider >
                 <ListItem.Content >
                 <View style={{flex:1,flexDirection:'row'}}>
                 <View style={{flex:1,flexDirection:'column'}}>
+                {l.idPlat!=='Table' &&
                 <ListItem.Title >{l.nom.split('_')[0]} </ListItem.Title>
-                <ListItem.Subtitle>{l.prix} €</ListItem.Subtitle>
+  }
+                {l.idPlat!=='Table' &&
+                  <ListItem.Subtitle>{l.prix} €</ListItem.Subtitle>
+                } 
+                {l.idPlat=='Table' &&
+                  <TouchableOpacity onPress={()=>{this.commande(l)}}>
+                  <Text>{l.nom}</Text>
+                  </TouchableOpacity>
+
+               }
                 </View>
 
 
                 <View style={{flex:1,flexDirection:'column'}}>
 
 
-                  {l.servi==true &&
+                  {l.servi==false &&
                 <TouchableOpacity onPress={()=>{this.commande(l)}}>
                   <Text>Voir la commande</Text>
                   </TouchableOpacity>
                   }
+                  {(l.payement==0) &&
                 <TouchableOpacity onPress={()=>{this.addition(l)}}><Text>Voir l'addition</Text></TouchableOpacity>
+                  }
                 </View>
 
                 </View>
@@ -507,7 +648,38 @@ const styles = StyleSheet.create({
         marginTop:'1%',
         height:'80%',
         width:'25%'
-      }
+      },
+      
+      containerStepper: {
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: "#FFF"
+      },
+      leftStepper: {
+        flex: 1,
+        alignItems: "center",
+        borderWidth: 1,
+        borderColor: "#007AFF",
+        borderBottomLeftRadius: 3,
+        borderTopLeftRadius: 3,
+        borderRightWidth: 0
+      },
+      leftIcon: {
+        fontSize: 30,
+        color: "#007AFF"
+      },
+      rightStepper: {
+        flex: 1,
+        alignItems: "center",
+        borderWidth: 1,
+        borderColor: "#007AFF",
+        borderBottomRightRadius: 3,
+        borderTopRightRadius: 3
+      },
+      rightIcon: {
+        fontSize: 30,
+        color: "#007AFF"
+      },
   });
   
 export default TableServeur;

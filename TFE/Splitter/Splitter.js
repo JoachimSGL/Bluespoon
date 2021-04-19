@@ -39,7 +39,7 @@ class Splitter extends React.Component {
         
         if(data!=null){
           this.setState({id:data});
-          fetch('http://192.168.0.27:3001/table', {
+          fetch('http://192.168.0.8:3001/table', {
                 method: 'POST',
                 headers: {
                   Accept: 'application/json',
@@ -88,7 +88,7 @@ componentDidMount(){
 toggleSplit=(num)=>{
   this.setState({split: num});
   
-  fetch('http://192.168.0.27:3001/payement', {
+  fetch('http://192.168.0.8:3001/payement', {
                 method: 'POST',
                 headers: {
                   Accept: 'application/json',
@@ -105,7 +105,7 @@ toggleSplit=(num)=>{
 }
  demandeAddition(bool){
   if(bool){
-  fetch('http://192.168.0.27:3001/demandeAddition', {
+  fetch('http://192.168.0.8:3001/demandeAddition', {
                   method: 'POST',
                   headers: {
                     Accept: 'application/json',
@@ -201,7 +201,7 @@ commandes=()=>{
 */
 contacts=()=>{
     this.setState({method:true});
-    fetch('http://192.168.0.27:3001/personnes?id='+this.state.id, {
+    fetch('http://192.168.0.8:3001/personnes?id='+this.state.id, {
       method: 'GET',
      
       headers: {
@@ -363,7 +363,7 @@ addition=()=>{
   
     
 
-      fetch('http://192.168.0.27:3001/commande?idTable='+this.state.numTable+'&&idRestaurant='+this.state.idRestaurant, {
+      fetch('http://192.168.0.8:3001/commande?idTable='+this.state.numTable+'&&idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
        
         headers: {

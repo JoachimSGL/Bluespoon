@@ -28,7 +28,7 @@ class Notation extends React.Component {
     }
     // idPlat attention
     componentDidMount(){
-      fetch('http://192.168.0.27:3001/commande?numTable='+this.state.numTable, {
+      fetch('http://192.168.0.8:3001/commande?idTable='+this.state.numTable+'&&idRestaurant'+this.state.idRestaurant, {
         method: 'GET',
       
         headers: {
@@ -43,6 +43,7 @@ class Notation extends React.Component {
         let compteur=0;
         let bool = true;
         let idVerif=[];
+        console.log(json);
         for(let i = 0; i<json.length;i++){
 
           let verif = true;
@@ -85,7 +86,7 @@ class Notation extends React.Component {
 
     valider(){
       if(this.state.nom==this.state.list[0].name){
-        fetch('http://192.168.0.27:3001/ajoutNotation', {
+        fetch('http://192.168.0.8:3001/ajoutNotation', {
           method: 'POST',
         
           headers: {
@@ -110,7 +111,7 @@ class Notation extends React.Component {
           }
         });
       }else{
-        fetch('http://192.168.0.27:3001/ajoutNotationPlat', {
+        fetch('http://192.168.0.8:3001/ajoutNotationPlat', {
           method: 'POST',
         
           headers: {
