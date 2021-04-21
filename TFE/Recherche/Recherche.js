@@ -705,7 +705,12 @@ class Recherche extends React.Component {
                                                                           })
                                                                       }]}]} >
                                                                       <View style={styles.actionBody}>
+                                                                      
                                                                       <Text style={styles.titleStyleAnimated}>Ajouté à la commande</Text>
+                                                                      <MaterialCommunityIconsIcon
+                                                                        name="check"
+                                                                        style={styles.captionIconAnimated}
+                                                                      ></MaterialCommunityIconsIcon>
                                                                       </View>
                                                                       </Animated.View>
 
@@ -740,10 +745,19 @@ class Recherche extends React.Component {
                         </View>
             <View style={{flex:1,width:'100%',height:'100%'}}>
             <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>this.commander()}>
+            <MaterialCommunityIconsIcon
+              name="plus-circle-outline"
+              style={styles.captionIcon}
+            ></MaterialCommunityIconsIcon>
             <Text style={styles.caption}>Ajouter à la commande</Text>
+            
             </TouchableOpacity>
             <TouchableOpacity style={[styles.containerButtonMauve, this.props.style]} onPress={this.toggleOverlay}>
-            <Text style={styles.captionMauve}>Catalogue</Text>
+            <MaterialCommunityIconsIcon
+              name="menu"
+              style={styles.captionIcon}
+            ></MaterialCommunityIconsIcon>
+            <Text style={styles.captionMauve}>Menu Plats</Text>
             </TouchableOpacity>
             
             </View>  
@@ -941,6 +955,10 @@ class Recherche extends React.Component {
                                                                       }]}]} >
                                                                       <View style={styles.actionBody}>
                                                                       <Text style={styles.titleStyleAnimated}>Ajouté à la commande</Text>
+                                                                      <MaterialCommunityIconsIcon
+                                                                        name="check"
+                                                                        style={styles.captionIconAnimated}
+                                                                      ></MaterialCommunityIconsIcon>
                                                                       </View>
                                                                       </Animated.View>
 
@@ -975,10 +993,18 @@ class Recherche extends React.Component {
                         </View>
             <View style={{flex:1,width:'100%',height:'100%'}}>
             <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>this.commander()}>
+            <MaterialCommunityIconsIcon
+              name="plus-circle-outline"
+              style={styles.captionIcon}
+            ></MaterialCommunityIconsIcon>
             <Text style={styles.caption}>Ajouter à la commande</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.containerButtonMauve, this.props.style]} onPress={this.toggleOverlay}>
-            <Text style={styles.captionMauve}>Catalogue</Text>
+            <MaterialCommunityIconsIcon
+              name="menu"
+              style={styles.captionIcon}
+            ></MaterialCommunityIconsIcon>
+            <Text style={styles.captionMauve}>Menu Boissons</Text>
             </TouchableOpacity>
             
             </View>  
@@ -1063,7 +1089,11 @@ class Recherche extends React.Component {
               }
               </ListItem.Content>
               <TouchableOpacity style={[styles.containerTrash, this.props.style]} onPress={()=>this.addCom(i)}>
-                <Icon name="restaurant-sharp" style={styles.iconTrash}></Icon>
+                
+                <MaterialCommunityIconsIcon
+              name="cog-outline"
+              style={styles.iconTrash}
+            ></MaterialCommunityIconsIcon>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.containerTrash, this.props.style]} onPress={()=>this.supprimer(i)}>
                 <Icon name="ios-trash" style={styles.iconTrash}></Icon>
@@ -1559,6 +1589,18 @@ const styles = StyleSheet.create({
           backgroundColor: "rgba(159,218,215,1)",
           marginLeft:'35%'
         },
+        captionIcon: {
+          color: "#fff",
+          fontSize: 30,
+          marginRight:'3%'
+        },
+        captionIconAnimated: {
+          color: "#fff",
+          fontSize: 30,
+          marginRight:'3%',
+          marginTop:'15%'
+        },
+        
       
   });
   

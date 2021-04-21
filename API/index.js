@@ -51,6 +51,7 @@ app.get('/commande', function (req, res) {
   var rechsql = 'select * from commandes join plats on commandes.idPlat=plats.idPlat join utilisateurs on commandes.idUtilisateur = utilisateurs.id where commandes.idTable= ? and commandes.idRestaurant = ?';
   db.query(rechsql,value, function (err, result, fields) {
     if (err) {throw err;}else{
+      console.log(result);
       res.send(JSON.stringify(result));
      }
 })

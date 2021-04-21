@@ -847,31 +847,38 @@ mapStyle = [
 { this.state.listShow.map((l, i) =>    (
       <View style={styles.rect} key={i}>
         <View style={styles.quickRow}>
+          <View style={{flex:1,flexDirection:'column',justifyContent:'center',alignItems:'center',height:'100%',width:'100%'}}>
           <Text style={styles.quick}>{l.name}</Text>
-          <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>{this.props.navigation.navigate('CarteRestaurant',{idRestaurant:l.id})}}>
-            <Text style={styles.voirLaCarte}>Voir le menu</Text>
-          </TouchableOpacity>
-        </View>
-        {this.state.method &&
+          <Text style={styles.quickPetit}>{this.findNote(l.id)}</Text>
+          </View>
+          {this.state.method &&
         <View style={{flex:1,flexDirection:'row'}}>
-                <Text style={styles.quick}>{this.findNote(l.id)}</Text>
+                
                 <TouchableOpacity style={[styles.containerButtonVoirSurCarte, this.props.style]} onPress={()=>{this.goToLocation(l.id)}}>
                 
-                <Image source={{uri: 'http://192.168.0.8:3001/image/resto.png'}} style={{ width: 40, height: 50 }} />
+                <Image source={{uri: 'http://192.168.0.8:3001/image/resto.png'}} style={{ width: 40, height: 50 }}  />
               </TouchableOpacity>
               </View>
           }
           {!this.state.method &&
-          <View style={{flex:1,flexDirection:'row',alignItems: "center"}}>
+          <View style={{flex:1,flexDirection:'row',alignItems: "center",width:'100%',height:'100%'}}>
                 <TouchableOpacity style={[styles.containerButtonPlat, this.props.style]} onPress={()=>{this.affichePlats(i)}}>
                 <Text style={styles.voirLaCarte}>Voir les plats correspondants</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.containerButtonVoirSurCarte, this.props.style]} onPress={()=>{this.goToLocation(l.id)}}>
-              <Image source={{uri: 'http://192.168.0.8:3001/image/resto.png'}} style={{ width: 40, height: 50 }} />
-            </TouchableOpacity>
             </View>
               
           }
+
+          <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>{this.props.navigation.navigate('CarteRestaurant',{idRestaurant:l.id})}}>
+            <Text style={styles.voirLaCarte}>Voir le menu</Text>
+            <MaterialCommunityIconsIcon
+            name="chevron-right"
+            style={styles.voirLaCarte}
+          ></MaterialCommunityIconsIcon>
+          </TouchableOpacity>
+        </View>
+        
+          
       </View>
     ))
   }
@@ -966,22 +973,32 @@ const styles = StyleSheet.create({
   },
   rect: {
     width: '100%',
-    height: 135,
-    backgroundColor: "rgba(150,175,208,1)",
-    borderRadius: 12,
-    marginTop: '2%'
+    height: 80,
+    backgroundColor: "#D9EBF1",
+    borderRadius: 5,
+    marginTop: '2%',
+    flex:1,
+    flexDirection:'row',
+    justifyContent:'space-between',
+    alignItems:'center'
   },
   quick: {
-    color: "#121212",
+    color: "#000",
     fontSize: 20,
-    marginTop: 6
+    marginTop: '1%'
+  },
+  quickPetit: {
+    color: "#000",
+    fontSize: 12,
+    marginTop: '1%'
   },
   quickRow: {
-    height: 36,
+    height: '100%',
     flexDirection: "row",
-    marginTop: 35,
-    marginLeft: 48,
-    marginRight: 52
+    marginTop: '2%',
+    marginLeft: '2%',
+    marginRight: '0%',
+    width:'100%'
   },
   loremIpsum: {
     color: "#121212",
@@ -1033,44 +1050,29 @@ const styles = StyleSheet.create({
     fontSize: 15
   },
   containerButton: {
-    backgroundColor: "#2196F3",
+    backgroundColor: "#D9EBF1",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
     borderRadius: 2,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1
-    },
-    shadowOpacity: 0.35,
-    shadowRadius: 5,
-    elevation: 2,
-    minWidth: 88,
-    paddingLeft: 16,
-    paddingRight: 16,
-    marginLeft:'5%'
+    paddingLeft: '3%',
+    paddingRight: '3%',
+    marginLeft:'0%',
+    height:'90%',
+    
+
   },
   containerButtonVoirSurCarte: {
-    backgroundColor: "#fff",
+    backgroundColor: "#D9EBF1",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
     borderRadius: 210,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1
-    },
-    shadowOpacity: 0.35,
-    shadowRadius: 5,
-    elevation: 2,
-    minWidth: 88,
     paddingLeft: 16,
     paddingRight: 16,
-    marginLeft:'5%',
+    marginLeft:'2%',
     marginTop:'1%',
-    height:'90%'
+    height:'80%'
   },
   containerButtonCarte:{
     backgroundColor:'#000',
@@ -1092,7 +1094,7 @@ const styles = StyleSheet.create({
     marginLeft:'5%'
   },
   containerButtonPlat: {
-    backgroundColor: "#2196F3",
+    backgroundColor: "#EFEA70",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
@@ -1108,11 +1110,11 @@ const styles = StyleSheet.create({
     minWidth: 88,
     paddingLeft: 16,
     paddingRight: 16,
-    marginTop:'8%'
+    marginTop:'2%'
   },
   voirLaCarte: {
-    color: "#fff",
-    fontSize: 14
+    color: "#000",
+    fontSize: 18
   },
   specialite: {
     color: "#fff",

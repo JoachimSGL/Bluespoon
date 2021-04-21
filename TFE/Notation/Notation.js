@@ -26,9 +26,8 @@ class Notation extends React.Component {
           this.ratingCompleted =this.ratingCompleted.bind(this); 
           this.commentaires =this.commentaires.bind(this); 
     }
-    // idPlat attention
     componentDidMount(){
-      fetch('http://192.168.0.8:3001/commande?idTable='+this.state.numTable+'&&idRestaurant'+this.state.idRestaurant, {
+      fetch('http://192.168.0.8:3001/commande?idTable='+this.state.numTable+'&&idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
       
         headers: {
@@ -284,7 +283,7 @@ class Notation extends React.Component {
         <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>this.valider()}>
         <Text style={styles.caption}>Valider</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>this.toggleOverlay()}>
+        <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>{this.toggleOverlay()}}>
         <Text style={styles.caption}>Noter un plat</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>this.props.navigation.replace('Home')}>

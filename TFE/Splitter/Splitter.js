@@ -735,23 +735,34 @@ changeMethod(bool){
         <View style={[styles.containerPrix, this.props.style]}>
           {l.id!==0 &&
           <Text numberOfLines={1} style={styles.commande}>{l.prenom} {l.nom}:</Text>
+          
           }
           {l.id==0 &&
-            <TextInput numberOfLines={1} placeholder='Nouveau contact' style={styles.commande} onChange={(text)=>this.changeNom(i,text)}></TextInput>
+            <TextInput numberOfLines={1} placeholder='Nouveau contact' style={styles.textInputContact}  onChange={(text)=>this.changeNom(i,text)}></TextInput>
           }
+          <Text style={styles.prix}>Total: {l.prix}€</Text>
       </View>
     
     <View style={styles.prixRow}>
-      <Text style={styles.prix}>Total: {l.prix}€</Text>
+      
 
       {((l.id == this.state.id || l.id==-1)&& l.prix!==0 )&&
       <TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.props.navigation.navigate('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant,contact:l.contact}); }}>
+        <MaterialCommunityIconsIcon
+            name="food"
+            style={styles.texteIcon}
+          ></MaterialCommunityIconsIcon>
         <Text style={styles.texte}>Recommander</Text>
+        
       </TouchableOpacity>
   }
 
 {(l.id == 0 || l.prix==0)&&
       <TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.rechercheContact(i,l.id); }}>
+        <MaterialCommunityIconsIcon
+            name="food"
+            style={styles.texteIcon}
+          ></MaterialCommunityIconsIcon>
         <Text style={styles.texte}>Commander</Text>
       </TouchableOpacity>
   }
@@ -796,13 +807,49 @@ changeMethod(bool){
 
   {this.state.type == 1 &&
   <View style={{width:'100%', height:'90%'}}>
-    <TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.toggleSplit(0)}><Text style={styles.payement}>Par personne</Text></TouchableOpacity>
-    <TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.toggleSplit(1)} ><Text style={styles.payement}>Divisé</Text></TouchableOpacity>
-    <TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.toggleSplit(2)} ><Text style={styles.payement}>Je paye l'addition</Text></TouchableOpacity>
+    <View style={styles.boxButton}>
+    <Text style={styles.infoPayement}>Les plats sont séparés en fonction des commandes.</Text>
+    <TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.toggleSplit(0)}>
+    <MaterialCommunityIconsIcon
+            name="food"
+            style={styles.texteIcon}
+          ></MaterialCommunityIconsIcon>
+      <Text style={styles.payement}>Par personne</Text>
+    
+    </TouchableOpacity>
+    </View>
+    <View style={styles.boxButton}>
+    <Text style={styles.infoPayement}>Les plats sont divisés par le nombre de personnes assises à la table</Text>
+    <TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.toggleSplit(1)} >
+    <MaterialCommunityIconsIcon
+            name="account-group"
+            style={styles.texteIcon}
+          ></MaterialCommunityIconsIcon>
+      <Text style={styles.payement}>Divisé</Text>
+    
+    </TouchableOpacity>
+    </View>
+    <View style={styles.boxButton}>
+    <Text style={styles.infoPayement}>Vous payer l'addition de toute la table.</Text>
+    <TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.toggleSplit(2)} >
+    <MaterialCommunityIconsIcon
+            name="account-hard-hat"
+            style={styles.texteIcon}
+          ></MaterialCommunityIconsIcon>
+      <Text style={styles.payement}>Je paye l'addition</Text>
+    
+    </TouchableOpacity>
+    </View>
     </View>
   }
 {this.state.addition &&
-<TouchableOpacity style={[styles.typePayementAddition, this.props.style]} onPress={()=>this.demandeAddition(true)} ><Text style={styles.payement}>Payer</Text></TouchableOpacity>
+<TouchableOpacity style={[styles.typePayementAddition, this.props.style]} onPress={()=>this.demandeAddition(true)} >
+<MaterialCommunityIconsIcon
+            name="credit-card-check-outline"
+            style={styles.texteIcon}
+          ></MaterialCommunityIconsIcon>
+  <Text style={styles.payement}>Payer</Text>
+  </TouchableOpacity>
   }
         <View style={[styles.footer, this.props.style]}>
       
@@ -843,23 +890,20 @@ changeMethod(bool){
 
 const styles = StyleSheet.create({
   containerPrix: {
-        minWidth: 288,
         justifyContent: "center",
-        backgroundColor: "#0B2444",
-        paddingLeft: '10%',
-        paddingRight: '10%',
+        backgroundColor: "rgba(156,175,227,1)",
         //borderRadius: 2,
-        width: '80%',
-        height: '30%',
+        width: '40%',
+        height: '90%',
         borderRadius: 100,
-        marginTop: 8,
-        marginLeft: 19
+        marginTop: '2%',
+        marginLeft: '3%'
       },
       containerAdd: {
         backgroundColor: "#3F51B5",
         alignItems: "center",
         justifyContent: "center",
-        borderRadius: 28,
+        borderRadius: 280,
         shadowColor: "#111",
         shadowOffset: {
           width: 0,
@@ -868,8 +912,9 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 1.2,
         elevation: 2,
-        minWidth: 40,
-        minHeight: 40
+        height:80,
+        width:'20%',
+        marginLeft:'80%'
       },
       iconAdd: {
         color: "#fff",
@@ -878,7 +923,16 @@ const styles = StyleSheet.create({
       },
       commande: {
         fontSize: 17,
-        color: "rgba(255,255,255,1)"
+        color: "rgba(0,0,0,1)"
+      },
+      textInputContact:{
+        fontSize: 17,
+        color: "#fff",
+        height:'60%',
+        borderRadius:20,
+        width:'100%',
+        padding:'10%',
+        backgroundColor:"#3F51B5"
       },
       commandeGroupe: {
         fontSize: 20,
@@ -890,10 +944,13 @@ const styles = StyleSheet.create({
       },
       rect: {
         width: '100%',
-        height: 150,
+        height: 100,
         backgroundColor: "rgba(156,175,227,1)",
-        marginTop: 10,
-        borderRadius: 15
+        marginTop: '2%',
+        borderRadius: 15,
+        flex:1,
+        flexDirection:'row',
+        justifyContent:'space-between'
       },
       rectGroup:{
         width: '100%',
@@ -908,10 +965,10 @@ const styles = StyleSheet.create({
         marginTop: 11
       },
       prixRow: {
-        height: '50%',
+        height: '70%',
+        width:'50%',
         flexDirection: "row",
-        marginTop: '5%',
-        marginLeft: '10%',
+        marginTop: '4%',
         marginRight: '2%'
       },
       boutton: {
@@ -923,14 +980,18 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         justifyContent: "center",
         alignItems: "center",
+        flexDirection:'row'
       },
       texte: {
         color: "#fff",
       fontSize: 18,
-      justifyContent: "center",
-        alignItems: "center",
+      marginTop:'2%'
       },
-
+      texteIcon: {
+        color: "#fff",
+      fontSize: 30,
+      marginRight:'5%'
+      },
 
 
 
@@ -1081,11 +1142,11 @@ const styles = StyleSheet.create({
         backgroundColor: "#007AFF",
         justifyContent: "center",
         alignItems: "center",
-        flexDirection: "column",
+        flexDirection: "row",
         borderRadius: 5,
         paddingLeft: 16,
         paddingRight: 16,
-        height: '30%',
+        height: '40%',
         width: '100%'
       },
       boutonAddition:{
@@ -1103,7 +1164,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#007AFF",
         justifyContent: "center",
         alignItems: "center",
-        flexDirection: "column",
+        flexDirection: "row",
         borderRadius: 5,
         paddingLeft: 16,
         paddingRight: 16,
@@ -1113,6 +1174,11 @@ const styles = StyleSheet.create({
       payement:{
         color: "#fff",
         fontSize: 17
+      },
+      infoPayement:{
+        color: "#000",
+        fontSize: 17,
+        marginBottom:'5%'
       },
       containerPicker: {
         flexDirection: "row",
@@ -1129,6 +1195,15 @@ const styles = StyleSheet.create({
         paddingRight: 30,
         flexDirection: "row"
       },
+      boxButton:{
+        flex:1,
+        flexDirection:"column",
+        alignItems:"center",
+        justifyContent:'center',
+        height:'30%',
+        backgroundColor:"rgba(156,175,227,1)"
+
+      }
   });
  
 export default Splitter;

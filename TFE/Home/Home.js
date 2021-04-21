@@ -75,7 +75,7 @@ class Home extends React.Component {
 
 QR(){
   if(!this.state.addition){
-  if(true){
+  if(false){
     fetch('http://192.168.0.8:3001/commandeHome?id='+this.state.id, {
               method: 'GET',
               headers: {
@@ -89,7 +89,11 @@ QR(){
                 if(json=='no' ){
                   this.setState({commande:false});
                   this.setState({addition:false});
-                  this.props.navigation.navigate('Table',{numTable:18, idRestaurant:1});
+                  //this.props.navigation.navigate('QR');
+                  this.storeToken(20,'id');
+                  this.storeToken(null,'serveur')
+                  this.props.navigation.navigate('Splitter',{numTable:18, idRestaurant:1});
+                  //this.props.navigation.navigate('Notation',{numTable:18, idRestaurant:1,id:20});
                 }else{
                   if(json.addition){
                     this.setState({commande:false});
@@ -102,7 +106,10 @@ QR(){
               });
     
   }else{
-  this.props.navigation.navigate('QR');
+  //this.props.navigation.navigate('QR');
+  this.storeToken(20,'id');
+  this.storeToken(null,'serveur')
+  this.props.navigation.navigate('Splitter',{numTable:18, idRestaurant:1});
   }
 }else{
   fetch('http://192.168.0.8:3001/commandeHome?id='+this.state.id, {

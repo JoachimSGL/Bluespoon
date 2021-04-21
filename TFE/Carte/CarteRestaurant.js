@@ -540,7 +540,12 @@ class CarteRestaurant extends React.Component {
               <View style={{flex:1,width:'100%',height:'100%',backgroundColor:"rgba(159,218,215,1)"}}>
               
               <TouchableOpacity style={[styles.containerButtonMauve, this.props.style]} onPress={this.toggleOverlay}>
-              <Text style={styles.captionMauve}>Catalogue</Text>
+              <MaterialCommunityIconsIcon
+              name="menu"
+              style={styles.captionIcon}
+            ></MaterialCommunityIconsIcon>
+              <Text style={styles.captionMauve}>Menu Plats</Text>
+              
               </TouchableOpacity>
               
               </View>  
@@ -701,7 +706,12 @@ class CarteRestaurant extends React.Component {
                         </View>
             <View style={{flex:1,width:'100%',height:'100%',backgroundColor:"rgba(159,218,215,1)"}}>
             <TouchableOpacity style={[styles.containerButtonMauve, this.props.style]} onPress={this.toggleOverlay}>
-            <Text style={styles.captionMauve}>Catalogue</Text>
+            <MaterialCommunityIconsIcon
+              name="menu"
+              style={styles.captionIcon}
+            ></MaterialCommunityIconsIcon>
+            <Text style={styles.captionMauve}>Menu Boissons</Text>
+            
             </TouchableOpacity>
             
             </View>  
@@ -1045,7 +1055,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.35,
         shadowRadius: 5,
         elevation: 2,
-        minWidth: 88,
         paddingLeft: 16,
         paddingRight: 16,
         height: '100%',
@@ -1055,6 +1064,11 @@ const styles = StyleSheet.create({
       captionMauve: {
         color: "#fff",
         fontSize: 19
+      },
+      captionIcon: {
+        color: "#fff",
+        fontSize: 30,
+        marginRight:'3%'
       },
       containerButtonNote: {
         backgroundColor: "#FDF427",
