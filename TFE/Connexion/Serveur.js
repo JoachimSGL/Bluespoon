@@ -1,8 +1,10 @@
-import { StyleSheet, View, TouchableOpacity, Text, TextInput  } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Text, TextInput,Image  } from "react-native";
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import React from 'react';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import bcrypt from "react-native-bcrypt";
 
 class Serveur extends React.Component {
     constructor(props) {
@@ -18,6 +20,8 @@ class Serveur extends React.Component {
             mdpR:'',
             activeR:false,
             nomRestaurant:'',
+            loading:false,
+            error:false,
           };
           this.onChangeNom= this.onChangeNom.bind(this);
           this.onChangeNomRestaurant= this.onChangeNomRestaurant.bind(this);
@@ -59,15 +63,23 @@ class Serveur extends React.Component {
         }
       }
      inscription(){
+if(this.state.mdp==this.state.mdp2 && this.state.mdp!==""&& this.state.mdp2!==""&& this.state.nom!==""&& this.state.prenom!==""&& this.state.email!==""&& this.state.mdpR!==""&& this.state.nomRestaurant!==""){
+      let t = this;
+      this.setState({error:false});
+      let pass = this.state.mdp;
+      this.setState({loading:true});
+      bcrypt.genSalt(10, function(err, salt) {
+        bcrypt.hash(pass, salt, function(err, hash) {
+          console.log(hash)
         fetch('http://192.168.0.8:3001/inscriptionServeur', {
             method: 'POST',
             body: JSON.stringify({
-                nom:this.state.nom,
-                prenom: this.state.prenom,
-                email: this.state.email,
-                mdp:this.state.mdp,
-                mdpR:this.state.mdpR,
-                nomRestaurant:this.state.nomRestaurant
+                nom:t.state.nom,
+                prenom: t.state.prenom,
+                email: t.state.email,
+                mdp:hash,
+                mdpR:t.state.mdpR,
+                nomRestaurant:t.state.nomRestaurant
             }),
             headers: {
               Accept: 'application/json',
@@ -78,13 +90,21 @@ class Serveur extends React.Component {
           .then((json) => {
           console.log(json);
           if(json!='no' && json!='pas autorisé'){
-            this.storeToken(json[0].id,'id');
-            this.storeToken(json[0].serveur,'serveur');
-            this.props.navigation.navigate('HomeServeur',{serveur:true,numTable:json[0].numTable});
+            t.setState({loading:false});
+            t.storeToken(json[0].id,'id');
+            t.storeToken(json[0].serveur,'serveur');
+            t.props.navigation.navigate('HomeServeur',{serveur:true,numTable:json[0].numTable});
           }else{
               console.log(json);
+              t.setState({loading:false});
           }
         });
+      });
+    });
+}else{
+  this.setState({error:true});
+}
+
     }
   render() {
     
@@ -140,9 +160,22 @@ class Serveur extends React.Component {
             <Icon name="eye" style={styles.iconStylePass} onPress={()=>this.setState({secureR:!this.state.secureR})}></Icon>
             </View>
             </View>
-        <TouchableOpacity style={[styles.containerButton, this.props.style]}>
-        <Text style={styles.caption} onPress={()=>this.inscription()}>S'inscrire</Text>
+        <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>this.inscription()}>
+          {!this.state.loading &&
+        <Text style={styles.caption} >S'inscrire</Text>
+          }
+        {this.state.loading &&
+            <Image
+            source={{uri: "http://192.168.0.8:3001/image/loading2.gif"}}
+            style={styles.imageLoading}
+        ></Image>
+          
+        }
         </TouchableOpacity>
+        {this.state.error &&
+        <Text style={styles.captionRed} >Vous avez une erreur dans vos informations</Text>
+
+        }
       </View>
     );
 }
@@ -165,6 +198,13 @@ const styles = StyleSheet.create({
         marginTop: '5%',
         marginBottom:'5%'
         //marginLeft: 93
+      },
+      imageLoading: {
+        flex: 1,
+        height:'90%',
+        width: '100%',
+        resizeMode: 'contain',
+        backgroundColor: "#2196F3",
       },
       container: {
         borderBottomWidth: 1,
@@ -258,6 +298,10 @@ const styles = StyleSheet.create({
       caption: {
         color: "#fff",
         fontSize: 17
+      },
+      captionRed:{
+        color: "red",
+        fontSize: 20
       }
   });
   

@@ -4,6 +4,7 @@ import React from 'react';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import bcrypt from "react-native-bcrypt";
 class Connexion extends React.Component {
     constructor(props) {
         super(props);
@@ -48,13 +49,16 @@ class Connexion extends React.Component {
         }
       }
      inscription(){
+      let t = this;
+      bcrypt.genSalt(10, function(err, salt) {
+        bcrypt.hash(pass, salt, function(err, hash) {
         fetch('http://192.168.0.8:3001/inscription', {
             method: 'POST',
             body: JSON.stringify({
-                nom:this.state.nom,
-                prenom: this.state.prenom,
-                email: this.state.email,
-                mdp:this.state.mdp
+                nom:t.state.nom,
+                prenom: t.state.prenom,
+                email: t.state.email,
+                mdp:t.state.mdp
             }),
             headers: {
               Accept: 'application/json',
@@ -65,13 +69,15 @@ class Connexion extends React.Component {
           .then((json) => {
           console.log(json);
           if(json!='no' && json!='pas autorisé'){
-            this.storeToken(json[0].id,'id');
-            this.storeToken(json[0].serveur,'serveur');
-            this.props.navigation.replace('Home');
+            t.storeToken(json[0].id,'id');
+            t.storeToken(json[0].serveur,'serveur');
+            t.props.navigation.replace('Home');
           }else{
               
           }
         });
+      });
+    });
     }
   render() {
     

@@ -1,8 +1,11 @@
-import { StyleSheet, View, TouchableOpacity, Text, TextInput } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Text, TextInput, ImageBackground,Image } from "react-native";
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import React from 'react';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import bcrypt from "react-native-bcrypt";
+
+
 class Reconnexion extends React.Component {
     constructor(props) {
         super(props);
@@ -10,7 +13,9 @@ class Reconnexion extends React.Component {
             id: 1,
             secure:true,
             email:'',
-            password:''
+            password:'',
+            loading:false,
+            error:false,
           };
           this.onChange= this.onChange.bind(this);
           this.onChangePass= this.onChangePass.bind(this);
@@ -34,7 +39,13 @@ class Reconnexion extends React.Component {
       
       }
     connexion(){
-        fetch('http://192.168.0.8:3001/reconnexion?email='+this.state.email+'&&password='+this.state.password, {
+      if(this.state.password!=="" && this.state.email!==""){
+      let pass =this.state.password;
+      let t = this;
+      this.setState({loading:true});
+       
+      this.setState({error:false});
+        fetch('http://192.168.0.8:3001/reconnexion?email='+this.state.email, {
             method: 'GET',
             headers: {
               Accept: 'application/json',
@@ -44,19 +55,33 @@ class Reconnexion extends React.Component {
           }).then(response => response.json())
           .then((json) => {
           console.log(json);
-          if(json!='pas autorisé' && json!='no'){
-            this.storeToken(json[0].id,'id');
+          if(json!=='no'){
+          bcrypt.compare(pass, json[0].password, function(err, res) {
+            console.log(res);
+          if(res){
+            t.storeToken(json[0].id,'id');
             if(json[0].serveur){
-              this.storeToken(json[0].serveur,'serveur');
-              this.props.navigation.navigate('HomeServeur',{serveur:json[0].serveur,numTable:json[0].numTable});
+              t.setState({loading:false});
+              t.storeToken(json[0].serveur,'serveur');
+              t.props.navigation.navigate('HomeServeur',{serveur:json[0].serveur,numTable:json[0].numTable});
             }else{
-              this.storeToken(json[0].serveur,'serveur');
-              this.props.navigation.replace('Home',{serveur:json[0].serveur});
+              t.setState({loading:false});
+              t.storeToken(json[0].serveur,'serveur');
+              t.props.navigation.replace('Home',{serveur:json[0].serveur});
             }
           }else{
-
+            console.log(err);
           }
+
         });
+          }else{
+            t.setState({error:true})
+          } 
+        });
+      }else{
+        this.setState({error:true})
+      }
+      
     }
   render() {
     
@@ -82,7 +107,17 @@ class Reconnexion extends React.Component {
         <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>this.connexion()}>
         <Text style={styles.caption}>Se connecter</Text>
         </TouchableOpacity>
-        
+        {this.state.loading &&
+            <Image
+            source={{uri: "http://192.168.0.8:3001/image/loading2.gif"}}
+            style={styles.imageLoading}
+        ></Image>
+          
+        }
+        {this.state.error &&
+        <Text style={styles.captionRed} >Vous avez une erreur dans vos informations</Text>
+
+        }
         <Text style={styles.lien} onPress={()=>this.props.navigation.navigate('Serveur')}>Créer un compte serveur?</Text>
       </View>
     );
@@ -147,6 +182,14 @@ const styles = StyleSheet.create({
         paddingBottom: 8,
         paddingLeft: 30
       },
+      imageLoading: {
+        backgroundColor: "rgba(191,209,249,1)",
+        flex: 1,
+        height:'10%',
+        width: '100%',
+        resizeMode: 'contain',
+        backgroundColor: "rgba(191,209,249,1)",
+      },
       containerPass: {
         borderBottomWidth: 1,
         borderColor: "#D9D5DC",
@@ -199,6 +242,10 @@ const styles = StyleSheet.create({
       caption: {
         color: "#fff",
         fontSize: 17
+      },
+      captionRed:{
+        color: "red",
+        fontSize: 20
       }
   });
   

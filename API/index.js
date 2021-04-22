@@ -126,24 +126,16 @@ app.get('/boissons', function (req, res) {
 
 app.get('/reconnexion', function (req, res) {
   let email = req.query['email'];
-  let password = req.query['password'];
-  let values = [[email]];
-  var rechsql = 'select password from utilisateurs where email = ?';
-  db.query(rechsql,values, function (err, result, fields) {
-    if (err) {throw err;}else{
-      if(password == result[0]['password']){
+  
         valueId = [[email]];
-        var rechsqlID = 'select id,serveur,numTable from utilisateurs where email = ?';
+        var rechsqlID = 'select id,serveur,password,numTable from utilisateurs where email = ?';
           db.query(rechsqlID,valueId, function (err2, result2, fields2) {
               if (err2) {res.send(JSON.stringify('no'));}else{
                 res.send(JSON.stringify(result2));
               }
           })
-      }else{
-        res.send(JSON.stringify('no'));
-      }
-      }
-})
+      
+
 });
 
 
@@ -379,10 +371,11 @@ app.post('/inscriptionServeur',jsonParser, function (req, res) {
   let mdp = req.body.mdp;
   let mdpR = req.body.mdpR;
   let nomRestaurant = req.body.nomRestaurant;
+  console.log(mdp);
   let valuesR = [[nomRestaurant]];
   var rechsqlR = 'select id,passwordRestaurant from restaurant where nomRestaurant = ?';
   db.query(rechsqlR,valuesR, function (errR, resultR, fields) {
-    if (errR) {res.send(JSON.stringify('no'));}else{
+    if (errR || resultR[0]==undefined) {res.send(JSON.stringify('no'));}else{
       if(mdpR == resultR[0]['passwordRestaurant']){
 
         values=[[nom,prenom,email,resultR[0]['id'],mdp,true]];

@@ -107,9 +107,9 @@ QR(){
     
   }else{
   //this.props.navigation.navigate('QR');
-  this.storeToken(20,'id');
-  this.storeToken(null,'serveur')
-  this.props.navigation.navigate('Splitter',{numTable:18, idRestaurant:1});
+  //this.storeToken(20,'id');
+  //this.storeToken(null,'serveur')
+  this.props.navigation.navigate('Table',{numTable:18, idRestaurant:1});
   }
 }else{
   fetch('http://192.168.0.8:3001/commandeHome?id='+this.state.id, {
