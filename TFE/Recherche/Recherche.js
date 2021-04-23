@@ -85,7 +85,7 @@ class Recherche extends React.Component {
             if(data!=null){
               this.setState({id:data});
               if(Number.isInteger(parseInt(this.state.numTable)) && this.state.numTable!=0 ){
-                fetch('http://192.168.0.8:3001/table', {
+                fetch('https://bluespoon-app.herokuapp.com/table', {
                   method: 'POST',
                   headers: {
                     Accept: 'application/json',
@@ -111,7 +111,7 @@ class Recherche extends React.Component {
     }
     componentDidMount(){
         
-        fetch('http://192.168.0.8:3001/plats?idRestaurant='+this.state.idRestaurant, {
+        fetch('https://bluespoon-app.herokuapp.com/plats?idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
        
         headers: {
@@ -164,7 +164,7 @@ class Recherche extends React.Component {
 
 
 
-      fetch('http://192.168.0.8:3001/boissons?idRestaurant='+this.state.idRestaurant, {
+      fetch('https://bluespoon-app.herokuapp.com/boissons?idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
        
         headers: {
@@ -210,7 +210,7 @@ class Recherche extends React.Component {
         }
       });
       /*
-      fetch('http://192.168.0.8:3001/image?idPlat=8', {
+      fetch('https://bluespoon-app.herokuapp.com/image?idPlat=8', {
         method: 'GET',
        
         headers: {
@@ -387,7 +387,7 @@ class Recherche extends React.Component {
             this.toggleOverlay();
           }else{
             let numCommande=0;
-            fetch('http://192.168.0.8:3001/ajoutCommande', {
+            fetch('https://bluespoon-app.herokuapp.com/ajoutCommande', {
               method: 'POST',
               headers: {
                 Accept: 'application/json',
@@ -434,7 +434,7 @@ class Recherche extends React.Component {
           this.setState({listCommande : com});
         }
         note(idPlat){
-          fetch('http://192.168.0.8:3001/notation?idRestaurant='+this.state.idRestaurant, {
+          fetch('https://bluespoon-app.herokuapp.com/notation?idRestaurant='+this.state.idRestaurant, {
   method: 'GET',
  
   headers: {
@@ -572,7 +572,7 @@ class Recherche extends React.Component {
                           {/*
                                     <View style={[styles.containerImage, this.props.style]}>
                                         <Image
-                                            source={{uri: "http://192.168.0.8:3001/image/"+this.state.imagePlat}}
+                                            source={{uri: "https://bluespoon-app.herokuapp.com/image/"+this.state.imagePlat}}
                                             style={styles.cardItemImagePlace}
                                         ></Image>
                                                 <View style={styles.cardBodyTop}>
@@ -626,7 +626,7 @@ class Recherche extends React.Component {
 
                                     {this.state.loading &&
                                     <Image
-                                    source={{uri: "http://192.168.0.8:3001/image/loading2.gif"}}
+                                    source={{uri: "https://bluespoon-app.herokuapp.com/image/loading2.gif"}}
                                     style={styles.imageLoading}
                                 ></Image>
                                   }
@@ -681,7 +681,7 @@ class Recherche extends React.Component {
                                                     marginBottom:'30%'
                                                   }]} >
                                                         <Image
-                                                            source={{uri: "http://192.168.0.8:3001/image/"+item.imagePlat}}
+                                                            source={{uri: "https://bluespoon-app.herokuapp.com/image/"+item.imagePlat}}
                                                             style={styles.cardItemImagePlace}
                                                         ></Image>
                                                               <View style={styles.cardBodyTop}>
@@ -826,7 +826,7 @@ class Recherche extends React.Component {
                           {/*
                                     <View style={[styles.containerImage, this.props.style]}>
                                         <Image
-                                            source={{uri: "http://192.168.0.8:3001/image/"+this.state.imagePlat}}
+                                            source={{uri: "https://bluespoon-app.herokuapp.com/image/"+this.state.imagePlat}}
                                             style={styles.cardItemImagePlace}
                                         ></Image>
                                                 <View style={styles.cardBodyTop}>
@@ -875,7 +875,7 @@ class Recherche extends React.Component {
                                                   
                                     {this.state.loading &&
                                     <Image
-                                    source={{uri: "http://192.168.0.8:3001/image/loading2.gif"}}
+                                    source={{uri: "https://bluespoon-app.herokuapp.com/image/loading2.gif"}}
                                     style={styles.imageLoading}
                                 ></Image>
                                   }
@@ -930,7 +930,7 @@ class Recherche extends React.Component {
                                                     marginBottom:'30%'
                                                   }]} >
                                                         <Image
-                                                            source={{uri: "http://192.168.0.8:3001/image/"+item.imagePlat}}
+                                                            source={{uri: "https://bluespoon-app.herokuapp.com/image/"+item.imagePlat}}
                                                             style={styles.cardItemImagePlace}
                                                         ></Image>
                                                               <View style={styles.cardBodyTop}>

@@ -66,7 +66,7 @@ class CarteRestaurant extends React.Component {
             this.props.navigation.navigate('Home');    
         
         }
-        fetch('http://192.168.0.8:3001/plats?idRestaurant='+this.state.idRestaurant, {
+        fetch('https://bluespoon-app.herokuapp.com/plats?idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
        
         headers: {
@@ -120,7 +120,7 @@ class CarteRestaurant extends React.Component {
 
 
 
-      fetch('http://192.168.0.8:3001/boissons?idRestaurant='+this.state.idRestaurant, {
+      fetch('https://bluespoon-app.herokuapp.com/boissons?idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
        
         headers: {
@@ -168,7 +168,7 @@ class CarteRestaurant extends React.Component {
 
 
       /*
-      fetch('http://192.168.0.8:3001/image?idPlat=8', {
+      fetch('https://bluespoon-app.herokuapp.com/image?idPlat=8', {
         method: 'GET',
        
         headers: {
@@ -323,7 +323,7 @@ class CarteRestaurant extends React.Component {
           this.setState({listCommande : com});
         }
         note(idPlat){
-          fetch('http://192.168.0.8:3001/notation?idRestaurant='+this.state.idRestaurant, {
+          fetch('https://bluespoon-app.herokuapp.com/notation?idRestaurant='+this.state.idRestaurant, {
           method: 'GET',
         
           headers: {
@@ -435,7 +435,7 @@ class CarteRestaurant extends React.Component {
                         
                                   {this.state.loading &&
                                     <Image
-                                    source={{uri: "http://192.168.0.8:3001/image/loading2.gif"}}
+                                    source={{uri: "https://bluespoon-app.herokuapp.com/image/loading2.gif"}}
                                     style={styles.imageLoading}
                                 ></Image>
                                   }
@@ -488,7 +488,7 @@ class CarteRestaurant extends React.Component {
                                                     marginBottom:'30%'
                                                   }]} >
                                                         <Image
-                                                            source={{uri: "http://192.168.0.8:3001/image/"+item.imagePlat}}
+                                                            source={{uri: "https://bluespoon-app.herokuapp.com/image/"+item.imagePlat}}
                                                             style={styles.cardItemImagePlace}
                                                         ></Image>
                                                               <View style={styles.cardBodyTop}>
@@ -661,7 +661,7 @@ class CarteRestaurant extends React.Component {
                                                     marginBottom:'30%'
                                                   }]} >
                                                         <Image
-                                                            source={{uri: "http://192.168.0.8:3001/image/"+item.imagePlat}}
+                                                            source={{uri: "https://bluespoon-app.herokuapp.com/image/"+item.imagePlat}}
                                                             style={styles.cardItemImagePlace}
                                                         ></Image>
                                                               <View style={styles.cardBodyTop}>

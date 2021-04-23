@@ -1,20 +1,37 @@
 
 .containerA{
-    background-color: rgba(157,204,227,1);
+    background-color: rgb(168, 201, 245);
   height: 100%;
   width: 100%;
-  background-image: url('http://192.168.0.8:3001/image/acceuil.jpg');
+  background-image: url('http://192.168.0.8:3001/image/acceuil2.jpg');
   background-repeat: repeat;
   background-size: 100% 1000px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-around;
 }
 .containerB{
   background-color: rgb(63, 31, 116);
 height: 100%;
 width: 50%;
 }
-
+.rectGlobal{
+  width: 40%;
+    height: 20%;
+    background-color: rgb(168, 201, 245)  ;
+    flex-direction: row;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 100px;
+    margin-top: 5px;
+    margin-right: 3px;
+}
 .container{
-  background-color: rgba(157,204,227,0.5);
+  background-color: rgb(168, 201, 245);
 height: 100%;
 width: 50%;
 flex-direction: column;
@@ -29,20 +46,16 @@ flex-direction: column;
 .rectA{
     width: 100%;
     height: 10%;
-    background-color: rgba(168,245,230,1);
+   
     flex-direction: row;
     display: flex;
-    border-radius: 10px;
-    margin-top: 5px;
 }
 .rectAMargin{
   width: 100%;
     height: 10%;
-    background-color: rgba(168,245,230,1);
+    background-color: rgb(168, 201, 245);
     flex-direction: row;
     display: flex;
-    margin-top: 2%;
-    border-radius: 10px;
 }
 .inputDiv{
     height: 50%;

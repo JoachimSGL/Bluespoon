@@ -44,7 +44,7 @@ class Table extends React.Component {
     Carte(){
       console.log(this.state.nom);
         if(this.state.nom!==''){
-            fetch('http://192.168.0.8:3001/inscription', {
+            fetch('https://bluespoon-app.herokuapp.com/inscription', {
               method: 'POST',
               headers: {
                 Accept: 'application/json',

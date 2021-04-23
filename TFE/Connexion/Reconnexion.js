@@ -45,7 +45,7 @@ class Reconnexion extends React.Component {
       this.setState({loading:true});
        
       this.setState({error:false});
-        fetch('http://192.168.0.8:3001/reconnexion?email='+this.state.email, {
+        fetch('https://bluespoon-app.herokuapp.com/reconnexion?email='+this.state.email, {
             method: 'GET',
             headers: {
               Accept: 'application/json',
@@ -109,7 +109,7 @@ class Reconnexion extends React.Component {
         </TouchableOpacity>
         {this.state.loading &&
             <Image
-            source={{uri: "http://192.168.0.8:3001/image/loading2.gif"}}
+            source={{uri: "https://bluespoon-app.herokuapp.com/image/loading2.gif"}}
             style={styles.imageLoading}
         ></Image>
           

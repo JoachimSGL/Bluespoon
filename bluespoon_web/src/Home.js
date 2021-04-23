@@ -28,7 +28,8 @@ class Home extends React.Component {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': 'true'
+          'Access-Control-Allow-Origin': '*',
+          //'mode':'no-cors',
         },
         body: JSON.stringify({
           nom: this.state.nom,

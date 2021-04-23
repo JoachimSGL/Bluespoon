@@ -27,7 +27,7 @@ class Notation extends React.Component {
           this.commentaires =this.commentaires.bind(this); 
     }
     componentDidMount(){
-      fetch('http://192.168.0.8:3001/commande?idTable='+this.state.numTable+'&&idRestaurant='+this.state.idRestaurant, {
+      fetch('https://bluespoon-app.herokuapp.com/commande?idTable='+this.state.numTable+'&&idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
       
         headers: {
@@ -85,7 +85,7 @@ class Notation extends React.Component {
 
     valider(){
       if(this.state.nom==this.state.list[0].name){
-        fetch('http://192.168.0.8:3001/ajoutNotation', {
+        fetch('https://bluespoon-app.herokuapp.com/ajoutNotation', {
           method: 'POST',
         
           headers: {
@@ -110,7 +110,7 @@ class Notation extends React.Component {
           }
         });
       }else{
-        fetch('http://192.168.0.8:3001/ajoutNotationPlat', {
+        fetch('https://bluespoon-app.herokuapp.com/ajoutNotationPlat', {
           method: 'POST',
         
           headers: {

@@ -58,7 +58,7 @@ toggleOverlay=()=>{
 }
 fetched(){
     
-    fetch('http://192.168.0.8:3001/commandeRestaurant?idRestaurant='+this.state.idRestaurant, {
+    fetch('https://bluespoon-app.herokuapp.com/commandeRestaurant?idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
         headers: {
             Accept: 'application/json',
@@ -118,6 +118,7 @@ fetched(){
                 }
             
            }, 5000)
+           this.setState({makeRequest:false})
         
     }
     findValue(arr,num,id){//A FAIRE: boucle pour trouver si la com est dedans(en fct de la numcom et de  l id)
@@ -237,7 +238,7 @@ fetched(){
     
     ack(num,id,addition){
         if(!this.findValue(this.state.vue,num,id) && !addition){
-            fetch('http://192.168.0.8:3001/addition', {
+            fetch('https://bluespoon-app.herokuapp.com/addition', {
                   method: 'POST',
                   headers: {
                     Accept: 'application/json',
@@ -262,7 +263,7 @@ fetched(){
             t.push({num:num,id:id});
             this.setState({vue:t});
         }else{
-            fetch('http://192.168.0.8:3001/demandeAddition', {
+            fetch('https://bluespoon-app.herokuapp.com/demandeAddition', {
                 method: 'POST',
                 headers: {
                   Accept: 'application/json',
@@ -280,6 +281,7 @@ fetched(){
     }
     changeBackground(m){
         console.log(m);
+        this.setState({makeRequest:false})
         this.props.navigation.navigate('TableServeur',{idTable:m.idTable,idRestaurant:this.state.idRestaurant})
     }
     rectStyle(val,id,addition){
@@ -360,7 +362,7 @@ fetched(){
         
 {this.state.listFull.map((m, i) => (
     <ImageBackground
-    source={m.active?{uri: "http://192.168.0.8:3001/image/Table2.png"}:{uri: "http://192.168.0.8:3001/image/Table.png"}}
+    source={m.active?{uri: "https://bluespoon-app.herokuapp.com/image/Table2.png"}:{uri: "https://bluespoon-app.herokuapp.com/image/Table.png"}}
         style={styles.cardItemImagePlace}
         key={i}
         

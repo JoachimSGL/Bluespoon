@@ -55,7 +55,7 @@ class TableServeur extends React.Component {
 ack(plat,servi,addition,bool=false){
   if(!addition){
       if(!bool){
-        fetch('http://192.168.0.8:3001/addition', {
+        fetch('https://bluespoon-app.herokuapp.com/addition', {
           method: 'POST',
           headers: {
             Accept: 'application/json',
@@ -74,7 +74,7 @@ ack(plat,servi,addition,bool=false){
         }
         })
       }else{
-        fetch('http://192.168.0.8:3001/additionAll', {
+        fetch('https://bluespoon-app.herokuapp.com/additionAll', {
           method: 'POST',
           headers: {
             Accept: 'application/json',
@@ -92,7 +92,7 @@ ack(plat,servi,addition,bool=false){
     }else{
       if(!bool){
         console.log(plat.id)
-        fetch('http://192.168.0.8:3001/demandeAddition', {
+        fetch('https://bluespoon-app.herokuapp.com/demandeAddition', {
           method: 'POST',
           headers: {
             Accept: 'application/json',
@@ -106,7 +106,7 @@ ack(plat,servi,addition,bool=false){
           })
         }).then(()=>{this.componentDidMount()})
       }else{
-        fetch('http://192.168.0.8:3001/demandeAdditionAll', {
+        fetch('https://bluespoon-app.herokuapp.com/demandeAdditionAll', {
           method: 'POST',
           headers: {
             Accept: 'application/json',
@@ -123,7 +123,7 @@ ack(plat,servi,addition,bool=false){
 }
 }
     componentDidMount(){
-        fetch('http://192.168.0.8:3001/commande?idTable='+this.state.idTable+'&&idRestaurant='+this.state.idRestaurant, {
+        fetch('https://bluespoon-app.herokuapp.com/commande?idTable='+this.state.idTable+'&&idRestaurant='+this.state.idRestaurant, {
             method: 'GET',
            
             headers: {
@@ -257,7 +257,7 @@ ack(plat,servi,addition,bool=false){
     }
     commande(arr){
       console.log(arr);
-      fetch('http://192.168.0.8:3001/additionSpecifique?idTable='+this.state.idTable+'&&idRestaurant='+this.state.idRestaurant+'&&id='+arr.idPlat+'&&contact='+arr.contact+'&&servi=true', {
+      fetch('https://bluespoon-app.herokuapp.com/additionSpecifique?idTable='+this.state.idTable+'&&idRestaurant='+this.state.idRestaurant+'&&id='+arr.idPlat+'&&contact='+arr.contact+'&&servi=true', {
             method: 'GET',
            
             headers: {
@@ -276,7 +276,7 @@ ack(plat,servi,addition,bool=false){
     }
     addition(arr){
       console.log(arr.contact);
-      fetch('http://192.168.0.8:3001/additionSpecifique?idTable='+this.state.idTable+'&&idRestaurant='+this.state.idRestaurant+'&&id='+arr.idPlat+'&&contact='+arr.contact+'&&servi=false', {
+      fetch('https://bluespoon-app.herokuapp.com/additionSpecifique?idTable='+this.state.idTable+'&&idRestaurant='+this.state.idRestaurant+'&&id='+arr.idPlat+'&&contact='+arr.contact+'&&servi=false', {
             method: 'GET',
            
             headers: {

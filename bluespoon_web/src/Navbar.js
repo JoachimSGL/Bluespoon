@@ -13,6 +13,9 @@ function Navbar() {
         <div>
             <Link className='App-link' to={"/Connection"}>se connecter</Link>
         </div>
+        <div>
+            <Link className='App-link' to={"/Test"}>autre</Link>
+        </div>
       </header>
     </div>
   );

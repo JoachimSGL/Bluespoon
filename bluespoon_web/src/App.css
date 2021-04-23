@@ -23,7 +23,7 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
-  background-image: url('http://192.168.0.8:3001/image/acceuil.jpg');
+  background-image: url('https://bluespoon-app.herokuapp.com/image/acceuil.jpg');
   background-repeat: no-repeat;
   background-size: 100% 100%;
 }

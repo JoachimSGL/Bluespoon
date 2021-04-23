@@ -155,7 +155,7 @@ changeStyle(){
   }
     componentDidMount(){
       let id=[];
-      fetch('http://192.168.0.8:3001/restaurant', {
+      fetch('https://bluespoon-app.herokuapp.com/restaurant', {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -178,7 +178,7 @@ changeStyle(){
           }
         }
 
-        fetch('http://192.168.0.8:3001/notationRestaurant', {
+        fetch('https://bluespoon-app.herokuapp.com/notationRestaurant', {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -856,7 +856,7 @@ mapStyle = [
                 
                 <TouchableOpacity style={[styles.containerButtonVoirSurCarte, this.props.style]} onPress={()=>{this.goToLocation(l.id)}}>
                 
-                <Image source={{uri: 'http://192.168.0.8:3001/image/resto.png'}} style={{ width: 40, height: 50 }}  />
+                <Image source={{uri: 'https://bluespoon-app.herokuapp.com/image/resto.png'}} style={{ width: 40, height: 50 }}  />
               </TouchableOpacity>
               </View>
           }
@@ -916,10 +916,10 @@ mapStyle = [
       title={marker.title}
       description={marker.description}
       onPress={()=>{this.voirCarte(marker.id,marker.title,marker.latlng)}}
-      //image={{uri: 'http://192.168.0.8:3001/image/resto2.png'}}
+      //image={{uri: 'https://bluespoon-app.herokuapp.com/image/resto2.png'}}
       //style={{width: 10, height: 10}}
     >
-    <Image source={{uri: 'http://192.168.0.8:3001/image/resto.png'}} style={{ width: 40, height: 50 }} />
+    <Image source={{uri: 'https://bluespoon-app.herokuapp.com/image/resto.png'}} style={{ width: 40, height: 50 }} />
     </Marker>
   ))}
 
@@ -950,7 +950,7 @@ showsHorizontalScrollIndicator={false}
   }
   </SafeAreaView>
 {this.state.loading &&
-<Image source={{uri:'http://192.168.0.8:3001/image/loading.gif'}} style={{heigth:100,width:100}}></Image>
+<Image source={{uri:'https://bluespoon-app.herokuapp.com/image/loading.gif'}} style={{heigth:100,width:100}}></Image>
 
 }
 

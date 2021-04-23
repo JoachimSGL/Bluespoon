@@ -38,7 +38,7 @@ class Home extends React.Component {
           if(dataS==null || dataS==false){
             this.setState({id:data});
             this.setState({serveur:dataS});
-            fetch('http://192.168.0.8:3001/commandeHome?id='+this.state.id, {
+            fetch('https://bluespoon-app.herokuapp.com/commandeHome?id='+this.state.id, {
               method: 'GET',
               headers: {
                   Accept: 'application/json',
@@ -76,7 +76,7 @@ class Home extends React.Component {
 QR(){
   if(!this.state.addition){
   if(false){
-    fetch('http://192.168.0.8:3001/commandeHome?id='+this.state.id, {
+    fetch('https://bluespoon-app.herokuapp.com/commandeHome?id='+this.state.id, {
               method: 'GET',
               headers: {
                   Accept: 'application/json',
@@ -112,7 +112,7 @@ QR(){
   this.props.navigation.navigate('Table',{numTable:18, idRestaurant:1});
   }
 }else{
-  fetch('http://192.168.0.8:3001/commandeHome?id='+this.state.id, {
+  fetch('https://bluespoon-app.herokuapp.com/commandeHome?id='+this.state.id, {
               method: 'GET',
               headers: {
                   Accept: 'application/json',
@@ -140,7 +140,7 @@ QR(){
     componentDidMount(){
       /*
       setInterval(() => {
-          fetch('http://192.168.0.8:3001/commandeHome?id='+this.state.id, {
+          fetch('https://bluespoon-app.herokuapp.com/commandeHome?id='+this.state.id, {
                   method: 'GET',
                   headers: {
                       Accept: 'application/json',
@@ -172,7 +172,7 @@ QR(){
     }
     splitter(){
       console.log(this.state.id)
-      fetch('http://192.168.0.8:3001/commandeHome?id='+this.state.id, {
+      fetch('https://bluespoon-app.herokuapp.com/commandeHome?id='+this.state.id, {
         method: 'GET',
         headers: {
             Accept: 'application/json',
@@ -193,18 +193,18 @@ QR(){
 
     return (
       <View style={{flex:1,flexDirection: "column"}}>
-    <ImageBackground style={[styles.containerImage, this.props.style]} source={{uri: "http://192.168.0.8:3001/image/acceuil2.jpg"}}>
+    <ImageBackground style={[styles.containerImage, this.props.style]} source={{uri: "https://bluespoon-app.herokuapp.com/image/acceuil2.jpg"}}>
         <View style={styles.containerBig}>
       <Text style={styles.bluespoon}>Bluespoon</Text>
       <View style={styles.containerSmall}>
         {!this.state.commande &&
       <TouchableOpacity style={[styles.containerJaune, this.props.style]} onPress={() => { this.QR() }} >
-        <ImageBackground style={[styles.containerJauneImage, this.props.style]} source={{uri: "http://192.168.0.8:3001/image/loupe.png"}}></ImageBackground>
+        <ImageBackground style={[styles.containerJauneImage, this.props.style]} source={{uri: "https://bluespoon-app.herokuapp.com/image/loupe.png"}}></ImageBackground>
       </TouchableOpacity>
         }
         {this.state.commande &&
           <TouchableOpacity style={[styles.containerJaune, this.props.style]} onPress={() => { this.splitter(); }} >
-          <ImageBackground style={[styles.containerJauneImage, this.props.style]} source={{uri: "http://192.168.0.8:3001/image/foodIcone.png"}}></ImageBackground>
+          <ImageBackground style={[styles.containerJauneImage, this.props.style]} source={{uri: "https://bluespoon-app.herokuapp.com/image/foodIcone.png"}}></ImageBackground>
         </TouchableOpacity>
         }
         {this.state.addition &&

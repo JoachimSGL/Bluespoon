@@ -22,10 +22,10 @@ var fs = require('fs');
 app.use(cors());
 
 const db = mysql.createConnection({
-    host: '127.0.0.1' ,
-    user: 'root',
-    password: 'user123',
-    database: 'bluespoon'
+    host: 'bav4owi5cbretfhonqkl-mysql.services.clever-cloud.com' ,
+    user: 'urttupjizaj6axzs',
+    password: 'OXN1MYb12tv7KIW6gxVc',
+    database: 'bav4owi5cbretfhonqkl'
 });
 
 db.connect( (err) =>{
@@ -584,6 +584,7 @@ app.get('/image2', function (req, res) {
 })
 });
 
-app.listen(3001, function () {
+
+app.listen(process.env.PORT || 3001, function () {
   console.log('listening on port 3001!');
 });

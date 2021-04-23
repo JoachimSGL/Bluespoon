@@ -5,7 +5,8 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import bcrypt from "react-native-bcrypt";
-
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(['Warning: ...']);
 class Serveur extends React.Component {
     constructor(props) {
         super(props);
@@ -71,7 +72,7 @@ if(this.state.mdp==this.state.mdp2 && this.state.mdp!==""&& this.state.mdp2!==""
       bcrypt.genSalt(10, function(err, salt) {
         bcrypt.hash(pass, salt, function(err, hash) {
           console.log(hash)
-        fetch('http://192.168.0.8:3001/inscriptionServeur', {
+        fetch('https://bluespoon-app.herokuapp.com/inscriptionServeur', {
             method: 'POST',
             body: JSON.stringify({
                 nom:t.state.nom,
@@ -166,7 +167,7 @@ if(this.state.mdp==this.state.mdp2 && this.state.mdp!==""&& this.state.mdp2!==""
           }
         {this.state.loading &&
             <Image
-            source={{uri: "http://192.168.0.8:3001/image/loading2.gif"}}
+            source={{uri: "https://bluespoon-app.herokuapp.com/image/loading2.gif"}}
             style={styles.imageLoading}
         ></Image>
           

@@ -52,7 +52,7 @@ class Connexion extends React.Component {
       let t = this;
       bcrypt.genSalt(10, function(err, salt) {
         bcrypt.hash(pass, salt, function(err, hash) {
-        fetch('http://192.168.0.8:3001/inscription', {
+        fetch('https://bluespoon-app.herokuapp.com/inscription', {
             method: 'POST',
             body: JSON.stringify({
                 nom:t.state.nom,
