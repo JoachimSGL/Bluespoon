@@ -681,7 +681,7 @@ class Recherche extends React.Component {
                                                     marginBottom:'30%'
                                                   }]} >
                                                         <Image
-                                                            source={{uri: "https://bluespoon-app.herokuapp.com/image/"+item.imagePlat}}
+                                                            source={{uri: item.imagePlat}}
                                                             style={styles.cardItemImagePlace}
                                                         ></Image>
                                                               <View style={styles.cardBodyTop}>
@@ -930,7 +930,7 @@ class Recherche extends React.Component {
                                                     marginBottom:'30%'
                                                   }]} >
                                                         <Image
-                                                            source={{uri: "https://bluespoon-app.herokuapp.com/image/"+item.imagePlat}}
+                                                            source={{uri: item.imagePlat}}
                                                             style={styles.cardItemImagePlace}
                                                         ></Image>
                                                               <View style={styles.cardBodyTop}>

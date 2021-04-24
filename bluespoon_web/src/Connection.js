@@ -1,5 +1,6 @@
 import './Connection.css';
 import React from 'react';
+import bcrypt from 'bcryptjs';
 class Connection extends React.Component {
   constructor(props) {
     super(props);
@@ -13,7 +14,8 @@ class Connection extends React.Component {
       this.onChangePass=this.onChangePass.bind(this);
 }
      send(){
-      fetch('http://192.168.0.8:3001/reconnexionRestaurant?nom='+this.state.nom+'&&password='+this.state.pass, {
+       let t = this;
+      fetch('https://bluespoon-app.herokuapp.com/reconnexionRestaurant?nom='+this.state.nom, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -23,13 +25,17 @@ class Connection extends React.Component {
       }).then(response => response.json())
       .then((json) => {
       console.log(json);
-      if(json!=='pas autorisé' && json!=='no'){
-        //this.storeToken(json);
-        localStorage.setItem('id', json);
-        this.props.history.push("/Acceuil");
+      bcrypt.compare(t.state.pass, json[0].passwordRestaurant, function(err, res) {
+        // res === true
+    
+      if(json!=='pas autorisé' && json!=='no' && res){
+        localStorage.setItem('id', json[0].id);
+        t.props.history.push("/Acceuil");
       }else{
 
       }
+
+    });
     });
       
     }

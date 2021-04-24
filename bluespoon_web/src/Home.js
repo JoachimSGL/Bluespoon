@@ -1,5 +1,6 @@
 import './Connection.css';
 import React from 'react';
+import bcrypt from 'bcryptjs';
 class Home extends React.Component {
   constructor(props) {
     super(props);
@@ -23,7 +24,12 @@ class Home extends React.Component {
       this.onChangePass2=this.onChangePass2.bind(this);
 }
      send(){
-      fetch('http://192.168.0.8:3001/inscriptionRestaurant', {
+       let t = this;
+      bcrypt.genSalt(10, function(err, salt) {
+        bcrypt.hash(t.state.pass, salt, function(err, hash) {
+            // Store hash in your password DB.
+        
+      fetch('https://bluespoon-app.herokuapp.com/inscriptionRestaurant', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -32,12 +38,12 @@ class Home extends React.Component {
           //'mode':'no-cors',
         },
         body: JSON.stringify({
-          nom: this.state.nom,
-          add:this.state.add,
-          long:this.state.long,
-          lat:this.state.lat,
-          type:this.state.type,
-          pass:this.state.pass
+          nom: t.state.nom,
+          add:t.state.add,
+          long:t.state.long,
+          lat:t.state.lat,
+          type:t.state.type,
+          pass:hash
       })
       }).then(response => response.json())
       .then((json) => {
@@ -45,11 +51,13 @@ class Home extends React.Component {
       if(json!=='pas autorisé' && json!=='no'){
         //this.storeToken(json);
         localStorage.setItem('id', json);
-        this.props.history.push("/Acceuil");
+        t.props.history.push("/Acceuil");
       }else{
 
       }
     });
+  });
+});
     }
     onChangeNom(txt){
       this.setState({nom:txt.target.value});

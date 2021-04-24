@@ -69,9 +69,23 @@ if(this.state.mdp==this.state.mdp2 && this.state.mdp!==""&& this.state.mdp2!==""
       this.setState({error:false});
       let pass = this.state.mdp;
       this.setState({loading:true});
+
+      fetch('https://bluespoon-app.herokuapp.com/reconnexionRestaurant?nom='+this.state.nomRestaurant, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': 'true'
+        }
+      }).then(response => response.json())
+      .then((resultatRestaurant) => {
+        bcrypt.compare(t.state.mdpR, resultatRestaurant[0].passwordRestaurant, function(err2, res) {
+          console.log(res)
+          console.log(t.state.mdpR)
+          if(res){
       bcrypt.genSalt(10, function(err, salt) {
         bcrypt.hash(pass, salt, function(err, hash) {
-          console.log(hash)
+          console.log(hash);
         fetch('https://bluespoon-app.herokuapp.com/inscriptionServeur', {
             method: 'POST',
             body: JSON.stringify({
@@ -102,6 +116,13 @@ if(this.state.mdp==this.state.mdp2 && this.state.mdp!==""&& this.state.mdp2!==""
         });
       });
     });
+
+  }else{
+    this.setState({error:true});
+  }
+});
+
+  });
 }else{
   this.setState({error:true});
 }

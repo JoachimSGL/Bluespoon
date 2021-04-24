@@ -950,7 +950,7 @@ showsHorizontalScrollIndicator={false}
   }
   </SafeAreaView>
 {this.state.loading &&
-<Image source={{uri:'https://bluespoon-app.herokuapp.com/image/loading.gif'}} style={{heigth:100,width:100}}></Image>
+<Image source={{uri:'https://bluespoon-app.herokuapp.com/image/loading.gif'}} style={{height:100,width:100}}></Image>
 
 }
 

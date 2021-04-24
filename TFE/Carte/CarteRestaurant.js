@@ -5,6 +5,7 @@ import { Overlay,ListItem } from 'react-native-elements';
 import Icon from "react-native-vector-icons/Ionicons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import {firebase} from "../firebase/config";
 class CarteRestaurant extends React.Component {
     constructor(props) {
         super(props);
@@ -43,8 +44,11 @@ class CarteRestaurant extends React.Component {
 
           };
     }
-    onPress(){
-      
+    async getImage(nom){
+      let ref = firebase.storage().ref('images/'+nom);
+      let url = await ref.getDownloadURL();
+      console.log(url);
+      return url;
     }
     async getToken() {
           try {
@@ -488,7 +492,7 @@ class CarteRestaurant extends React.Component {
                                                     marginBottom:'30%'
                                                   }]} >
                                                         <Image
-                                                            source={{uri: "https://bluespoon-app.herokuapp.com/image/"+item.imagePlat}}
+                                                            source={{uri: item.imagePlat}}
                                                             style={styles.cardItemImagePlace}
                                                         ></Image>
                                                               <View style={styles.cardBodyTop}>
@@ -661,7 +665,7 @@ class CarteRestaurant extends React.Component {
                                                     marginBottom:'30%'
                                                   }]} >
                                                         <Image
-                                                            source={{uri: "https://bluespoon-app.herokuapp.com/image/"+item.imagePlat}}
+                                                            source={{uri: item.imagePlat}}
                                                             style={styles.cardItemImagePlace}
                                                         ></Image>
                                                               <View style={styles.cardBodyTop}>

@@ -5,6 +5,7 @@ import JSZip from 'jszip' ;
 import { saveAs } from 'file-saver';
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { storage } from "./firebase";
 class Acceuil extends Component {
     constructor(props) {
         super(props);
@@ -17,6 +18,8 @@ class Acceuil extends Component {
             visible:false,
             value:1,
             keepId : [],
+            progress:0,
+            url:[]
           };
           this.add = this.add.bind(this);
           this.addServeur = this.addServeur.bind(this);
@@ -25,6 +28,7 @@ class Acceuil extends Component {
           this.changement = this.changement.bind(this);
     }
     componentDidMount(){
+      this.getImage()
         fetch('https://bluespoon-app.herokuapp.com/all?idRestaurant='+this.state.id, {
         method: 'GET',
         headers: {
@@ -73,6 +77,43 @@ class Acceuil extends Component {
       }
       this.setState({liste : arr});
     }
+    handleUpload(image,plat){
+      const uploadTask = storage.ref(`images/${image.name}`).put(image);
+      uploadTask.on(
+        "state_changed",
+        snapshot => {
+          const progress = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          this.setState({progress:progress});
+        },
+        error => {
+          console.log(error);
+        },
+        () => {
+          storage
+            .ref("images")
+            .child(image.name)
+            .getDownloadURL()
+            .then(url => {
+              fetch('https://bluespoon-app.herokuapp.com/changeImage', {
+                method: 'POST',
+                headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/json',
+                  //'Access-Control-Allow-Origin': 'true'
+                },
+                body: JSON.stringify({
+                    url:url,
+                    idRestaurant:this.state.id,
+                    nomPlat:plat
+
+                })
+              });
+            });
+        }
+      );
+    };
     add(){
         let array = this.state.chaine;
         array.push(<div class="input-group mb-3" key={this.state.cle}><span  class="input-group-text">plat:</span><input class="form-control" placeholder='nom du plat'  id={this.state.cle+'plat'}/><span className='Span'>prix:</span><input class="form-control" placeholder='prix'  id={this.state.cle + 'prix'}/><span className='Span'>commentaires:</span><input class="form-control" placeholder='commentaires éventuels'  id={this.state.cle + 'com'}/></div>);
@@ -84,6 +125,12 @@ class Acceuil extends Component {
     addServeur(){
       this.props.history.push("/CompteServeur");
     }
+    async getImage(){
+      const ref = storage.ref('images/1619196381261.jpg');
+      let url = await ref.getDownloadURL();
+      this.setState({url:url});
+      console.log(url);
+    }
     send(cle){
         cle = cle.target.value;
         let platB = document.getElementById(cle+ 'plat').value;
@@ -94,7 +141,11 @@ class Acceuil extends Component {
         let imageB = document.getElementById(cle+ 'image').value;
         let arr=imageB.split("\\");
         imageB=arr[arr.length-1];
-        const file = document.getElementById(cle+ 'image').files[0];
+        imageB = Date.now()+imageB.slice(-4);
+        let type= imageB.slice(-3);
+        let file = document.getElementById(cle+ 'image').files[0];
+        var blob = file.slice(0, file.size, 'image/png'); 
+        file = new File([blob], imageB, {type: 'image/'+type});
         /*
         const fileInput = document.querySelector(imageB) ;
         //const fileInput = document.getElementById(cle.target.value+ 'image').files[0].name; 
@@ -117,6 +168,9 @@ class Acceuil extends Component {
             boisson:boissonBool
         })
       });
+      this.handleUpload(file,platB);
+        
+      /*
       var formData = new FormData();
       formData.append('file', file);
       console.log(file);
@@ -129,6 +183,7 @@ class Acceuil extends Component {
         },
         body:formData,
       });
+      */
       /*
       fetch('https://bluespoon-app.herokuapp.com/image', {
         method: 'POST',
@@ -156,7 +211,11 @@ class Acceuil extends Component {
         let imageB = document.getElementById(cle+ 'image').value;
         let arr=imageB.split("\\");
         imageB=arr[arr.length-1];
-        const file = document.getElementById(cle+ 'image').files[0];
+        imageB = Date.now()+imageB.slice(-4);
+        let type= imageB.slice(-3);
+        let file = document.getElementById(cle+ 'image').files[0];
+        var blob = file.slice(0, file.size, 'image/png'); 
+        file = new File([blob], imageB, {type: 'image/'+type});
         //var blob = new Blob([file]);
         /*
         const fileInput = document.querySelector(imageB) ;
@@ -181,6 +240,7 @@ class Acceuil extends Component {
             boisson : boissonBool
         })
       });
+      /*
       var formData = new FormData();
       formData.append('file', file);
       console.log(file);
@@ -192,7 +252,8 @@ class Acceuil extends Component {
           //'Access-Control-Allow-Origin': 'true'
         },
         body:formData,
-      });
+      });*/
+      this.handleUpload(file,platB)
     }
      downloadQR = () => {
         this.setState({visible:true});
