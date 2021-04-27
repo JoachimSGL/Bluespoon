@@ -56,6 +56,7 @@ class Table extends React.Component {
                   nom:this.state.nom,
                   idRestaurant:this.state.idRestaurant,
                   id :this.state.id,
+                  password:'4A1cDm$12$'
               })
             }).then(response => response.json())
             .then((json) => {

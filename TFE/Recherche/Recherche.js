@@ -95,6 +95,7 @@ class Recherche extends React.Component {
                   body: JSON.stringify({
                       numero: this.state.numTable,
                       id :this.state.id,
+                      password:'4A1cDm$12$'
                   })
                 })
       
@@ -399,7 +400,8 @@ class Recherche extends React.Component {
                   idRestaurant:this.state.idRestaurant,
                   id:this.state.id,
                   idTable:this.state.numTable,
-                  contact:this.state.contact
+                  contact:this.state.contact,
+                  password:'4A1cDm$12$'
               })
             }).then(response => response.json())
             .then((json) => {

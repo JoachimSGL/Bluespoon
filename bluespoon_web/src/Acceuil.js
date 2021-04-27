@@ -46,11 +46,11 @@ class Acceuil extends Component {
       for(let i=0; i<json.length;i++){
         console.log(json[i].idPlat);
         arr.push(json[i].idPlat);
-        arrDef.push(<div class="input-group mb-3" key={compteur}><span className='Span'>plat:</span><input className='Input' id={compteur+'plat'} defaultValue={json[i]['nomPlat']}/><span className='Span'>prix:</span><input className='Input' defaultValue={json[i]['prix']} placeholder='prix'  id={compteur + 'prix'}/><span className='Span'>commentaires:</span><input className='Input' defaultValue={json[i]['commentaires']} placeholder='commentaires éventuels'  id={compteur + 'com'}/></div>);
+        arrDef.push(<div class="input-group mb-3" key={compteur}><span className="input-group-text">plat:</span><input className='form-control' id={compteur+'plat'} defaultValue={json[i]['nomPlat']}/><span className='input-group-text'>prix:</span><input className='form-control' defaultValue={json[i]['prix']} placeholder='prix'  id={compteur + 'prix'}/><span className='input-group-text'>commentaires:</span><input className='form-control' defaultValue={json[i]['commentaires']} placeholder='commentaires éventuels'  id={compteur + 'com'}/></div>);
         if(json[i].boisson){
-          arrDef.push(<div class="input-group mb-3" key={compteur+1}><span className='Span'>boisson?<input type='checkbox' id={compteur+'boiss'}/></span><span className='Span'>ajouter une image</span><input type="file" className='Input' id={compteur+'image'} accept="image/png, image/jpeg"/><Button  onClick={this.modif} value={compteur}>modifier</Button></div>);
+          arrDef.push(<div class="input-group mb-3" key={compteur+1}><span className='input-group-text'>boisson?<input type='checkbox' id={compteur+'boiss'}/></span><span className='input-group-text'>ajouter une image</span><input type="file" className='form-control' id={compteur+'image'} accept="image/png, image/jpeg"/><Button  onClick={this.modif} value={compteur}>modifier</Button></div>);
         }else{
-          arrDef.push(<div class="input-group mb-3" key={compteur+1}><span className='Span'>boisson?<input type='checkbox' id={compteur+'boiss'}/></span><span className='Span'>ajouter une image</span><input type="file" className='Input' id={compteur+'image'} accept="image/png, image/jpeg"/><Button  onClick={this.modif} value={compteur}>modifier</Button></div>);
+          arrDef.push(<div class="input-group mb-3" key={compteur+1}><span className='input-group-text'>boisson?<input type='checkbox' id={compteur+'boiss'}/></span><span className='input-group-text'>ajouter une image</span><input type="file" className='form-control' id={compteur+'image'} accept="image/png, image/jpeg"/><Button  onClick={this.modif} value={compteur}>modifier</Button></div>);
         }
         array.push(<div class="input-group mb-3">{arrDef}</div>)
         arrDef=[];
@@ -117,7 +117,7 @@ class Acceuil extends Component {
     add(){
         let array = this.state.chaine;
         array.push(<div class="input-group mb-3" key={this.state.cle}><span  class="input-group-text">plat:</span><input class="form-control" placeholder='nom du plat'  id={this.state.cle+'plat'}/><span className='Span'>prix:</span><input class="form-control" placeholder='prix'  id={this.state.cle + 'prix'}/><span className='Span'>commentaires:</span><input class="form-control" placeholder='commentaires éventuels'  id={this.state.cle + 'com'}/></div>);
-        array.push(<div class="input-group mb-3" key={this.state.cle+1}><span className='Span'>boisson?<input type='checkbox' onClick={()=> this.setState({boisson:!this.state.boisson})} id={this.state.cle+'boiss'}/></span><span className='Span'>ajouter une image:</span><input type="file" className='Input' id={this.state.cle+'image'} accept="image/png, image/jpeg"/><button className='Button' onClick={this.send} value={this.state.cle}>confirmer</button></div>);
+        array.push(<div class="input-group mb-3" key={this.state.cle+1}><span className='input-group-text'>boisson?<input  type='checkbox' onClick={()=> this.setState({boisson:!this.state.boisson})} id={this.state.cle+'boiss'}/></span><span className='input-group-text'>ajouter une image:</span><input type="file" class="form-control" id={this.state.cle+'image'} accept="image/png, image/jpeg"/><Button className='Button' onClick={this.send} value={this.state.cle}>confirmer</Button></div>);
         array = [<div class="input-group mb-3">{array}</div>]
         this.setState({chaine : array});
         this.setState({ cle: this.state.cle+2 });
@@ -304,22 +304,22 @@ class Acceuil extends Component {
     render(){
         return (
              
-            <div className="containerA" id='base'>
+            <div className="masthead" style={{backgroundColor:'#7DAEE7'}} id='base'>
             
             {this.state.chaine.map((value) => value)}
-            <button className='Button' onClick={this.add}>ajouter un plat</button>
+            <Button onClick={this.add}>ajouter un plat</Button>
             <div className='rectAMargin'>
 
             <span className='Span'>Combien de Qr-codes voulez-vous?:</span>
             <span className='Span'>à chaque qr-codes correspond une table</span>
             <input className='Input' type='number' placeholder='nom du plat'  id={'ufi'} value={this.state.value} onChange={this.changement}/>
             <span className='Span'>vos QR-codes:</span>
-            <button className='Button' onClick={this.downloadQR}>Télécharger les QR-codes</button>
+            <Button className='Button' onClick={this.downloadQR}>Télécharger les QR-codes</Button>
           
             </div>
             <div>
             {this.state.liste.map((l, i) =>    (
-            <QRCode className='qr' id={'qr'+l} value={"http://127.0.0.1:19002/Table/"+this.state.id+"/"+l} />
+            <QRCode className='qr' id={'qr'+l} value={"https://bluespoon-app.herokuapp.com/Table/"+this.state.id+"/"+l} />
             ))} 
            
            </div>

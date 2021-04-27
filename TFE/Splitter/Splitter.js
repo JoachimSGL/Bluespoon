@@ -49,6 +49,7 @@ class Splitter extends React.Component {
                 body: JSON.stringify({
                     numero: this.state.numTable,
                     id:this.state.id,
+                    password:'4A1cDm$12$'
                 })
               });
          
@@ -98,6 +99,7 @@ toggleSplit=(num)=>{
                 body: JSON.stringify({
                     payement: num,
                     idTable:this.state.numTable,
+                    password:'4A1cDm$12$'
                 })
               });
   this.addition();
@@ -115,7 +117,8 @@ toggleSplit=(num)=>{
                   body: JSON.stringify({
                       addition: true,
                       idUtilisateur: this.state.id,
-                      idRestaurant:this.state.idRestaurant
+                      idRestaurant:this.state.idRestaurant,
+                      password:'4A1cDm$12$'
                   })
                 }).then(response => response.json())
                 .then((json) => {

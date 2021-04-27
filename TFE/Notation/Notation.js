@@ -97,7 +97,8 @@ class Notation extends React.Component {
               idRestaurant:this.state.idRestaurant,
               id:this.state.id,
               commentairesNotation:this.state.commentairesNotation,
-              note:this.state.note
+              note:this.state.note,
+              password:'4A1cDm$12$'
           })
         }).then(response => response.json())
         .then((json) => {
@@ -123,7 +124,8 @@ class Notation extends React.Component {
               id:this.state.id,
               commentairesNotation:this.state.commentairesNotation,
               note:this.state.note,
-              idRestaurant:this.state.idRestaurant
+              idRestaurant:this.state.idRestaurant,
+              password:'4A1cDm$12$'
           })
         }).then(response => response.json())
         .then((json) => {

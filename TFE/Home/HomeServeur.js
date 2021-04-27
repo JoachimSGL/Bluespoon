@@ -248,7 +248,8 @@ fetched(){
                   body: JSON.stringify({
                       servi: true,
                       numCommande: num,
-                      idUtilisateur: id
+                      idUtilisateur: id,
+                      password:'4A1cDm$12$'
                   })
                 })
                 this.fetched();
@@ -273,7 +274,8 @@ fetched(){
                 body: JSON.stringify({
                     addition: false,
                     numCommande: num,
-                    idUtilisateur: id
+                    idUtilisateur: id,
+                    password:'4A1cDm$12$'
                 })
               })
               this.fetched();
