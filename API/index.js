@@ -2,7 +2,10 @@ var express = require('express');
 var app = express();
 const mysql = require('mysql');
 const cors = require('cors');
+var path = require('path');
 app.use('/image',express.static('images'));
+app.use(express.static(path.join(__dirname,'templates')));
+/*
 var multer  = require('multer')
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -14,10 +17,12 @@ var storage = multer.diskStorage({
 })
 
 var upload = multer({ storage: storage });
+*/
 //var upload = multer({ dest: 'uploads/' })
 
 var bodyParser = require('body-parser');
 var fs = require('fs');
+const { nextTick } = require('process');
 
 app.use(cors());
 
@@ -40,11 +45,19 @@ var jsonParser = bodyParser.json()
  
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
+
+
 app.get('/', function (req, res) {
-  res.send('Hello World!');
+  res.sendFile((path.join(__dirname +'/templates/bluespoon.html')));
+});
+
+app.get('/portfolio',function(req,res){
+  
+  res.sendFile((path.join(__dirname +'/templates/index.html')));
 });
 
 app.get('/commande', function (req, res) {
+  try{
   let idTable = req.query['idTable'];
   let idRestaurant = req.query['idRestaurant'];
   let value=[[idTable],[idRestaurant]];
@@ -55,9 +68,13 @@ app.get('/commande', function (req, res) {
       res.send(JSON.stringify(result));
      }
 })
+  }catch(e){
+    console.log(e);
+  }
 });
 
 app.get('/commandeHome', function (req, res) {
+  try{
   let id = req.query['id'];
   let value=[[id]];
   var rechsql = 'select * from commandes join plats on commandes.idPlat=plats.idPlat join utilisateurs on commandes.idUtilisateur = utilisateurs.id where commandes.idUtilisateur= ?';
@@ -70,9 +87,14 @@ app.get('/commandeHome', function (req, res) {
         }
      }
 })
+}catch(e){
+  console.log(e);
+}
+
 });
 
 app.get('/commandeRestaurant', function (req, res) {
+  try{
   let idRestaurant = req.query['idRestaurant'];
   let values = [[idRestaurant]];
   var rechsql = 'select * from commandes join plats on commandes.idPlat=plats.idPlat where commandes.idRestaurant = ?';
@@ -81,18 +103,26 @@ app.get('/commandeRestaurant', function (req, res) {
       res.send(JSON.stringify(result));
      }
 })
+}catch(e){
+  console.log(e);
+}
 });
 
 app.get('/restaurant', function (req, res) {
+  try{
   var rechsql = 'select * from restaurant join plats on restaurant.id=plats.idRestaurant';
   db.query(rechsql, function (err, result, fields) {
     if (err) {throw err;}else{
       res.send(JSON.stringify(result));
      }
 })
+}catch(e){
+  console.log(e);
+}
 });
 
 app.get('/plats', function (req, res) {
+  try{
   let idRestaurant = req.query['idRestaurant'];
   let values = [[idRestaurant]];
   var rechsql = 'select* from plats where idRestaurant = ? and boisson = false';
@@ -101,8 +131,12 @@ app.get('/plats', function (req, res) {
       res.send(JSON.stringify(result));
      }
 })
+}catch(e){
+  console.log(e);
+}
 });
 app.get('/all', function (req, res) {
+  try{
   let idRestaurant = req.query['idRestaurant'];
   let values = [[idRestaurant]];
   var rechsql = 'select* from plats where idRestaurant = ?';
@@ -111,9 +145,13 @@ app.get('/all', function (req, res) {
       res.send(JSON.stringify(result));
      }
 })
+}catch(e){
+  console.log(e);
+}
 });
 
 app.get('/boissons', function (req, res) {
+  try{
   let idRestaurant = req.query['idRestaurant'];
   let values = [[idRestaurant]];
   var rechsql = 'select * from plats where idRestaurant = ? and boisson = true';
@@ -122,9 +160,13 @@ app.get('/boissons', function (req, res) {
       res.send(JSON.stringify(result));
      }
 })
+}catch(e){
+  console.log(e);
+}
 });
 
 app.get('/reconnexion', function (req, res) {
+  try{
   let email = req.query['email'];
   
         valueId = [[email]];
@@ -134,35 +176,33 @@ app.get('/reconnexion', function (req, res) {
                 res.send(JSON.stringify(result2));
               }
           })
+        }catch(e){
+          console.log(e);
+        }
       
 
 });
 
 
 app.get('/reconnexionRestaurant', function (req, res) {
+  try{
   let nom = req.query['nom'];
-  let password = req.query['password'];
   let values = [[nom]];
-  var rechsql = 'select passwordRestaurant from restaurant where nomRestaurant = ?';
+  var rechsql = 'select id,passwordRestaurant from restaurant where nomRestaurant = ?';
   db.query(rechsql,values, function (err, result, fields) {
-    if (err) {throw err;}else{
-      if(password == result[0]['passwordRestaurant']){
-        valueId = [[nom]];
-        var rechsqlID = 'select id from restaurant where nomRestaurant = ?';
-          db.query(rechsqlID,valueId, function (err2, result2, fields2) {
-              if (err2) {res.send(JSON.stringify('no'));}else{
-                res.send(JSON.stringify(result2[0]['id']));
-              }
-          })
-      }else{
-        res.send(JSON.stringify('no'));
-      }
+    if (err) {throw err;}else{       
+        res.send(JSON.stringify(result));
+      
       }
 })
+}catch(e){
+  console.log(e);
+}
 });
 
 
 app.get('/personnes', function (req, res) {
+  try{
   let id = req.query['id'];
   let values = [[id]];
   var rechsql = 'select numTable from utilisateurs where id = ?';
@@ -178,9 +218,13 @@ app.get('/personnes', function (req, res) {
 
      }
 })
+}catch(e){
+  console.log(e);
+}
 });
 
 app.get('/notation', function (req, res) {
+  try{
   let idRestaurant = req.query['idRestaurant'];
   let values = [[idRestaurant]];
   var rechsql = 'select * from notationPlat join restaurant on notationplat.idRestaurant=restaurant.id join utilisateurs on notationplat.idUtilisateur=utilisateurs.id where idRestaurant = ?';
@@ -189,18 +233,26 @@ app.get('/notation', function (req, res) {
       res.send(JSON.stringify(result));
      }
 })
+}catch(e){
+  console.log(e);
+}
 });
 
 app.get('/notationRestaurant', function (req, res) {
+  try{
   var rechsql = 'select  idRestaurant,note from notation join restaurant on notation.idRestaurant=restaurant.id ';
   db.query(rechsql, function (err, result, fields) {
     if (err) {throw err;}else{
       res.send(JSON.stringify(result));
      }
 })
+}catch(e){
+  console.log(e);
+}
 });
 
 app.get('/additionSpecifique', function (req, res) {
+  try{
   let idRestaurant = req.query['idRestaurant'];
   let idTable = req.query['idTable'];
   let id = req.query['id'];
@@ -227,11 +279,21 @@ app.get('/additionSpecifique', function (req, res) {
       res.send(JSON.stringify(result));
      }
 })
+}catch(e){
+  console.log(e);
+}
 });
 
-
+app.post('/table',jsonParser, function (req, res,next) {
+  if(req.body.password=='4A1cDm$12$'){
+    next();
+  }else{
+    res.send(JSON.stringify('not allowed'));
+  }
+})
 
 app.post('/table',jsonParser, function (req, res) {
+  try{
   let numero = req.body.numero;
   let idU = req.body.id;
   let values=[[numero],[idU]]
@@ -241,9 +303,50 @@ app.post('/table',jsonParser, function (req, res) {
       res.send(JSON.stringify('done'));
      }
 })
+}catch(e){
+  console.log(e);
+}
+});
+app.post('/changeImage',jsonParser, function (req, res,next) {
+
+  if(req.body.password=='4A1cDm$12$'){
+    next();
+  }else{
+    res.send(JSON.stringify('not allowed'));
+  }
+
+})
+app.post('/changeImage',jsonParser, function (req, res) {
+  try{
+  let url = req.body.url;
+  let nomPlat = req.body.nomPlat;
+  let idRestaurant =  req.body.idRestaurant;
+  console.log(url);
+  console.log(nomPlat);
+  console.log(idRestaurant);
+  let values=[[url],[nomPlat],[idRestaurant]]
+  var rechsql = "update plats set imagePlat = ? where nomPlat = ? and idRestaurant= ?";
+  db.query(rechsql,values, function (err, result, fields) {
+    if (err) {throw err;}else{
+      res.send(JSON.stringify('done'));
+     }
+})
+}catch(e){
+  console.log(e);
+}
 });
 
+app.post('/demandeAddition',jsonParser, function (req, res,next) {
+
+  if(req.body.password=='4A1cDm$12$'){
+    next();
+  }else{
+    res.send(JSON.stringify('not allowed'));
+  }
+
+})
 app.post('/demandeAddition',jsonParser, function (req, res) {
+  try{
   let addition = req.body.addition;
   let idUtilisateur = req.body.idUtilisateur;
   let idRestaurant = req.body.idRestaurant;
@@ -283,8 +386,22 @@ app.post('/demandeAddition',jsonParser, function (req, res) {
       //}
   })
   }
+}catch(e){
+  console.log(e);
+}
 });
+
+app.post('/demandeAdditionAll',jsonParser, function (req, res,next) {
+
+  if(req.body.password=='4A1cDm$12$'){
+    next();
+  }else{
+    res.send(JSON.stringify('not allowed'));
+  }
+
+})
 app.post('/demandeAdditionAll',jsonParser, function (req, res) {
+  try{
   let addition = req.body.addition;
   let idTable = req.body.idTable;
   let idRestaurant=req.body.idRestaurant;
@@ -298,9 +415,23 @@ app.post('/demandeAdditionAll',jsonParser, function (req, res) {
         }
     })
   }
+}catch(e){
+  console.log(e);
+}
 });
 
+
+app.post('/addition',jsonParser, function (req, res,next) {
+
+  if(req.body.password=='4A1cDm$12$'){
+    next();
+  }else{
+    res.send(JSON.stringify('not allowed'));
+  }
+
+})
 app.post('/addition',jsonParser, function (req, res) {
+  try{
   let servi = req.body.servi;
   let addition = req.body.addition;
   let idTable = req.body.idTable;
@@ -313,10 +444,24 @@ app.post('/addition',jsonParser, function (req, res) {
           res.send(JSON.stringify('done'));
         }
     })
+  }catch(e){
+    console.log(e);
+  }
   
 });
 
+
+app.post('/additionAll',jsonParser, function (req, res,next) {
+
+  if(req.body.password=='4A1cDm$12$'){
+    next();
+  }else{
+    res.send(JSON.stringify('not allowed'));
+  }
+
+})
 app.post('/additionAll',jsonParser, function (req, res) {
+  try{
   let servi = req.body.servi;
   let addition = req.body.addition;
   let idTable = req.body.idTable;
@@ -328,10 +473,16 @@ app.post('/additionAll',jsonParser, function (req, res) {
           res.send(JSON.stringify('done'));
         }
     })
+  }catch(e){
+    console.log(e);
+  }
   
 });
 
+
+
 app.post('/inscription',jsonParser, function (req, res) {
+  try{
   let nom = req.body.nom;
   let numTable=req.body.numTable;
   
@@ -345,7 +496,7 @@ app.post('/inscription',jsonParser, function (req, res) {
           db.query(rechsql ,values, function (err, result, fields) {
             if (err) {
               console.log(err);
-              res.send(JSON.stringify('no'));
+              res.send(JSON.stringify('no'));  
             }else{
 
               let valueId = [[nom]];
@@ -362,9 +513,13 @@ app.post('/inscription',jsonParser, function (req, res) {
         })
       }
 })
+}catch(e){
+  console.log(e);
+}
 });
 
 app.post('/inscriptionServeur',jsonParser, function (req, res) {
+  try{
   let nom = req.body.nom;
   let prenom = req.body.prenom;
   let email = req.body.email;
@@ -373,10 +528,9 @@ app.post('/inscriptionServeur',jsonParser, function (req, res) {
   let nomRestaurant = req.body.nomRestaurant;
   console.log(mdp);
   let valuesR = [[nomRestaurant]];
-  var rechsqlR = 'select id,passwordRestaurant from restaurant where nomRestaurant = ?';
+  var rechsqlR = 'select id from restaurant where nomRestaurant = ?';
   db.query(rechsqlR,valuesR, function (errR, resultR, fields) {
     if (errR || resultR[0]==undefined) {res.send(JSON.stringify('no'));}else{
-      if(mdpR == resultR[0]['passwordRestaurant']){
 
         values=[[nom,prenom,email,resultR[0]['id'],mdp,true]];
         var rechsql = "insert into utilisateurs(nom,prenom,email,numTable,password,serveur) values(?)";
@@ -393,16 +547,17 @@ app.post('/inscriptionServeur',jsonParser, function (req, res) {
             
           }
       })
-      }else{
-        res.send(JSON.stringify('no'));
-      }
   }
 });
+}catch(e){
+  console.log(e);
+}
 
 });
 
 
 app.post('/inscriptionRestaurant',jsonParser, function (req, res) {
+  try{
   let nom = req.body.nom;
   let add = req.body.add;
   let type = req.body.type;
@@ -410,10 +565,11 @@ app.post('/inscriptionRestaurant',jsonParser, function (req, res) {
   let long = req.body.long;
   let pass = req.body.pass;
   values=[[nom,add,pass,long,lat,type]];
+  console.log('test')
   var rechsql = "insert into restaurant(nomRestaurant,adresse,passwordRestaurant,longitude,latitude,specialite) values(?)";
   db.query(rechsql ,values, function (err, result, fields) {
     if (err) {res.send(JSON.stringify('no'));}else{
-
+        console.log(result)
       valueId = [[nom]];
       var rechsqlID = 'select id from restaurant where nomRestaurant = ?';
         db.query(rechsqlID,valueId, function (err2, result2, fields2) {
@@ -424,10 +580,22 @@ app.post('/inscriptionRestaurant',jsonParser, function (req, res) {
       
      }
 })
+}catch(e){
+  console.log(e);
+}
 });
 
+app.post('/ajoutPlat',jsonParser, function (req, res,next) {
 
+  if(req.body.password=='4A1cDm$12$'){
+    next();
+  }else{
+    res.send(JSON.stringify('not allowed'));
+  }
+
+})
 app.post('/ajoutPlat',jsonParser, function (req, res) {
+  try{
   nom = req.body.plat;
   idRestaurant = req.body.idRestaurant;
   commentaires = req.body.commentaires;
@@ -442,11 +610,23 @@ app.post('/ajoutPlat',jsonParser, function (req, res) {
       res.send('done');
      }
 })
+}catch(e){
+  console.log(e);
+}
 });
 
 
+app.post('/ajoutCommande',jsonParser, function (req, res,next) {
 
+  if(req.body.password=='4A1cDm$12$'){
+    next();
+  }else{
+    res.send(JSON.stringify('not allowed'));
+  }
+
+})
 app.post('/ajoutCommande',jsonParser, function (req, res) {
+  try{
   
   commande = req.body.commande;
   idRestaurant = req.body.idRestaurant;
@@ -489,12 +669,26 @@ app.post('/ajoutCommande',jsonParser, function (req, res) {
     }
 
 })
+}catch(e){
+  console.log(e);
+}
 
 
   
 });
 
+
+app.post('/ajoutNotation',jsonParser, function (req, res,next) {
+
+  if(req.body.password=='4A1cDm$12$'){
+    next();
+  }else{
+    res.send(JSON.stringify('not allowed'));
+  }
+
+})
 app.post('/ajoutNotation',jsonParser, function (req, res) {
+  try{
   idRestaurant = req.body.idRestaurant;
   commentairesNotation = req.body.commentairesNotation;
   id = req.body.id;
@@ -507,9 +701,23 @@ app.post('/ajoutNotation',jsonParser, function (req, res) {
       res.send(JSON.stringify('done'));
      }
 })
+}catch(e){
+  console.log(e);
+}
 });
 
+
+app.post('/payement',jsonParser, function (req, res,next) {
+
+  if(req.body.password=='4A1cDm$12$'){
+    next();
+  }else{
+    res.send(JSON.stringify('not allowed'));
+  }
+
+})
 app.post('/payement',jsonParser, function (req, res) {
+  try{
   payement = req.body.payement;
   idTable = req.body.idTable;
   let values = [[payement],[idTable]];
@@ -520,9 +728,23 @@ app.post('/payement',jsonParser, function (req, res) {
       res.send(JSON.stringify('done'));
      }
 })
+}catch(e){
+  console.log(e);
+}
 });
 
+
+app.post('/ajoutNotationPlat',jsonParser, function (req, res,next) {
+
+  if(req.body.password=='4A1cDm$12$'){
+    next();
+  }else{
+    res.send(JSON.stringify('not allowed'));
+  }
+
+})
 app.post('/ajoutNotationPlat',jsonParser, function (req, res) {
+  try{
   idPlat = req.body.idPlat;
   commentairesNotation = req.body.commentairesNotation;
   id = req.body.id;
@@ -536,12 +758,24 @@ app.post('/ajoutNotationPlat',jsonParser, function (req, res) {
       res.send(JSON.stringify('done'));
      }
 })
+}catch(e){
+  console.log(e);
+}
 });
 
 
 
+app.post('/modifPlat',jsonParser, function (req, res,next) {
 
+  if(req.body.password=='4A1cDm$12$'){
+    next();
+  }else{
+    res.send(JSON.stringify('not allowed'));
+  }
+
+})
 app.post('/modifPlat',jsonParser, function (req, res) {
+  try{
   id = req.body.idPlat;
   nom = req.body.plat;
   idRestaurant = req.body.idRestaurant;
@@ -557,14 +791,19 @@ app.post('/modifPlat',jsonParser, function (req, res) {
       res.send('done');
      }
 })
+}catch(e){
+  console.log(e);
+}
 });
-
+/*
 app.post('/image',upload.single('file'), function (req, res) {
   let file = req.file;
   
 //fs.writeFile(file.originalname, file);
 })
+*/
 app.get('/image2', function (req, res) {
+  try{
   let idPlat = req.query['idPlat'];
   let values=[[idPlat]]
   var rechsql = 'select image from plats where idPlat= ?';
@@ -582,8 +821,10 @@ app.get('/image2', function (req, res) {
       res.send(JSON.stringify(bufferBase64));
      }
 })
+}catch(e){
+  console.log(e);
+}
 });
-
 
 app.listen(process.env.PORT || 3001, function () {
   console.log('listening on port 3001!');
