@@ -4,16 +4,15 @@ import React, { Component } from 'react';
 import QRCode from'qrcode.react';
 import JSZip from 'jszip' ;
 import { saveAs } from 'file-saver';
-import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { storage } from "./firebase";
 class Acceuil extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            chaine: [],
+            chaine: [{nomPlat:'',commentaires:'',prix:''}],
             cle:0,
-            id:(localStorage.getItem('id')?localStorage.getItem('id') : 1),
+            id:(localStorage.getItem('id')?localStorage.getItem('id') : 0),
             boisson: false,
             liste:[],
             visible:false,
@@ -29,9 +28,12 @@ class Acceuil extends Component {
           this.modif = this.modif.bind(this);
           this.changement = this.changement.bind(this);
           this.suppr = this.suppr.bind(this);
+          this.changeNom = this.changeNom.bind(this);
     }
     componentDidMount(){
-      this.getImage()
+      if(this.state.id===0){
+        this.props.history.push("/Home");
+      }
         fetch('https://bluespoon-app.herokuapp.com/all?idRestaurant='+this.state.id, {
         method: 'GET',
         headers: {
@@ -41,28 +43,30 @@ class Acceuil extends Component {
         }
       }).then(response => response.json())
       .then((json) => {
-      let array = [];
+      //let array = [];
       this.setState({ cle: 0 });
-      let compteur = 2;
+      //let compteur = 2;
       let arr = [];
-      let arrDef=[];
+      //let arrDef=[];
       for(let i=0; i<json.length;i++){
         console.log(json[i].idPlat);
-        arr.push(json[i].idPlat);
+       //arr.push(json[i].idPlat);
+        arr.push({nomPlat:json[i].nomPlat,prix:json[i].prix,commentaires : json[i].commentaires,boisson:json[i].boisson,id:json[i].idPlat,image:false,new:false})
+        /*
         arrDef.push(<div class="input-group mb-3" key={compteur}><span className="input-group-text">plat:</span><input className='form-control' id={compteur+'plat'} defaultValue={json[i]['nomPlat']}/><span className='input-group-text'>prix:</span><input className='form-control' defaultValue={json[i]['prix']} placeholder='prix'  id={compteur + 'prix'}/><span className='input-group-text'>commentaires:</span><input className='form-control' defaultValue={json[i]['commentaires']} placeholder='commentaires éventuels'  id={compteur + 'com'}/></div>);
         if(json[i].boisson){
           arrDef.push(<div class="input-group mb-3" key={compteur+1}><span className='input-group-text'>boisson?<input type='checkbox' id={compteur+'boiss'}/></span><span className='input-group-text'>ajouter une image</span><input type="file" className='form-control' id={compteur+'image'} accept="image/png, image/jpeg"/><Button  onClick={this.modif} value={compteur}>modifier</Button><Button  style={{backgroundColor:"#00005c"}}onClick={this.suppr} value={compteur}>Supprimer</Button></div>);
         }else{
           arrDef.push(<div class="input-group mb-3" key={compteur+1}><span className='input-group-text'>boisson?<input type='checkbox' id={compteur+'boiss'}/></span><span className='input-group-text'>ajouter une image</span><input type="file" className='form-control' id={compteur+'image'} accept="image/png, image/jpeg"/><Button  onClick={this.modif} value={compteur}>modifier</Button><Button  style={{backgroundColor:"#00005c"}} onClick={this.suppr} value={compteur}>Supprimer</Button></div>);
-        }
-        array.push(<div class="input-group mb-3">{arrDef}</div>)
-        arrDef=[];
-        compteur++;
-        compteur++;
+        }*/
+        //array.push(<div class="input-group mb-3">{arrDef}</div>)
+        //arrDef=[];
+        //compteur++;
+        //compteur++;
       }
-      this.setState({cle:compteur});
-      this.setState({keepId : arr});
-      this.setState({ chaine: array });
+      //this.setState({cle:compteur});
+      //this.setState({keepId : arr});
+      this.setState({ chaine: arr });
     });
         /*
         let array = [];
@@ -81,10 +85,8 @@ class Acceuil extends Component {
       this.setState({liste : arr});
     }
     suppr(cle){
-      cle = cle.target.value;
-      console.log(this.state.keepId[(parseInt(cle)/2)-1]);
-      let id = this.state.keepId[(parseInt(cle)/2)-1];
-      fetch('http://192.168.0.8:3001/deletePlat', {
+      let id = this.state.chaine[cle].id;
+      fetch('https://bluespoon-app.herokuapp.com/deletePlat', {
                 method: 'POST',
                 headers: {
                   Accept: 'application/json',
@@ -145,9 +147,12 @@ class Acceuil extends Component {
     };
     add(){
         let array = this.state.chaine;
+        /*
         array.push(<div class="input-group mb-3" key={this.state.cle}><span  class="input-group-text">plat:</span><input class="form-control" placeholder='nom du plat'  id={this.state.cle+'plat'}/><span className='Span'>prix:</span><input class="form-control" placeholder='prix'  id={this.state.cle + 'prix'}/><span className='Span'>commentaires:</span><input class="form-control" placeholder='commentaires éventuels'  id={this.state.cle + 'com'}/></div>);
         array.push(<div class="input-group mb-3" key={this.state.cle+1}><span className='input-group-text'>boisson?<input  type='checkbox' onClick={()=> this.setState({boisson:!this.state.boisson})} id={this.state.cle+'boiss'}/></span><span className='input-group-text'>ajouter une image:</span><input type="file" class="form-control" id={this.state.cle+'image'} accept="image/png, image/jpeg"/><Button className='Button' onClick={this.send} value={this.state.cle}>confirmer</Button></div>);
-        array = [<div class="input-group mb-3">{array}</div>]
+        array = [<div class="input-group mb-3">{array}</div>]*/
+        array.push({nomPlat:'',prix:'',commentaires : '',boisson:false,id:0,image:true,new:true})
+
         this.setState({chaine : array});
         this.setState({ cle: this.state.cle+2 });
     }
@@ -161,18 +166,18 @@ class Acceuil extends Component {
       console.log(url);
     }
     send(cle){
-        cle = cle.target.value;
-        let platB = document.getElementById(cle+ 'plat').value;
-        let prixB = document.getElementById(cle+ 'prix').value;
-        let commentairesB = document.getElementById(cle+ 'com').value;
-        let boissonBool = document.getElementById(cle+ 'boiss').checked;
-        console.log(boissonBool);
-        let imageB = document.getElementById(cle+ 'image').value;
+      let id = this.state.id;
+      let platB = this.state.chaine[cle].nomPlat;
+      let prixB = this.state.chaine[cle].prix;
+      let commentairesB = this.state.chaine[cle].commentaires;
+      let boissonBool = this.state.chaine[cle].boisson;
+
+        let imageB = document.getElementById(cle).value;
         let arr=imageB.split("\\");
         imageB=arr[arr.length-1];
         imageB = Date.now()+imageB.slice(-4);
         let type= imageB.slice(-3);
-        let file = document.getElementById(cle+ 'image').files[0];
+        let file = document.getElementById(cle).files[0];
         var blob = file.slice(0, file.size, 'image/png'); 
         file = new File([blob], imageB, {type: 'image/'+type});
         /*
@@ -189,7 +194,7 @@ class Acceuil extends Component {
           //'Access-Control-Allow-Origin': 'true'
         },
         body: JSON.stringify({
-            idRestaurant:this.state.id,
+            idRestaurant:id,
             plat:platB,
             commentaires:commentairesB,
             prix:prixB,
@@ -197,6 +202,10 @@ class Acceuil extends Component {
             boisson:boissonBool,
             password:'4A1cDm$12$'
         })
+      }).then(()=>{
+        let arr = this.state.chaine;
+        arr[cle].new = false;
+        this.setState({chaine:arr});
       });
       this.handleUpload(file,platB);
         
@@ -229,31 +238,47 @@ class Acceuil extends Component {
 
     }
     modif(cle){
-        cle = cle.target.value;
-        console.log(this.state.keepId[(parseInt(cle)/2)-1]);
-        let id = this.state.id;
-        let platB = document.getElementById(cle+ 'plat').value;
-        let prixB = document.getElementById(cle+ 'prix').value;
-        let commentairesB = document.getElementById(cle+ 'com').value;
-        let boissonBool = document.getElementById(cle+ 'boiss').checked;
-        console.log(boissonBool);
         
-        let imageB = document.getElementById(cle+ 'image').value;
-        let arr=imageB.split("\\");
-        imageB=arr[arr.length-1];
-        imageB = Date.now()+imageB.slice(-4);
-        let type= imageB.slice(-3);
-        let file = document.getElementById(cle+ 'image').files[0];
-        var blob = file.slice(0, file.size, 'image/png'); 
-        file = new File([blob], imageB, {type: 'image/'+type});
-        //var blob = new Blob([file]);
-        /*
-        const fileInput = document.querySelector(imageB) ;
-        //const fileInput = document.getElementById(cle.target.value+ 'image').files[0].name; 
-        const formData = new FormData();
-        formData.append('file', fileInput.files[0]);
-        */
-        fetch('https://bluespoon-app.herokuapp.com/modifPlat', {
+        let id = this.state.id;
+        let platB = this.state.chaine[cle].nomPlat;
+        let prixB = this.state.chaine[cle].prix;
+        let commentairesB = this.state.chaine[cle].commentaires;
+        let boissonBool = this.state.chaine[cle].boisson;
+        let idPlat = this.state.chaine[cle].id;
+      console.log(this.state.chaine[cle])
+      if(this.state.chaine[cle].image){
+          let imageB = document.getElementById(cle).value;
+          let arr=imageB.split("\\");
+          imageB=arr[arr.length-1];
+          imageB = Date.now()+imageB.slice(-4);
+          let type= imageB.slice(-3);
+          let file = document.getElementById(cle).files[0];
+          var blob = file.slice(0, file.size, 'image/png'); 
+          file = new File([blob], imageB, {type: 'image/'+type});
+          
+          
+          fetch('https://bluespoon-app.herokuapp.com/modifPlatAvecImage', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            //'Access-Control-Allow-Origin': 'true'
+          },
+          body: JSON.stringify({
+              idPlat:idPlat,
+              idRestaurant:id,
+              plat:platB,
+              commentaires:commentairesB,
+              prix:prixB,
+              imagePlat:imageB,
+              boisson : boissonBool,
+              password:'4A1cDm$12$'
+          })
+        });
+        
+        this.handleUpload(file,platB)
+    }else{
+      fetch('https://bluespoon-app.herokuapp.com/modifPlat', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -261,30 +286,16 @@ class Acceuil extends Component {
           //'Access-Control-Allow-Origin': 'true'
         },
         body: JSON.stringify({
-            idPlat:this.state.keepId[(parseInt(cle)/2)-1],
+            idPlat:idPlat,
             idRestaurant:id,
             plat:platB,
             commentaires:commentairesB,
             prix:prixB,
-            imagePlat:imageB,
             boisson : boissonBool,
             password:'4A1cDm$12$'
         })
       });
-      /*
-      var formData = new FormData();
-      formData.append('file', file);
-      console.log(file);
-      fetch('https://bluespoon-app.herokuapp.com/image', {
-        method: 'POST',
-        headers: {
-          //Accept: 'application/json',
-          //'Content-Type': 'multipart/form-data',
-          //'Access-Control-Allow-Origin': 'true'
-        },
-        body:formData,
-      });*/
-      this.handleUpload(file,platB)
+    }
     }
      downloadQR = () => {
         this.setState({visible:true});
@@ -305,51 +316,119 @@ class Acceuil extends Component {
           // see FileSaver.js
           saveAs(content, "QR.zip");
       });
-      /*
-        let downloadLink = document.createElement("a");
-        downloadLink.href = pngUrl;
-        downloadLink.download = "qrcode.png";
-        document.body.appendChild(downloadLink);
-        //downloadLink.click();
-        document.body.removeChild(downloadLink);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <button className='Button' onClick={this.addServeur}>ajouter un compte serveur</button>
-        */
+      
         this.setState({visible:false});
       };
+      setImageTrue(cle){
+        let arr = this.state.chaine;
+        arr[cle].image=true;
+        this.setState({chaine:arr});
+      }
+      changeBoisson(cle){
+        let arr = this.state.chaine;
+        arr[cle].boisson=!arr[cle].boisson;
+        this.setState({chaine:arr});
+      }
+      changeNom(cle,text){
+        let arr = this.state.chaine;
+        arr[cle].nomPlat=text.target.value;
+        this.setState({chaine:arr});
+      }
+      changeCommentaires(text,cle){
+        let arr = this.state.chaine;
+        arr[cle].commentaires=text.target.value;
+        this.setState({chaine:arr});
+      }
+      changePrix(text,cle){
+        let arr = this.state.chaine;
+        arr[cle].prix=text.target.value;
+        this.setState({chaine:arr});
+      }
+     
 
     render(){
         return (
              
-            <div className="masthead" style={{backgroundColor:'#7DAEE7'}} id='base'>
+
+           <body class="bg-primary">
+            <div id="layoutAuthentication">
+                <div id="layoutAuthentication_content">
+                    <main>
+                    {this.state.chaine.map((l,i) => {
+                        return(<div class="container2">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-7">
+                                    <div class="card shadow-lg border-0 rounded-lg mt-5">
+                                        <div class="card-header"><h3 class="text-center font-weight-light my-4">{l.nomPlat}</h3></div>
+                                        <div class="card-body">
+                                            <form>
+                                                
+                                                <div class="form-group">
+                                                    <label class="small mb-1" for="inputEmailAddress">nom du plat</label>
+                                                    <input class="form-control py-4"  type="text" aria-describedby="emailHelp"  placeholder="Inscrivez le nom de votre plat"  onChange={(text)=>{this.changeNom(i, text)}} value={l.nomPlat}/>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="small mb-1" for="inputEmailAddress">Commentaires</label>
+                                                    <input class="form-control py-4"  type="text" aria-describedby="emailHelp" placeholder="Indication supplémentaire sur votre plat" value={l.commentaires} onChange={(text)=>{this.changeCommentaires(text,i)}}/>
+                                                </div>
+                                                <div class="form-row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label class="small mb-1" for="inputFirstName">prix</label>
+                                                            <input class="form-control py-4"  type="text" placeholder="En euro" value={l.prix} onChange={(text)=>{this.changePrix(text,i)}}/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label class="small mb-1" for="inputLastName">Boisson ?</label>
+                                                            {l.boisson &&
+                                                            <input class="form-control py-4"  type='checkbox' placeholder="Indication supplémentaire sur votre plat" checked onClick={()=>{this.changeBoisson(i)}}/>
+                                                            }
+                                                            {!l.boisson &&
+                                                              <input class="form-control py-4"  type='checkbox' placeholder="Indication supplémentaire sur votre plat"  onClick={()=>{this.changeBoisson(i)}}/>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {l.image &&
+                                                <div class="form-group" >
+                                                    <label class="small mb-1" for="inputEmailAddress">Image</label>
+                                                    <input class="form-control py-4" id={i} type="file" aria-describedby="emailHelp" placeholder="Indication supplémentaire sur votre plat" />
+                                                </div>
+                                                  }
+                                                  {!l.image &&
+                                                      <div class="form-group mt-4 mb-0"><input type="button" class="btn btn-secondary btn-block" onClick={()=>{this.setImageTrue(i)}} value="Changer l'image ?"/></div>
+                                                  }
+                                                  {l.new &&
+                                                      <div class="form-group mt-4 mb-0"><input type="button" class="btn btn-primary btn-block" onClick={()=>{this.send(i)}} value='Confirmer'/></div>
+                                                  }
+                                                {!l.new &&
+                                                      <div class="form-group mt-4 mb-0"><input type="button" class="btn btn-primary btn-block" onClick={()=>{this.modif(i)}} value='Modifier'/>
+                                                      <input type="button"  class="btn btn-primary btn-block" onClick={()=>{this.suppr(i)}} value={'Supprimer'}/></div>
+                                                  }
+                                            </form>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )},this)}
+                    </main>
+                </div>
+                {this.state.error &&
+                <p style={{color:'red',fontSize:25}}>Ce plat est en cours de commande et ne peut pas être supprimer</p>
+
+                }
+                <input type="button" class="btn btn-secondary btn-block" onClick={this.add} value='ajouter un plat'/>
+                <div className='rectAMargin'>
+
             
-            {this.state.chaine.map((value) => value)}
-            <Button onClick={this.add}>ajouter un plat</Button>
-            {this.state.error &&
-            <p className='input-group-text'>Ce plat a été commandé et ne peut pas être supprimer</p>
-
-            }
-            <div className='rectAMargin'>
-
-            <span className='Span'>Combien de Qr-codes voulez-vous?:</span>
-            <span className='Span'>à chaque qr-codes correspond une table</span>
-            <input className='Input' type='number' placeholder='nom du plat'  id={'ufi'} value={this.state.value} onChange={this.changement}/>
-            <span className='Span'>vos QR-codes:</span>
-            <Button className='Button' onClick={this.downloadQR}>Télécharger les QR-codes</Button>
+            <div class="form-group">
+            <span style={{color:'white',fontSize:18}}>Combien de Qr-codes voulez-vous?:</span>
+                <input class="form-control py-4"  type='number' aria-describedby="emailHelp" placeholder="Combien de QR codes souhaitez-vous" value={this.state.value} onChange={this.changement}/>
+            </div>
+            <input type="button" class="btn btn-secondary btn-block"  onClick={this.downloadQR} value="Télécharger les QR-codes"/>
           
             </div>
             <div>
@@ -358,69 +437,13 @@ class Acceuil extends Component {
             ))} 
            
            </div>
-
-
-
-           <body class="bg-primary">
-            <div id="layoutAuthentication">
-                <div id="layoutAuthentication_content">
-                    <main>
-                        <div class="container">
-                            <div class="row justify-content-center">
-                                <div class="col-lg-7">
-                                    <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                        <div class="card-header"><h3 class="text-center font-weight-light my-4">Ajoutez un</h3></div>
-                                        <div class="card-body">
-                                            <form>
-                                                <div class="form-row">
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label class="small mb-1" for="inputFirstName">First Name</label>
-                                                            <input class="form-control py-4" id="inputFirstName" type="text" placeholder="Enter first name" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label class="small mb-1" for="inputLastName">Last Name</label>
-                                                            <input class="form-control py-4" id="inputLastName" type="text" placeholder="Enter last name" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="small mb-1" for="inputEmailAddress">Email</label>
-                                                    <input class="form-control py-4" id="inputEmailAddress" type="email" aria-describedby="emailHelp" placeholder="Enter email address" />
-                                                </div>
-                                                <div class="form-row">
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label class="small mb-1" for="inputPassword">Password</label>
-                                                            <input class="form-control py-4" id="inputPassword" type="password" placeholder="Enter password" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label class="small mb-1" for="inputConfirmPassword">Confirm Password</label>
-                                                            <input class="form-control py-4" id="inputConfirmPassword" type="password" placeholder="Confirm password" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group mt-4 mb-0"><a class="btn btn-primary btn-block" href="login.html">Create Account</a></div>
-                                            </form>
-                                        </div>
-                                        
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </main>
-                </div>
                 
             </div>
             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
             <script src="js/scripts.js"></script>
         </body>
-            </div>
+           
 
 
             

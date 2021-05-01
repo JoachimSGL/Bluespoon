@@ -3,7 +3,7 @@ import Home from './Home'
 import { BrowserRouter , Route } from 'react-router-dom'
 import Navbar from './Navbar'
 import Connection from './Connection'
-import Acceuil from './Acceuil'
+import Accueil from './Accueil'
 import CompteServeur from './CompteServeur'
 
 class App extends Component {
@@ -18,7 +18,7 @@ render() {
      <Route path='/' exact component={Navbar}></Route>
      <Route path='/Home' component={Home}></Route>
      <Route path='/Connection' component={Connection}></Route>
-     <Route path='/Acceuil' component={Acceuil}></Route>
+     <Route path='/Accueil' component={Accueil}></Route>
      <Route path='/CompteServeur' component={CompteServeur}></Route>
     </BrowserRouter>
    );

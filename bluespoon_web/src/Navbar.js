@@ -57,9 +57,7 @@ function Navbar() {
                     <div class="text-white-75 font-weight-light mb-5">
                         <Link class="btn btn-light btn-xl js-scroll-trigger" to={"/Home"}>s'inscrire</Link>
                     </div>
-                    <div class="text-white-75 font-weight-light mb-5">
-                        <Link class="btn btn-light btn-xl js-scroll-trigger" to={"/Test"}>test</Link>
-                    </div>
+                    
                     </div>
                 </div>
             </div>
