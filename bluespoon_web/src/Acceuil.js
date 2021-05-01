@@ -1,4 +1,4 @@
-import './Acceuil.css';
+//import './Acceuil.css';
 import React, { Component } from 'react';
 import QRCode from'qrcode.react';
 import JSZip from 'jszip' ;
@@ -19,13 +19,15 @@ class Acceuil extends Component {
             value:1,
             keepId : [],
             progress:0,
-            url:[]
+            url:[],
+            error:false
           };
           this.add = this.add.bind(this);
           this.addServeur = this.addServeur.bind(this);
           this.send = this.send.bind(this);
           this.modif = this.modif.bind(this);
           this.changement = this.changement.bind(this);
+          this.suppr = this.suppr.bind(this);
     }
     componentDidMount(){
       this.getImage()
@@ -48,9 +50,9 @@ class Acceuil extends Component {
         arr.push(json[i].idPlat);
         arrDef.push(<div class="input-group mb-3" key={compteur}><span className="input-group-text">plat:</span><input className='form-control' id={compteur+'plat'} defaultValue={json[i]['nomPlat']}/><span className='input-group-text'>prix:</span><input className='form-control' defaultValue={json[i]['prix']} placeholder='prix'  id={compteur + 'prix'}/><span className='input-group-text'>commentaires:</span><input className='form-control' defaultValue={json[i]['commentaires']} placeholder='commentaires éventuels'  id={compteur + 'com'}/></div>);
         if(json[i].boisson){
-          arrDef.push(<div class="input-group mb-3" key={compteur+1}><span className='input-group-text'>boisson?<input type='checkbox' id={compteur+'boiss'}/></span><span className='input-group-text'>ajouter une image</span><input type="file" className='form-control' id={compteur+'image'} accept="image/png, image/jpeg"/><Button  onClick={this.modif} value={compteur}>modifier</Button></div>);
+          arrDef.push(<div class="input-group mb-3" key={compteur+1}><span className='input-group-text'>boisson?<input type='checkbox' id={compteur+'boiss'}/></span><span className='input-group-text'>ajouter une image</span><input type="file" className='form-control' id={compteur+'image'} accept="image/png, image/jpeg"/><Button  onClick={this.modif} value={compteur}>modifier</Button><Button  style={{backgroundColor:"#00005c"}}onClick={this.suppr} value={compteur}>Supprimer</Button></div>);
         }else{
-          arrDef.push(<div class="input-group mb-3" key={compteur+1}><span className='input-group-text'>boisson?<input type='checkbox' id={compteur+'boiss'}/></span><span className='input-group-text'>ajouter une image</span><input type="file" className='form-control' id={compteur+'image'} accept="image/png, image/jpeg"/><Button  onClick={this.modif} value={compteur}>modifier</Button></div>);
+          arrDef.push(<div class="input-group mb-3" key={compteur+1}><span className='input-group-text'>boisson?<input type='checkbox' id={compteur+'boiss'}/></span><span className='input-group-text'>ajouter une image</span><input type="file" className='form-control' id={compteur+'image'} accept="image/png, image/jpeg"/><Button  onClick={this.modif} value={compteur}>modifier</Button><Button  style={{backgroundColor:"#00005c"}} onClick={this.suppr} value={compteur}>Supprimer</Button></div>);
         }
         array.push(<div class="input-group mb-3">{arrDef}</div>)
         arrDef=[];
@@ -76,6 +78,31 @@ class Acceuil extends Component {
         arr.push(i);
       }
       this.setState({liste : arr});
+    }
+    suppr(cle){
+      cle = cle.target.value;
+      console.log(this.state.keepId[(parseInt(cle)/2)-1]);
+      let id = this.state.keepId[(parseInt(cle)/2)-1];
+      fetch('http://192.168.0.8:3001/deletePlat', {
+                method: 'POST',
+                headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/json',
+                  //'Access-Control-Allow-Origin': 'true'
+                },
+                body: JSON.stringify({
+                    idPlat:id,
+                    idRestaurant:parseInt(this.state.id),
+                    password:'4A1cDm$12$'
+
+                })
+              }).then(response => response.json())
+              .then((json) => {
+
+                if(json!=='done'){
+                  this.setState({error:true})
+                }
+              });
     }
     handleUpload(image,plat){
       const uploadTask = storage.ref(`images/${image.name}`).put(image);
@@ -106,7 +133,8 @@ class Acceuil extends Component {
                 body: JSON.stringify({
                     url:url,
                     idRestaurant:this.state.id,
-                    nomPlat:plat
+                    nomPlat:plat,
+                    password:'4A1cDm$12$'
 
                 })
               });
@@ -165,7 +193,8 @@ class Acceuil extends Component {
             commentaires:commentairesB,
             prix:prixB,
             imagePlat:imageB,
-            boisson:boissonBool
+            boisson:boissonBool,
+            password:'4A1cDm$12$'
         })
       });
       this.handleUpload(file,platB);
@@ -237,7 +266,8 @@ class Acceuil extends Component {
             commentaires:commentairesB,
             prix:prixB,
             imagePlat:imageB,
-            boisson : boissonBool
+            boisson : boissonBool,
+            password:'4A1cDm$12$'
         })
       });
       /*
@@ -308,6 +338,10 @@ class Acceuil extends Component {
             
             {this.state.chaine.map((value) => value)}
             <Button onClick={this.add}>ajouter un plat</Button>
+            {this.state.error &&
+            <p className='input-group-text'>Ce plat a été commandé et ne peut pas être supprimer</p>
+
+            }
             <div className='rectAMargin'>
 
             <span className='Span'>Combien de Qr-codes voulez-vous?:</span>

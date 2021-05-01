@@ -44,7 +44,9 @@ db.connect( (err) =>{
 var jsonParser = bodyParser.json()
  
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
-
+setInterval(function () {
+  db.query('SELECT 1');
+}, 5000);
 
 
 app.get('/', function (req, res) {
@@ -52,8 +54,8 @@ app.get('/', function (req, res) {
 });
 
 app.get('/portfolio',function(req,res){
-  
-  res.sendFile((path.join(__dirname +'/templates/index.html')));
+  res.sendFile((path.join(__dirname +'/templates/bluespoon.html')));
+  //res.sendFile((path.join(__dirname +'/templates/index.html')));
 });
 
 app.get('/commande', function (req, res) {
@@ -227,7 +229,7 @@ app.get('/notation', function (req, res) {
   try{
   let idRestaurant = req.query['idRestaurant'];
   let values = [[idRestaurant]];
-  var rechsql = 'select * from notationPlat join restaurant on notationplat.idRestaurant=restaurant.id join utilisateurs on notationplat.idUtilisateur=utilisateurs.id where idRestaurant = ?';
+  var rechsql = 'select * from notationPlat join restaurant on notationPlat.idRestaurant=restaurant.id join utilisateurs on notationPlat.idUtilisateur=utilisateurs.id where idRestaurant = ?';
   db.query(rechsql,values, function (err, result, fields) {
     if (err) {throw err;}else{
       res.send(JSON.stringify(result));
@@ -350,6 +352,7 @@ app.post('/demandeAddition',jsonParser, function (req, res) {
   let addition = req.body.addition;
   let idUtilisateur = req.body.idUtilisateur;
   let idRestaurant = req.body.idRestaurant;
+  let force = req.body.force;
   let value=[[idUtilisateur],[idRestaurant]];
   if(!addition){
       //var rechsql = "delete from commandes where numCommande = "+numCommande+ " and idUtilisateur = "+idUtilisateur;
@@ -364,7 +367,7 @@ app.post('/demandeAddition',jsonParser, function (req, res) {
     var rechsql = "select * from commandes where idUtilisateur = ? and idRestaurant = ?";
     db.query(rechsql,value, function (err, result, fields) {
       if (err) {throw err;}else{
-        /*
+        
         let bool =true;
         for(let i = 0 ; i<result.length;i++){
           if(result[i].servi==false){
@@ -373,7 +376,10 @@ app.post('/demandeAddition',jsonParser, function (req, res) {
             break;
           }
         }
-        if(bool){*/
+        if(force){
+          bool=true;
+        }
+        if(bool){
           let value2=[[addition],[idUtilisateur],[idRestaurant]];
             var rechsql = "update commandes set addition = ? where idUtilisateur = ? and idRestaurant = ?";
             db.query(rechsql,value2, function (err2, result2, fields2) {
@@ -383,7 +389,7 @@ app.post('/demandeAddition',jsonParser, function (req, res) {
           })
         }
           
-      //}
+      }
   })
   }
 }catch(e){
@@ -795,6 +801,43 @@ app.post('/modifPlat',jsonParser, function (req, res) {
   console.log(e);
 }
 });
+
+
+
+app.post('/deletePlat',jsonParser, function (req, res,next) {
+
+  if(req.body.password=='4A1cDm$12$'){
+    next();
+  }else{
+    res.send(JSON.stringify('not allowed'));
+  }
+
+})
+app.post('/deletePlat',jsonParser, function (req, res) {
+  try{
+  idPlat = req.body.idPlat;
+  idRestaurant = req.body.idRestaurant;
+  
+  let values = [[idPlat]];
+  var rechsql = "delete from notationPlat where idPlat=?";
+  db.query(rechsql,values, function (err, result, fields) { 
+    if (err) {throw err;}else{
+      let values2=[[idPlat],[idRestaurant]]
+      let rechsql2='delete from plats where idPlat = ? and idRestaurant= ?';
+      db.query(rechsql2,values2, function (err2, result2, fields2) { 
+        if (err2) {res.send(JSON.stringify('commande'));}else{
+          res.send(JSON.stringify('done'));
+         }
+    })
+     }
+})
+}catch(e){
+  console.log(e);
+}
+});
+
+
+
 /*
 app.post('/image',upload.single('file'), function (req, res) {
   let file = req.file;

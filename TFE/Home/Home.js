@@ -75,7 +75,7 @@ class Home extends React.Component {
 
 QR(){
   if(!this.state.addition){
-  if(false){
+  if(true){
     fetch('https://bluespoon-app.herokuapp.com/commandeHome?id='+this.state.id, {
               method: 'GET',
               headers: {
@@ -89,10 +89,10 @@ QR(){
                 if(json=='no' ){
                   this.setState({commande:false});
                   this.setState({addition:false});
-                  //this.props.navigation.navigate('QR');
-                  this.storeToken(20,'id');
-                  this.storeToken(null,'serveur')
-                  this.props.navigation.navigate('Splitter',{numTable:18, idRestaurant:1});
+                  this.props.navigation.navigate('QR');
+                  //this.storeToken(20,'id');
+                  //this.storeToken(null,'serveur')
+                  //this.props.navigation.navigate('Splitter',{numTable:18, idRestaurant:1});
                   //this.props.navigation.navigate('Notation',{numTable:18, idRestaurant:1,id:20});
                 }else{
                   if(json.addition){

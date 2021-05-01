@@ -105,7 +105,7 @@ toggleSplit=(num)=>{
   this.addition();
   
 }
- demandeAddition(bool){
+ demandeAddition(bool,force){
   if(bool){
   fetch('https://bluespoon-app.herokuapp.com/demandeAddition', {
                   method: 'POST',
@@ -118,12 +118,13 @@ toggleSplit=(num)=>{
                       addition: true,
                       idUtilisateur: this.state.id,
                       idRestaurant:this.state.idRestaurant,
+                      force:force,
                       password:'4A1cDm$12$'
                   })
                 }).then(response => response.json())
                 .then((json) => {
                     if(json=='done'){
-                    this.props.navigation.replace('Notation',{id :this.state.id,idRestaurant:this.state.idRestaurant,numTable:this.state.numTable});
+                      this.props.navigation.replace('Notation',{id :this.state.id,idRestaurant:this.state.idRestaurant,numTable:this.state.numTable});
                     }else{
                       this.toggleOverlay();
                     }
@@ -245,7 +246,7 @@ contacts=()=>{
                     
                   }
                 }else if(json[i].contact=='Table'){
-                  prixTable= prixTable+json[i].prix;
+                  prixTable= (prixTable+json[i].prix).toFixed(2);
                   this.setState({prixTable:prixTable});
                 }else{
                   if(!nombrePersonne.includes(json[i].contact)){
@@ -254,7 +255,7 @@ contacts=()=>{
                   }else{
                     for(let j = 0 ; j < prix.length;j++){
                       if(prix[j].id == -1 && prix[j].nom=='' && prix[j].prenom ==json[i].contact){
-                        prix[j].prix = prix[j].prix + json[i].prix;
+                        prix[j].prix = (prix[j].prix + json[i].prix).toFixed(2);
                       }
                     }
                   }
@@ -312,12 +313,12 @@ contacts=()=>{
         for(let i = 0 ; i < prix.length;i++){
           if(this.state.id == prix[i].id){
             arr.push('Ma Commande');
-            test.push({prenom: 'Ma' , nom: 'Commande' , prix: prix[i].prix , id : prix[i].id, contact:prix[i].contact});
+            test.push({prenom: 'Ma' , nom: 'Commande' , prix: prix[i].prix.toFixed(2) , id : prix[i].id, contact:prix[i].contact});
             //test.push(<View style={styles.rect} key={this.state.cle}><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>Ma commande:</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Total: {prix[i].prix}€</Text><TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant}); }}><Text style={styles.texte}>Recommander</Text></TouchableOpacity></View></View>);
             this.setState({ cle: this.state.cle+1 });
           }else{
             arr.push(prix[i].prenom +' '+ prix[i].nom);
-            test.push({prenom: prix[i].prenom , nom: prix[i].nom.split('_')[0] , prix: prix[i].prix , id : prix[i].id, contact:prix[i].contact});
+            test.push({prenom: prix[i].prenom , nom: prix[i].nom.split('_')[0] , prix: prix[i].prix.toFixed(2) , id : prix[i].id, contact:prix[i].contact});
             //test.push(<View style={styles.rect} key={this.state.cle}><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>{prix[i].prenom} {prix[i].nom}</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Total: {prix[i].prix}€</Text></View></View>);
             this.setState({ cle: this.state.cle+1 });
           }
@@ -351,9 +352,9 @@ ajoutPersonne(){
 rechercheContact(val,id){
   if(id==0){
     let txt = this.state.noms[val]; 
-    this.props.navigation.navigate('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant,contact:txt});
+    this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant,contact:txt});
   }else{
-    this.props.navigation.navigate('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant});
+    this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant});
   }
 }
 changeNom(val,txt){
@@ -484,7 +485,7 @@ addition=()=>{
 
                 }
               }
-              test.push({nom:nom,prenom:'',prix:prixC,plats:detailContact});
+              test.push({nom:nom,prenom:'',prix:prixC.toFixed(2),plats:detailContact});
               detailContact=[];
             }
           }
@@ -555,7 +556,7 @@ addition=()=>{
                 }
               }
           }
-            bigArr.push({nom:'',prenom:'',prix:prix,plats:arr});
+            bigArr.push({nom:'',prenom:'',prix:prix.toFixed(2),plats:arr});
             this.setState({ listeCommande: bigArr });
             this.setState({ channel: 'addition' });
             this.setState({type:0});
@@ -750,7 +751,7 @@ changeMethod(bool){
       
 
       {((l.id == this.state.id || l.id==-1)&& l.prix!==0 )&&
-      <TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.props.navigation.navigate('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant,contact:l.contact}); }}>
+      <TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant,contact:l.contact}); }}>
         <MaterialCommunityIconsIcon
             name="food"
             style={styles.texteIcon}
@@ -774,7 +775,7 @@ changeMethod(bool){
         ))
     }
     {this.state.channel=='contacts' &&
-    <TouchableOpacity style={[styles.rectGroup, this.props.style,{flex:1,flexDirection:'row',alignItems:'center', justifyContent: "center",}]} onPress={()=>{this.props.navigation.navigate('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant,contact:'Table'}); }}>
+    <TouchableOpacity style={[styles.rectGroup, this.props.style,{flex:1,flexDirection:'row',alignItems:'center', justifyContent: "center",}]} onPress={()=>{this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant,contact:'Table'}); }}>
       {this.state.split==0 &&
           <Text numberOfLines={1} style={styles.commandeGroupe}>Commandes groupées : (Total: {this.state.prixTable} €)</Text>
       }
@@ -798,8 +799,8 @@ changeMethod(bool){
           <View style={{height:100}}>
                 <Text>  Votre plat n'a pas encore été servi voulez vous demander l'addition en même temps               </Text>
                 <View style={{flex:1,flexDirection:'row',height:80}}>
-                <TouchableOpacity style={[styles.boutonAddition, this.props.style]} onPress={()=>this.demandeAddition(true)}><Text style={styles.payement}>Oui</Text></TouchableOpacity>
-                <TouchableOpacity style={[styles.boutonAddition, this.props.style]} onPress={()=>this.demandeAddition(false)} ><Text style={styles.payement}>Non</Text></TouchableOpacity>
+                <TouchableOpacity style={[styles.boutonAddition, this.props.style]} onPress={()=>this.demandeAddition(true,true)}><Text style={styles.payement}>Oui</Text></TouchableOpacity>
+                <TouchableOpacity style={[styles.boutonAddition, this.props.style]} onPress={()=>this.demandeAddition(false,false)} ><Text style={styles.payement}>Non</Text></TouchableOpacity>
     
                 </View>
                 </View>
@@ -846,7 +847,7 @@ changeMethod(bool){
     </View>
   }
 {this.state.addition &&
-<TouchableOpacity style={[styles.typePayementAddition, this.props.style]} onPress={()=>this.demandeAddition(true)} >
+<TouchableOpacity style={[styles.typePayementAddition, this.props.style]} onPress={()=>this.demandeAddition(true,false)} >
 <MaterialCommunityIconsIcon
             name="credit-card-check-outline"
             style={styles.texteIcon}

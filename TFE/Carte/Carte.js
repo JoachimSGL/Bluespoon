@@ -116,9 +116,12 @@ changeStyle(){
       this.setState({search:txt.nativeEvent.text});
       if(this.state.method){
         let arr = [];
+        console.log(txt.nativeEvent.text.toLowerCase());
         for(let i = 0 ; i<this.state.list.length;i++){
-          if(this.state.list[i].name.includes(txt.nativeEvent.text) || this.state.list[i].adresse.includes(txt.nativeEvent.text)){
+          console.log(this.state.list[i].name.toLowerCase());
+          if(this.state.list[i].name.toLowerCase().includes(txt.nativeEvent.text.toLowerCase()) || this.state.list[i].adresse.toLowerCase().includes(txt.nativeEvent.text.toLowerCase())){
             arr.push(this.state.list[i]);
+
           }
         }
         this.setState({listShow:arr});
@@ -127,7 +130,7 @@ changeStyle(){
         let alreadyIn=[];
         let plats=[];
         for(let i = 0 ; i<this.state.listePlat.length;i++){
-          if(this.state.listePlat[i].nomPlat.includes(txt.nativeEvent.text)){
+          if(this.state.listePlat[i].nomPlat.toLowerCase().includes(txt.nativeEvent.text.toLowerCase())){
             if(!alreadyIn.includes(this.state.listePlat[i].id)){
               alreadyIn.push(this.state.listePlat[i].id);
               arr.push(this.state.listePlat[i]);
@@ -863,7 +866,7 @@ mapStyle = [
           {!this.state.method &&
           <View style={{flex:1,flexDirection:'row',alignItems: "center",width:'100%',height:'100%'}}>
                 <TouchableOpacity style={[styles.containerButtonPlat, this.props.style]} onPress={()=>{this.affichePlats(i)}}>
-                <Text style={styles.voirLaCarte}>Voir les plats correspondants</Text>
+                <Text style={styles.voirLaCarte}>Plats correspondants</Text>
               </TouchableOpacity>
             </View>
               
