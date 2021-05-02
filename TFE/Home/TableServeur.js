@@ -217,6 +217,7 @@ ack(plat,servi,addition,bool=false){
                 serviAddition[i].prix=(prix/serviAddition.length).toFixed(2)
               }
             }*/
+            let tableBool = false;
             for(let i = 0 ; i<nonServiAddition.length;i++){
               if(payement==0){
                 nonServiAddition[i].prix=(nonServiAddition[i].prix+(prix/nonServiAddition.length)).toFixed(2)
@@ -225,9 +226,15 @@ ack(plat,servi,addition,bool=false){
                 nonServiAddition[i].prix=(prix/nonServiAddition.length).toFixed(2)
                 serviAddition.push(nonServiAddition[i]);
               }
+
+              if(nonServiAddition[i].contact=='Table'){
+                tableBool=true
+              }
             }
-            nonServiAddition.push({nomPlat:'Commandes pour la table',nom:'Commandes pour la table',prix:0,idTable:this.state.idTable,nombre:1,contact:true,idPlat:'Table'})
-            this.setState({servi:servi});
+            if(tableBool){
+              nonServiAddition.push({nomPlat:'Commandes pour la table',nom:'Commandes pour la table',prix:0,idTable:this.state.idTable,nombre:1,contact:true,idPlat:'Table'})
+            }
+              this.setState({servi:servi});
             this.setState({serviAddition:serviAddition});
             this.setState({nonServiAddition:nonServiAddition});
             this.setState({nonServi:nonServi});

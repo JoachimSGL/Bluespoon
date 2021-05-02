@@ -314,7 +314,7 @@ class CarteRestaurant extends React.Component {
             this.setState({placeNote:0});
             this.setState({place:0});
             this.setState({placeBoissons:0});
-            this.flatListRef.scrollToIndex({animated: true, index: this.state.list[this.state.placeBoissons][val].id});
+            this.flatListRef.scrollToIndex({animated: true, index: this.state.listBoissons[this.state.placeBoissons][val].id});
           }
       }
       changerNote=(val)=>{

@@ -107,9 +107,9 @@ QR(){
     
   }else{
   //this.props.navigation.navigate('QR');
-  //this.storeToken(20,'id');
-  //this.storeToken(null,'serveur')
-  this.props.navigation.navigate('Table',{numTable:18, idRestaurant:1});
+  this.storeToken(9,'id');
+  this.storeToken(null,'serveur')
+  this.props.navigation.navigate('Splitter',{numTable:6, idRestaurant:4});
   }
 }else{
   fetch('https://bluespoon-app.herokuapp.com/commandeHome?id='+this.state.id, {

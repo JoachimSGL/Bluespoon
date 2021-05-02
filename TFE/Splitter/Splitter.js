@@ -235,7 +235,7 @@ contacts=()=>{
                   if(!nombrePersonne.includes(json[i].id)){
                     
                     nombrePersonne.push(json[i].id);
-                    prix.push({id :json[i].id , nom : json[i].nom , prenom : json[i].prenom , prix : json[i].prix,contact:json[i].contact});
+                    prix.push({id :json[i].id , nom : json[i].nom , prenom : json[i].prenom , prix : json[i].prix,contact:json[i].contact,idRef:0});
                     
                   }else{
                     for(let j = 0 ; j < prix.length;j++){
@@ -251,7 +251,7 @@ contacts=()=>{
                 }else{
                   if(!nombrePersonne.includes(json[i].contact)){
                     nombrePersonne.push(json[i].contact);
-                    prix.push({id : -1 , nom : '' , prenom : json[i].contact , prix : json[i].prix, contact:json[i].contact});
+                    prix.push({id : -1 , nom : '' , prenom : json[i].contact , prix : json[i].prix, contact:json[i].contact,idRef:json[i].id});
                   }else{
                     for(let j = 0 ; j < prix.length;j++){
                       if(prix[j].id == -1 && prix[j].nom=='' && prix[j].prenom ==json[i].contact){
@@ -269,7 +269,7 @@ contacts=()=>{
               if(json[i].contact==null){
                 if(!nombrePersonne.includes(json[i].id)){
                   nombrePersonne.push(json[i].id);
-                  prix.push({id :json[i].id , nom : json[i].nom , prenom : json[i].prenom , prix : 0});
+                  prix.push({id :json[i].id , nom : json[i].nom , prenom : json[i].prenom , prix : 0,idRef:0});
                 }
               }else if(json[i].contact=='Table'){
                 prixTable= prixTable+json[i].prix;
@@ -277,7 +277,7 @@ contacts=()=>{
               }else{
                 if(!nombrePersonne.includes(json[i].contact)){
                   nombrePersonne.push(json[i].contact);
-                  prix.push({id : -1 , nom : '' , prenom : json[i].contact , prix : json[i].prix, contact:json[i].contact});
+                  prix.push({id : -1 , nom : '' , prenom : json[i].contact , prix : json[i].prix, contact:json[i].contact,idRef:json[i].id});
                 }
               }
               prixTotal = prixTotal + json[i].prix;
@@ -313,12 +313,12 @@ contacts=()=>{
         for(let i = 0 ; i < prix.length;i++){
           if(this.state.id == prix[i].id){
             arr.push('Ma Commande');
-            test.push({prenom: 'Ma' , nom: 'Commande' , prix: prix[i].prix.toFixed(2) , id : prix[i].id, contact:prix[i].contact});
+            test.push({prenom: 'Ma' , nom: 'Commande' , prix: prix[i].prix , id : prix[i].id, contact:prix[i].contact});
             //test.push(<View style={styles.rect} key={this.state.cle}><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>Ma commande:</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Total: {prix[i].prix}€</Text><TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant}); }}><Text style={styles.texte}>Recommander</Text></TouchableOpacity></View></View>);
             this.setState({ cle: this.state.cle+1 });
           }else{
             arr.push(prix[i].prenom +' '+ prix[i].nom);
-            test.push({prenom: prix[i].prenom , nom: prix[i].nom.split('_')[0] , prix: prix[i].prix.toFixed(2) , id : prix[i].id, contact:prix[i].contact});
+            test.push({prenom: prix[i].prenom , nom: prix[i].nom.split('_')[0] , prix: prix[i].prix , id : prix[i].id, contact:prix[i].contact,idRef:prix[i].idRef});
             //test.push(<View style={styles.rect} key={this.state.cle}><View style={[styles.containerPrix, this.props.style]}><Text numberOfLines={1} style={styles.commande}>{prix[i].prenom} {prix[i].nom}</Text></View><View style={styles.prixRow}><Text style={styles.prix}>Total: {prix[i].prix}€</Text></View></View>);
             this.setState({ cle: this.state.cle+1 });
           }
@@ -495,7 +495,10 @@ addition=()=>{
             let prixPlat=(detailTable[i].prix*detailTable[i].nombre)/(listeContact.length);
             for(let j = 0; j<test.length;j++){
               test[j].plats.push({nomPlat:'Commande groupée : '+detailTable[i].nombre +' '+detailTable[i].nomPlat,prix:prixPlat.toFixed(2),nombre:1});
-              test[j].prix=(test[j].prix+prixPlat).toFixed(2);
+              let prixTest =(test[j].prix+prixPlat);
+              prixTest = parseFloat(prixTest)
+              prixTest = prixTest.toFixed(2);
+              test[j].prix = prixTest;
             }
           }
 
@@ -697,7 +700,7 @@ changeMethod(bool){
     </Text>
     </View>
     {this.state.listeCommande.map((m, i) => (
-      <View key={i}>
+      <View key={i} style={{flex:1,flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
     <Text style={styles.subtitleStyle}>
       {m.prenom}  {m.nom}
       </Text>
@@ -750,7 +753,7 @@ changeMethod(bool){
     <View style={styles.prixRow}>
       
 
-      {((l.id == this.state.id || l.id==-1)&& l.prix!==0 )&&
+      {((l.id == this.state.id || (l.id==-1 && l.idRef==this.state.id))&& l.prix!==0 )&&
       <TouchableOpacity style={[styles.boutton, this.props.style]} onPress={()=>{this.props.navigation.replace('Recherche',{numero:this.state.numTable,idRestaurant:this.state.idRestaurant,contact:l.contact}); }}>
         <MaterialCommunityIconsIcon
             name="food"
@@ -1097,6 +1100,9 @@ const styles = StyleSheet.create({
       bodyContent: {
         padding: 16,
         paddingTop: 24,
+        flex:1,
+        flexDirection:'column',
+        alignItems:'center',
         justifyContent: "center"
       },
       titleGoesHere: {
@@ -1105,7 +1111,7 @@ const styles = StyleSheet.create({
         paddingBottom: 12
       },
       subtitleStyle: {
-        fontSize: 14,
+        fontSize: 18,
         color: "#000",
         lineHeight: 16,
         opacity: 0.5
