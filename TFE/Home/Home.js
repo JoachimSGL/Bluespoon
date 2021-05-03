@@ -3,6 +3,7 @@ import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommun
 import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ImageBackground } from "react-native";
+import { createIconSetFromFontello } from "react-native-vector-icons";
 class Home extends React.Component {
     constructor(props) {
         super(props);
@@ -47,17 +48,22 @@ class Home extends React.Component {
               }
               }).then(response => response.json())
               .then((json) => {
-                console.log(json);
                 if(json=='no' ){
                   this.setState({commande:false});
                   this.setState({addition:false});
                 }else{
-                  if(json.addition){
-                    this.setState({commande:false});
-                    this.setState({addition:true});
-                  }else{
+                  let boolValidate=false
+                  for(let i = 0; i<json.length;i++){
+                    if(!json[i].addition && this.state.id==json[i].id){
+                      boolValidate=true;
+                    }
+                  }
+                  if(boolValidate){
                     this.setState({commande:true});
                     this.setState({addition:false});
+                  }else{
+                    this.setState({commande:false});
+                    this.setState({addition:true});
                   }
                 }
               });
@@ -66,10 +72,12 @@ class Home extends React.Component {
           }
         }else{
           this.setState({commande:false});
+          this.setState({addition:true});
         }
       } catch (error) {
           console.log("Something went wrong", error);
           this.setState({commande:false});
+          this.setState({addition:true});
   }
 }
 
@@ -85,7 +93,7 @@ QR(){
               }
               }).then(response => response.json())
               .then((json) => {
-                console.log(json);
+                
                 if(json=='no' ){
                   this.setState({commande:false});
                   this.setState({addition:false});
@@ -95,12 +103,18 @@ QR(){
                   //this.props.navigation.navigate('Splitter',{numTable:18, idRestaurant:1});
                   //this.props.navigation.navigate('Notation',{numTable:18, idRestaurant:1,id:20});
                 }else{
-                  if(json.addition){
-                    this.setState({commande:false});
-                    this.setState({addition:true});
-                  }else{
+                  let boolValidate=false
+                  for(let i = 0; i<json.length;i++){
+                    if(!json[i].addition && this.state.id==json[i].id){
+                      boolValidate=true;
+                    }
+                  }
+                  if(boolValidate){
                     this.setState({commande:true});
                     this.setState({addition:false});
+                  }else{
+                    this.setState({commande:false});
+                    this.setState({addition:true});
                   }
                 }
               });
@@ -121,17 +135,22 @@ QR(){
               }
               }).then(response => response.json())
               .then((json) => {
-                console.log(json);
                 if(json=='no' ){
                   this.setState({commande:false});
                   this.setState({addition:false});
                 }else{
-                  if(json.addition){
-                    this.setState({commande:false});
-                    this.setState({addition:true});
-                  }else{
+                  let boolValidate=false
+                  for(let i = 0; i<json.length;i++){
+                    if(!json[i].addition && this.state.id==json[i].id){
+                      boolValidate=true;
+                    }
+                  }
+                  if(boolValidate){
                     this.setState({commande:true});
                     this.setState({addition:false});
+                  }else{
+                    this.setState({commande:false});
+                    this.setState({addition:true});
                   }
                 }
               });
@@ -181,9 +200,18 @@ QR(){
         }
         }).then(response => response.json())
         .then((json) => {
-          if(json!=='no' && !json.addition){
-          console.log(json.idRestaurant);
-            this.props.navigation.navigate('Splitter',{numCommande : json.numCommande, idRestaurant: json.idRestaurant,numTable:json.idTable}); 
+          let boolValidate=false
+            for(let i = 0; i<json.length;i++){
+              if(!json[i].addition && this.state.id==json[i].id){
+                boolValidate=true;
+              }
+            }
+          if(json!=='no' && boolValidate){
+            
+            this.props.navigation.navigate('Splitter',{ idRestaurant: json[0].idRestaurant,numTable:json[0].idTable}); 
+          }else{
+            this.setState({commande:false});
+            this.setState({addition:true});
           }
         });
       
@@ -193,9 +221,10 @@ QR(){
 
     return (
       <View style={{flex:1,flexDirection: "column"}}>
-    <ImageBackground style={[styles.containerImage, this.props.style]} source={{uri: "https://bluespoon-app.herokuapp.com/image/acceuil2.jpg"}}>
+    <ImageBackground style={[styles.containerImage, this.props.style]} source={{uri: "https://bluespoon-app.herokuapp.com/image/accueil.jpg"}}>
         <View style={styles.containerBig}>
       <Text style={styles.bluespoon}>Bluespoon</Text>
+  
       <View style={styles.containerSmall}>
         {!this.state.commande &&
       <TouchableOpacity style={[styles.containerJaune, this.props.style]} onPress={() => { this.QR() }} >
@@ -212,13 +241,18 @@ QR(){
         }
       </View>
 
-<View style={{flex:1,flexDirection: "row",width:'100%',height:'80%'}}> 
+<View style={{flex:1,flexDirection: "row",width:'100%',height:'80%',alignItems:'center',justifyContent:'center'}}> 
       
         
 
       
         <TouchableOpacity style={[styles.containerMauve, this.props.style]} onPress={() => { this.props.navigation.navigate('Carte'); }}>
-        <Text style={styles.recherche}>Recherche de restaurant</Text>
+        {//<Text style={styles.recherche}>Recherche de restaurant</Text>
+  }
+        <MaterialCommunityIconsIcon
+          name="silverware-clean"
+          style={styles.icon}
+        ></MaterialCommunityIconsIcon>
       </TouchableOpacity>
   
       </View>
@@ -245,24 +279,24 @@ const styles = StyleSheet.create({
       borderWidth:2,
     },
     containerMauve: {
-        backgroundColor: "#5856D6",
+      backgroundColor: "rgba(255,255,255,0.2)",
         justifyContent: "center",
         alignItems: "center",
-        flexDirection: "column",
-        borderRadius: Dimensions.get('window').width*10,
-        height: '100%',
-        width: '100%',
-        borderWidth:2,
-      },
-      containerJaune: {
-        backgroundColor: "rgba(116,166,214,1)",
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "column",
+        flexDirection: "row",
         borderRadius: Dimensions.get('window').width*10,
         height: '50%',
-        width: '45%',
-        borderWidth:3,
+        width: '50%',
+        borderWidth:0,
+      },
+      containerJaune: {
+        backgroundColor: "rgba(255,255,255,0.5)",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        borderRadius: 100000,
+        height: '60%',
+        width: '65%',
+        borderWidth:0,
       },
       containerJauneImage: {
         justifyContent: "center",
@@ -294,7 +328,8 @@ const styles = StyleSheet.create({
       },
     containerBig: {
         flex: 1,
-        backgroundColor: 'rgba(52, 52, 52, 0)'
+        backgroundColor: 'rgba(52, 52, 52, 0)',
+        marginTop:'0%'
       },
       containerSmall: {
         justifyContent: "center",
@@ -302,14 +337,14 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(191,209,249,0)"
       },
       bluespoon: {
-        //fontFamily: "Georgian",
+        fontFamily: "Font Awesome",
         color: "#fff",
-        textDecorationLine: "underline",
+        //textDecorationLine: "underline",
         textAlign: "center",
         justifyContent: "center",
         alignItems: "center",
-        fontSize: 30,
-        marginTop: '20%',
+        fontSize: 60,
+        marginTop: '2%',
         //marginLeft: 93
       },
       additionTxt: {
@@ -319,7 +354,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
         justifyContent: "center",
         alignItems: "center",
-        fontSize: 15,
+        fontSize: 16,
         marginTop: 2,
         //marginLeft: 93
       },
@@ -334,6 +369,14 @@ const styles = StyleSheet.create({
         marginTop: '5%',
         backgroundColor: "rgba(191,209,249,0.5)"
         //marginLeft: 93
+      },
+      icon:{
+       
+          color: "#fff",
+          fontSize: 60,
+          marginRight:'0%',
+          marginTop:'0%'
+        
       }
   });
   

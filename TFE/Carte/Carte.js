@@ -866,7 +866,12 @@ mapStyle = [
           {!this.state.method &&
           <View style={{flex:1,flexDirection:'row',alignItems: "center",width:'100%',height:'100%'}}>
                 <TouchableOpacity style={[styles.containerButtonPlat, this.props.style]} onPress={()=>{this.affichePlats(i)}}>
-                <Text style={styles.voirLaCarte}>Plats correspondants</Text>
+                {//<Text style={styles.voirLaCarte}>Plats</Text>
+                     }
+                <MaterialCommunityIconsIcon
+                  name="food-fork-drink"
+                  style={styles.iconPlat}
+                ></MaterialCommunityIconsIcon>
               </TouchableOpacity>
             </View>
               
@@ -1097,11 +1102,10 @@ const styles = StyleSheet.create({
     marginLeft:'5%'
   },
   containerButtonPlat: {
-    backgroundColor: "#EFEA70",
+    backgroundColor: "#405495",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    borderRadius: 2,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -1110,10 +1114,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.35,
     shadowRadius: 5,
     elevation: 2,
-    minWidth: 88,
-    paddingLeft: 16,
-    paddingRight: 16,
-    marginTop:'2%'
+    height:'50%',
+    width:'50%',
+    marginTop:'2%',
+    borderRadius:20,
+    marginLeft:'5%'
   },
   voirLaCarte: {
     color: "#000",
@@ -1165,7 +1170,15 @@ const styles = StyleSheet.create({
   titleRight: {
     fontSize: 13,
     color: "#007AFF"
-  }
+  },
+  iconPlat:{
+       
+    color: "#fff",
+    fontSize: 40,
+    marginRight:'0%',
+    marginTop:'0%'
+  
+}
       
   });
   

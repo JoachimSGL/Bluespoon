@@ -108,6 +108,7 @@ if(this.state.mdp==this.state.mdp2 && this.state.mdp!==""&& this.state.mdp2!==""
             t.setState({loading:false});
             t.storeToken(json[0].id,'id');
             t.storeToken(json[0].serveur,'serveur');
+            t.storeToken(json[0].numTable,'idRestaurant');
             t.props.navigation.navigate('HomeServeur',{serveur:true,numTable:json[0].numTable});
           }else{
               console.log(json);

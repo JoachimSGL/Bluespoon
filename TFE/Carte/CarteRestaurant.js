@@ -303,7 +303,7 @@ class CarteRestaurant extends React.Component {
             this.setState({placeNote:0});
             this.setState({place:0});
             this.setState({placeBoissons:0});
-          }else{
+          }else{ 
             this.setState({nom : this.state.listBoissons[this.state.placeBoissons][val].name});
             this.setState({prix : this.state.listBoissons[this.state.placeBoissons][val].prix});
             this.setState({commentaires : this.state.listBoissons[this.state.placeBoissons][val].subtitle});

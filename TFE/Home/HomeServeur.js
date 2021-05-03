@@ -12,7 +12,7 @@ class HomeServeur extends React.Component {
             id: 0,
             serveur:(this.props.route.params== undefined ? false  :this.props.route.params.serveur),
             makeRequest:true,
-            idRestaurant:(this.props.route.params== undefined ? 1  :this.props.route.params.numTable),
+            idRestaurant:(this.props.route.params== undefined ? 0  :this.props.route.params.numTable),
             list:[],
             listFull:[],
             listOverlay:[{nomPlat:'fez',prix:'df'}],
@@ -37,11 +37,14 @@ class HomeServeur extends React.Component {
         let data = JSON.parse(userData);
         let serveurData = await AsyncStorage.getItem("serveur");
         let dataS = JSON.parse(serveurData);
+        let rest = await AsyncStorage.getItem("idRestaurant");
+        let restData = JSON.parse(rest);
         
         if(data!=null){
-            if(dataS){
+            if(dataS && restData!==null){
                 this.setState({id:data});
                 this.setState({serveur:dataS});
+                this.setState({idRestaurant:restData})
             }else{
                 this.props.navigation.replace('Home');
             }
@@ -118,7 +121,7 @@ fetched(){
                 }
             
            }, 5000)
-           this.setState({makeRequest:false})
+           //this.setState({makeRequest:false})
         
     }
     findValue(arr,num,id){//A FAIRE: boucle pour trouver si la com est dedans(en fct de la numcom et de  l id)
@@ -282,8 +285,8 @@ fetched(){
         }
     }
     changeBackground(m){
-        console.log(m);
-        this.setState({makeRequest:false})
+        //console.log(m);
+        //this.setState({makeRequest:false})
         this.props.navigation.navigate('TableServeur',{idTable:m.idTable,idRestaurant:this.state.idRestaurant})
     }
     rectStyle(val,id,addition){

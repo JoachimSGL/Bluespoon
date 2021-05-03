@@ -63,6 +63,7 @@ class Reconnexion extends React.Component {
             if(json[0].serveur){
               t.setState({loading:false});
               t.storeToken(json[0].serveur,'serveur');
+              t.storeToken(json[0].numTable,'idRestaurant');
               //t.storeToken(null,'id');
               t.props.navigation.navigate('HomeServeur',{serveur:json[0].serveur,numTable:json[0].numTable});
             }else{

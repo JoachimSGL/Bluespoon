@@ -240,7 +240,9 @@ contacts=()=>{
                   }else{
                     for(let j = 0 ; j < prix.length;j++){
                       if(prix[j].id == json[i].id){
-                        prix[j].prix = prix[j].prix + json[i].prix;
+                        let prixCompte = prix[j].prix + json[i].prix;
+                        prixCompte = parseFloat(prixCompte).toFixed(2);
+                        prix[j].prix = prixCompte;
                       }
                     }
                     
@@ -298,7 +300,9 @@ contacts=()=>{
                     prix.push({id :json[i].id , nom : json[i].nom , prenom : json[i].prenom , prix : 0});
                   }
                 }
-              prixTotal = prixTotal + json[i].prix;
+              let prixCompte = prixTotal + json[i].prix;
+              prixCompte = parseFloat(prixCompte).toFixed(2);
+              prixTotal = prixCompte;
             
             }
             console.log(prix);
@@ -444,7 +448,9 @@ addition=()=>{
               let prixC=0
               for(let j = 0 ; j<json.length;j++){
                 if(listeContact[i]==json[j].contact && json[j].contact!==null){
-                  prixC=prixC+json[j].prix;
+                  let prixCompte=prixC+json[j].prix;
+                  prixCompte = parseFloat(prixCompte).toFixed(2);
+                  prixC = prixCompte;
 
                   if(!platsC.includes(json[j].nomPlat)){
                     detailContact.push({nomPlat:json[j].nomPlat,prix:json[j].prix,nombre:1});
@@ -514,7 +520,9 @@ addition=()=>{
           let contacts=[];
           let plats=[];
           for(let i = 0 ; i<json.length;i++){
-              prix = prix+json[i]['prix'];
+              let prixCompte = prix+json[i]['prix'];
+              prixCompte = parseFloat(prixCompte).toFixed(2);
+              prix = prixCompte;
 
               if(!plats.includes(json[i].nomPlat)){
                 arr.push({nomPlat:json[i].nomPlat,prix:json[i].prix,nombre:1});
@@ -547,7 +555,9 @@ addition=()=>{
           let bigArr=[];
           let plats=[];
           for(let i = 0 ; i<json.length;i++){
-              prix = prix+json[i]['prix'];
+              let prixCompte = prix+json[i]['prix'];
+              prixCompte = parseFloat(prixCompte).toFixed(2);
+              prix = prixCompte;
               if(!plats.includes(json[i].nomPlat)){
                 arr.push({nomPlat:json[i].nomPlat,prix:json[i].prix,nombre:1});
                 plats.push(json[i].nomPlat);
