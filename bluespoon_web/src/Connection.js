@@ -32,7 +32,7 @@ class Connection extends React.Component {
     
       if(json!=='pas autorisé' && json!=='no' && res){
         localStorage.setItem('id', json[0].id);
-        t.props.history.push("/Acceuil");
+        t.props.history.push("/Accueil");
       }else{
 
       }

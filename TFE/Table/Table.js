@@ -81,18 +81,18 @@ let table = this.props.active ? require('./Table.png') : require('./Table2.png')
     return (
       <SafeAreaView style={{width:'100%', height:'100%'}} >
         <View style={styles.containerBig}>
-      <Text style={styles.bluespoon} >Vous êtes à la table numéro: {this.state.numTable}</Text>
+      <Text style={styles.bluespoon} >Table numéro: {this.state.numTable}</Text>
       <View style={[styles.container, this.props.style]}>
-                        <Text style={styles.label}>Veuillez indiquer votre nom:</Text>
+                        
                         <TextInput
-                            placeholder="Nom"
+                            placeholder="Veuillez indiquer votre nom"
                             style={styles.inputStyle}
                             onChange={this.changeNom}
                         >{this.state.nom}</TextInput>
                     </View>
                     
         <TouchableOpacity style={[styles.containerMauve, this.props.style]} onPress={() => { this.Carte(); }} >
-        <Text style={styles.confirmer}>Confirmer</Text>
+        <Text style={styles.confirmer}>Continuer</Text>
       </TouchableOpacity>
       </View>
       </SafeAreaView>
@@ -100,74 +100,7 @@ let table = this.props.active ? require('./Table.png') : require('./Table2.png')
 }
 
 }
-/*
-<View style={[styles.container, this.props.style]}>
-                        <Text style={styles.label}>Numéro de votre table:</Text>
-                        <TextInput
-                            placeholder="Numéro"
-                            style={styles.inputStyle}
-                            onChange={this.changeNum}
-                            keyboardType="numeric"
-                        />
-                        <Text style={styles.helper}>Si vous ne savez pas, demandez au serveur</Text>
-                    </View>
 
-
-
-
-
-
-
-
-
-
-          <ScrollView  style={{ width:'100%', height:'100%',flex:1}} >
-        {this.state.active &&
-                    <ImageBackground
-                        source={require("./Table.png")}
-                        style={styles.cardItemImagePlace}
-                        
-                    ><TouchableOpacity style={{ width:'100%', height:'100%'}} onPress={()=>this.changeBackground()}><Text style={styles.numero} >n°1</Text></TouchableOpacity></ImageBackground>
-        }
-        {!this.state.active &&
-                    <ImageBackground
-                        source={require("./Table2.png")}
-                        style={styles.cardItemImagePlace}
-                        
-                        ><TouchableOpacity style={{ width:'100%', height:'100%'}} onPress={()=>this.changeBackground()}><Text style={styles.numero} >n°1</Text></TouchableOpacity></ImageBackground>
-         }
-
-{this.state.active &&
-                    <ImageBackground
-                        source={require("./Table.png")}
-                        style={styles.cardItemImagePlace}
-                        
-                    ><TouchableOpacity style={{ width:'100%', height:'100%'}} onPress={()=>this.changeBackground()}><Text style={styles.numero} >n°1</Text></TouchableOpacity></ImageBackground>
-        }
-        {!this.state.active &&
-                    <ImageBackground
-                        source={require("./Table2.png")}
-                        style={styles.cardItemImagePlace}
-                        
-                        ><TouchableOpacity style={{ width:'100%', height:'100%'}} onPress={()=>this.changeBackground()}><Text style={styles.numero} >n°1</Text></TouchableOpacity></ImageBackground>
-         }
-
-{this.state.active &&
-                    <ImageBackground
-                        source={require("./Table.png")}
-                        style={styles.cardItemImagePlace}
-                        
-                    ><TouchableOpacity style={{ width:'100%', height:'100%'}} onPress={()=>this.changeBackground()}><Text style={styles.numero} >n°1</Text></TouchableOpacity></ImageBackground>
-        }
-        {!this.state.active &&
-                    <ImageBackground
-                        source={require("./Table2.png")}
-                        style={styles.cardItemImagePlace}
-                        
-                        ><TouchableOpacity style={{ width:'100%', height:'100%'}} onPress={()=>this.changeBackground()}><Text style={styles.numero} >n°1</Text></TouchableOpacity></ImageBackground>
-         }
-                    </ScrollView>
-*/
 const styles = StyleSheet.create({
     
     containerBig: {
@@ -176,7 +109,6 @@ const styles = StyleSheet.create({
       },
       bluespoon: {
         color: "#121212",
-        textDecorationLine: "underline",
         textAlign: "center",
         justifyContent: "center",
         alignItems: "center",
@@ -198,8 +130,11 @@ const styles = StyleSheet.create({
 
       container: {
         backgroundColor: "transparent",
-        height: '40%',
+        height: '20%',
         width: '100%',
+        marginTop:'10%',
+        marginBottom:'10%',
+        borderRadius:50,
         backgroundColor: "rgba(169,187,216,1)",
         overflow: "visible"
       },
@@ -236,7 +171,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
-        borderRadius: 5,
+        borderRadius: 50,
         paddingLeft: 16,
         paddingRight: 16,
         height: '10%',

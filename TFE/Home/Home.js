@@ -72,12 +72,12 @@ class Home extends React.Component {
           }
         }else{
           this.setState({commande:false});
-          this.setState({addition:true});
+          this.setState({addition:false});
         }
       } catch (error) {
           console.log("Something went wrong", error);
           this.setState({commande:false});
-          this.setState({addition:true});
+          this.setState({addition:false});
   }
 }
 
@@ -121,9 +121,9 @@ QR(){
     
   }else{
   //this.props.navigation.navigate('QR');
-  this.storeToken(9,'id');
-  this.storeToken(null,'serveur')
-  this.props.navigation.navigate('Splitter',{numTable:6, idRestaurant:4});
+  //this.storeToken(9,'id');
+  //this.storeToken(null,'serveur')
+  this.props.navigation.navigate('Table',{numTable:6, idRestaurant:4});
   }
 }else{
   fetch('https://bluespoon-app.herokuapp.com/commandeHome?id='+this.state.id, {
@@ -228,7 +228,14 @@ QR(){
       <View style={styles.containerSmall}>
         {!this.state.commande &&
       <TouchableOpacity style={[styles.containerJaune, this.props.style]} onPress={() => { this.QR() }} >
-        <ImageBackground style={[styles.containerJauneImage, this.props.style]} source={{uri: "https://bluespoon-app.herokuapp.com/image/loupe.png"}}></ImageBackground>
+        <ImageBackground style={[styles.containerQRImage, this.props.style]} source={{uri: "https://bluespoon-app.herokuapp.com/image/scan.png"}}></ImageBackground>
+  
+  {/*
+        <MaterialCommunityIconsIcon
+              name="qrcode-scan"
+              style={styles.captionIcon}
+            ></MaterialCommunityIconsIcon>
+  */}
       </TouchableOpacity>
         }
         {this.state.commande &&
@@ -285,7 +292,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         borderRadius: Dimensions.get('window').width*10,
         height: '50%',
-        width: '50%',
+        width: '60%',//ou ici
         borderWidth:0,
       },
       containerJaune: {
@@ -294,7 +301,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         flexDirection: "column",
         borderRadius: 100000,
-        height: '60%',
+        height: '60%',//ici pour la taille 
         width: '65%',
         borderWidth:0,
       },
@@ -307,6 +314,15 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
         
         
+        
+      },
+      containerQRImage: {
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        height: '80%',
+        width: '80%',
+        resizeMode: 'contain',
         
       },
       containerImage: {
@@ -377,7 +393,12 @@ const styles = StyleSheet.create({
           marginRight:'0%',
           marginTop:'0%'
         
-      }
+      },
+      captionIcon: {
+        color: "#000",
+        fontSize: 100,
+        marginRight:'3%'
+      },
   });
   
 export default Home;

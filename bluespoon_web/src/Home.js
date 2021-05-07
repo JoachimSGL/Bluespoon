@@ -51,7 +51,7 @@ class Home extends React.Component {
       if(json!=='pas autorisé' && json!=='no'){
         //this.storeToken(json);
         localStorage.setItem('id', json);
-        t.props.history.push("/Acceuil");
+        t.props.history.push("/Accueil");
       }else{
 
       }
