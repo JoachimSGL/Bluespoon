@@ -1,4 +1,4 @@
-import { StyleSheet, View, TouchableOpacity, Text, Image,ScrollView,SafeAreaView, StatusBar,TextInput,FlatList  } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Text, Image,ScrollView,SafeAreaView, StatusBar,TextInput,FlatList ,ImageBackground } from "react-native";
 import React from 'react';
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Overlay,ListItem, Avatar } from 'react-native-elements';
@@ -173,11 +173,11 @@ changeStyle(){
         for(let i = 0 ; i<json.length;i++){
           if(!id.includes(json[i].id)){
             id.push(json[i].id);
-            arrPlat.push({id:json[i].id,nomPlat:json[i].nomPlat,name:json[i].nomRestaurant,commentaires:json[i].commentaires});
-            arr.push({name:json[i].nomRestaurant,id : json[i].id,adresse:json[i].adresse, localisation:json[i].adresse});// changer ici qd j aurai mis la localisation
+            arrPlat.push({id:json[i].id,nomPlat:json[i].nomPlat,name:json[i].nomRestaurant,commentaires:json[i].commentaires, imageRestaurant: json[i].imageRestaurant});
+            arr.push({name:json[i].nomRestaurant,id : json[i].id,adresse:json[i].adresse, localisation:json[i].adresse, imageRestaurant: json[i].imageRestaurant});// changer ici qd j aurai mis la localisation
             location.push({title:json[i].nomRestaurant,description:json[i].adresse,id:json[i].id,specialite:json[i].specialite,latlng:{longitude:json[i].longitude,latitude:json[i].latitude}})
           }else{
-            arrPlat.push({id:json[i].id,nomPlat:json[i].nomPlat,name:json[i].nomRestaurant,commentaires:json[i].commentaires});
+            arrPlat.push({id:json[i].id,nomPlat:json[i].nomPlat,name:json[i].nomRestaurant,commentaires:json[i].commentaires, imageRestaurant: json[i].imageRestaurant});
           }
         }
 
@@ -849,7 +849,9 @@ mapStyle = [
     <ScrollView  style={{ width:'100%', height:'100%'}}>
 { this.state.listShow.map((l, i) =>    (
       <View style={styles.rect} key={i}>
+        <ImageBackground style={[styles.containerImage, this.props.style]} source={{uri: l.imageRestaurant}}>
         <View style={styles.quickRow}>
+        
           <View style={{flex:1,flexDirection:'column',justifyContent:'center',alignItems:'center',height:'100%',width:'100%'}}>
           <Text style={styles.quick}>{l.name}</Text>
           <Text style={styles.quickPetit}>{this.findNote(l.id)}</Text>
@@ -859,13 +861,18 @@ mapStyle = [
                 
                 <TouchableOpacity style={[styles.containerButtonVoirSurCarte, this.props.style]} onPress={()=>{this.goToLocation(l.id)}}>
                 
-                <Image source={{uri: 'https://bluespoon-app.herokuapp.com/image/resto.png'}} style={{ width: 40, height: 50 }}  />
+                {//<Image source={{uri: 'https://bluespoon-app.herokuapp.com/image/resto.png'}} style={{ width: 40, height: 50 }}  />
+  }
+                <MaterialCommunityIconsIcon
+                  name="google-maps"
+                  style={styles.iconPlat}
+                ></MaterialCommunityIconsIcon>
               </TouchableOpacity>
               </View>
           }
           {!this.state.method &&
           <View style={{flex:1,flexDirection:'row',alignItems: "center",width:'100%',height:'100%'}}>
-                <TouchableOpacity style={[styles.containerButtonPlat, this.props.style]} onPress={()=>{this.affichePlats(i)}}>
+                <TouchableOpacity style={[styles.containerButtonVoirSurCarte, this.props.style]} onPress={()=>{this.affichePlats(i)}}>
                 {//<Text style={styles.voirLaCarte}>Plats</Text>
                      }
                 <MaterialCommunityIconsIcon
@@ -886,7 +893,7 @@ mapStyle = [
           </TouchableOpacity>
         </View>
         
-          
+        </ImageBackground>
       </View>
     ))
   }
@@ -981,7 +988,7 @@ const styles = StyleSheet.create({
   },
   rect: {
     width: '100%',
-    height: 80,
+    height: 200,
     backgroundColor: "#D9EBF1",
     borderRadius: 5,
     marginTop: '2%',
@@ -991,22 +998,26 @@ const styles = StyleSheet.create({
     alignItems:'center'
   },
   quick: {
-    color: "#000",
-    fontSize: 20,
+    color: "#fff",
+    fontSize: 25,
     marginTop: '1%'
   },
   quickPetit: {
-    color: "#000",
-    fontSize: 12,
+    color: "#fff",
+    fontSize: 15,
     marginTop: '1%'
   },
   quickRow: {
-    height: '100%',
+    height: '50%',
     flexDirection: "row",
     marginTop: '2%',
-    marginLeft: '2%',
+    marginLeft: '0%',
     marginRight: '0%',
-    width:'100%'
+    width:'100%',
+    backgroundColor:'rgba(0,0,0,0.5)',
+    justifyContent:'space-between',
+    alignItems:'center'
+
   },
   loremIpsum: {
     color: "#121212",
@@ -1058,7 +1069,7 @@ const styles = StyleSheet.create({
     fontSize: 15
   },
   containerButton: {
-    backgroundColor: "#D9EBF1",
+    //backgroundColor: "#D9EBF1",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
@@ -1071,16 +1082,15 @@ const styles = StyleSheet.create({
 
   },
   containerButtonVoirSurCarte: {
-    backgroundColor: "#D9EBF1",
+    //backgroundColor: "#D9EBF1",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
     borderRadius: 210,
-    paddingLeft: 16,
-    paddingRight: 16,
-    marginLeft:'2%',
-    marginTop:'1%',
-    height:'80%'
+    marginLeft:'30%',
+    marginTop:'0%',
+    height:'100%',
+    color:'#fff',
   },
   containerButtonCarte:{
     backgroundColor:'#000',
@@ -1121,8 +1131,8 @@ const styles = StyleSheet.create({
     marginLeft:'5%'
   },
   voirLaCarte: {
-    color: "#000",
-    fontSize: 18
+    color: "#fff",
+    fontSize: 23
   },
   specialite: {
     color: "#fff",
@@ -1132,7 +1142,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#FFF",
-    backgroundColor: "rgba(180,238,239,1)",
+    backgroundColor: '#84AFEA',
     width:'100%',
     height:'8%'
   },
@@ -1174,10 +1184,20 @@ const styles = StyleSheet.create({
   iconPlat:{
        
     color: "#fff",
-    fontSize: 40,
+    fontSize: 50,
     marginRight:'0%',
     marginTop:'0%'
   
+},
+containerImage:{
+  height:'100%',
+  width:'100%',
+  borderRadius:200,
+  opacity:1,
+  resizeMode: "cover",
+  flex:1,
+  flexDirection:'column',
+  justifyContent:'flex-end'
 }
       
   });

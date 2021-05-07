@@ -85,7 +85,8 @@ app.get('/commandeHome', function (req, res) {
         if(result[0]==undefined){
           res.send(JSON.stringify('no'));
         }else{
-          res.send(JSON.stringify(result[0]));
+          
+          res.send(JSON.stringify(result));
         }
      }
 })
@@ -338,6 +339,33 @@ app.post('/changeImage',jsonParser, function (req, res) {
 }
 });
 
+
+app.post('/changeImageRestaurant',jsonParser, function (req, res,next) {
+
+  if(req.body.password=='4A1cDm$12$'){
+    next();
+  }else{
+    res.send(JSON.stringify('not allowed'));
+  }
+
+})
+app.post('/changeImageRestaurant',jsonParser, function (req, res) {
+  try{
+  let url = req.body.url;
+  let idRestaurant =  req.body.idRestaurant;
+  console.log(idRestaurant);
+  let values=[[url],[idRestaurant]]
+  var rechsql = "update restaurant set imageRestaurant = ? where id= ?";
+  db.query(rechsql,values, function (err, result, fields) {
+    if (err) {throw err;}else{
+      res.send(JSON.stringify('done'));
+     }
+})
+}catch(e){
+  console.log(e);
+}
+});
+
 app.post('/demandeAddition',jsonParser, function (req, res,next) {
 
   if(req.body.password=='4A1cDm$12$'){
@@ -371,7 +399,6 @@ app.post('/demandeAddition',jsonParser, function (req, res) {
         let bool =true;
         for(let i = 0 ; i<result.length;i++){
           if(result[i].servi==false){
-            res.send(JSON.stringify('no'));
             bool =false
             break;
           }
@@ -387,6 +414,8 @@ app.post('/demandeAddition',jsonParser, function (req, res) {
                 res.send(JSON.stringify('done'));
               }
           })
+        }else{
+          res.send(JSON.stringify('no'));
         }
           
       }
@@ -444,7 +473,7 @@ app.post('/addition',jsonParser, function (req, res) {
   let idRestaurant = req.body.idRestaurant;
   let idPlat= req.body.idPlat;
   let values=[[servi],[addition],[idRestaurant],[idTable],[idPlat]];
-      var rechsql = "update commandes set servi = ? and addition = ? where idRestaurant = ? and idTable = ? and idPlat= ?";
+      var rechsql = "update commandes set servi = ? and addition = ? where idRestaurant = ? and idTable = ? and idPlat= ? and servi= false and addition = false";
       db.query(rechsql,values, function (err, result, fields) {
         if (err) {throw err;}else{
           res.send(JSON.stringify('done'));
@@ -771,6 +800,37 @@ app.post('/ajoutNotationPlat',jsonParser, function (req, res) {
 
 
 
+app.post('/modifPlatAvecImage',jsonParser, function (req, res,next) {
+
+  if(req.body.password=='4A1cDm$12$'){
+    next();
+  }else{
+    res.send(JSON.stringify('not allowed'));
+  }
+
+})
+app.post('/modifPlatAvecImage',jsonParser, function (req, res) {
+  try{
+  id = req.body.idPlat;
+  nom = req.body.plat;
+  idRestaurant = req.body.idRestaurant;
+  commentaires = req.body.commentaires;
+  prix = req.body.prix;
+  imagePlat = req.body.imagePlat;
+  boisson = req.body.boisson;
+  
+  let values = [[nom],[commentaires],[prix],[boisson],[imagePlat],[id]];
+  var rechsql = "UPDATE plats set nomPlat= ?, commentaires= ?, prix= ?,boisson = ? ,imagePlat = ? where idPlat = ?";
+  db.query(rechsql,values, function (err, result, fields) { 
+    if (err) {throw err;}else{
+      res.send('done');
+     }
+})
+}catch(e){
+  console.log(e);
+}
+});
+
 app.post('/modifPlat',jsonParser, function (req, res,next) {
 
   if(req.body.password=='4A1cDm$12$'){
@@ -787,11 +847,10 @@ app.post('/modifPlat',jsonParser, function (req, res) {
   idRestaurant = req.body.idRestaurant;
   commentaires = req.body.commentaires;
   prix = req.body.prix;
-  imagePlat = req.body.imagePlat;
   boisson = req.body.boisson;
   
-  let values = [[nom],[commentaires],[prix],[boisson],[imagePlat],[id]];
-  var rechsql = "UPDATE plats set nomPlat= ?, commentaires= ?, prix= ?,boisson = ? ,imagePlat = ? where idPlat = ?";
+  let values = [[nom],[commentaires],[prix],[boisson],[id]];
+  var rechsql = "UPDATE plats set nomPlat= ?, commentaires= ?, prix= ?,boisson = ? where idPlat = ?";
   db.query(rechsql,values, function (err, result, fields) { 
     if (err) {throw err;}else{
       res.send('done');

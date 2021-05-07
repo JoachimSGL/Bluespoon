@@ -227,19 +227,14 @@ QR(){
   
       <View style={styles.containerSmall}>
         {!this.state.commande &&
-      <TouchableOpacity style={[styles.containerJaune, this.props.style]} onPress={() => { this.QR() }} >
+      <TouchableOpacity style={[styles.containerJauneQR, this.props.style]} onPress={() => { this.QR() }} >
         <ImageBackground style={[styles.containerQRImage, this.props.style]} source={{uri: "https://bluespoon-app.herokuapp.com/image/scan.png"}}></ImageBackground>
   
-  {/*
-        <MaterialCommunityIconsIcon
-              name="qrcode-scan"
-              style={styles.captionIcon}
-            ></MaterialCommunityIconsIcon>
-  */}
+ 
       </TouchableOpacity>
         }
         {this.state.commande &&
-          <TouchableOpacity style={[styles.containerJaune, this.props.style]} onPress={() => { this.splitter(); }} >
+          <TouchableOpacity style={[styles.containerJauneQR, this.props.style]} onPress={() => { this.splitter(); }} >
           <ImageBackground style={[styles.containerJauneImage, this.props.style]} source={{uri: "https://bluespoon-app.herokuapp.com/image/foodIcone.png"}}></ImageBackground>
         </TouchableOpacity>
         }
@@ -291,8 +286,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
         flexDirection: "row",
         borderRadius: Dimensions.get('window').width*10,
-        height: '50%',
-        width: '60%',//ou ici
+        height: '35%',
+        width: '24%',//ou ici
         borderWidth:0,
       },
       containerJaune: {
@@ -301,8 +296,18 @@ const styles = StyleSheet.create({
         alignItems: "center",
         flexDirection: "column",
         borderRadius: 100000,
-        height: '60%',//ici pour la taille 
-        width: '65%',
+        height: '20%',//ici pour la taille 
+        width: '100%',
+        borderWidth:0,
+      },
+      containerJauneQR:{
+        backgroundColor: "rgba(255,255,255,0.4)",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        borderRadius: 100000,
+        height: '100%',//ici pour la taille 
+        width: '63%',
         borderWidth:0,
       },
       containerJauneImage: {
@@ -348,9 +353,12 @@ const styles = StyleSheet.create({
         marginTop:'0%'
       },
       containerSmall: {
-        justifyContent: "center",
+        flex:1,
+        flexDirection:'column',
+        justifyContent: "space-around",
         alignItems: "center",
-        backgroundColor: "rgba(191,209,249,0)"
+        backgroundColor: "rgba(191,209,249,0)",
+        marginTop:'20%'
       },
       bluespoon: {
         fontFamily: "Font Awesome",

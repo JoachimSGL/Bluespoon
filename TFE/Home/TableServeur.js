@@ -70,10 +70,7 @@ ack(plat,servi,addition,bool=false){
               idPlat:plat.idPlat,
               password:'4A1cDm$12$'
           })
-        }).then(()=>{()=>{
-          this.componentDidMount();
-        }
-        })
+        }).then(()=>{this.componentDidMount()})
       }else{
         fetch('https://bluespoon-app.herokuapp.com/additionAll', {
           method: 'POST',

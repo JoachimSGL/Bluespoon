@@ -29,6 +29,7 @@ class Acceuil extends Component {
           this.changement = this.changement.bind(this);
           this.suppr = this.suppr.bind(this);
           this.changeNom = this.changeNom.bind(this);
+          this.downloadImage = this.downloadImage.bind(this);
     }
     componentDidMount(){
       if(this.state.id===0){
@@ -145,6 +146,53 @@ class Acceuil extends Component {
         }
       );
     };
+    downloadImage(){
+      let imageB = document.getElementById('containerImageRestaurant').value;
+      let arr=imageB.split("\\");
+      imageB=arr[arr.length-1];
+      imageB = Date.now()+imageB.slice(-4);
+      let type= imageB.slice(-3);
+      let file = document.getElementById('containerImageRestaurant').files[0];
+      var blob = file.slice(0, file.size, 'image/png'); 
+      file = new File([blob], imageB, {type: 'image/'+type});
+
+
+        const uploadTask = storage.ref(`images/${file.name}`).put(file);
+        uploadTask.on(
+          "state_changed",
+          snapshot => {
+            const progress = Math.round(
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+            );
+            //this.setState({progress:progress});
+          },
+          error => {
+            console.log(error);
+          },
+          () => {
+            storage
+              .ref("images")
+              .child(file.name)
+              .getDownloadURL()
+              .then(url => {
+                fetch('https://bluespoon-app.herokuapp.com/changeImageRestaurant', {
+                  method: 'POST',
+                  headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': 'true'
+                  },
+                  body: JSON.stringify({
+                      url:url,
+                      idRestaurant:this.state.id,
+                      password:'4A1cDm$12$'
+
+                  })
+                });
+              });
+          }
+        );
+    }
     add(){
         let array = this.state.chaine;
         /*
@@ -420,15 +468,24 @@ class Acceuil extends Component {
                 <p style={{color:'red',fontSize:25}}>Ce plat est en cours de commande et ne peut pas être supprimer</p>
 
                 }
-                <input type="button" class="btn btn-secondary btn-block" onClick={this.add} value='ajouter un plat'/>
-                <div className='rectAMargin'>
+                <input type="button" class="btn btn-secondary btn-block" style={{height:100,fontSize:40}} onClick={this.add} value='ajouter un plat'/>
+                <div className='rectAMargin' style={{display:'flex',flexDirection:'row',alignItems:'center',width:'100%',justifyContent:'center'}}>
 
+
+                
+                
+               
             
-            <div class="form-group">
+            <div class="form-group" style={{marginRight:'1%',width:'45%',display:'flex',justifyContent:'center',flexDirection:'column',alignItems:'center'}}>
             <span style={{color:'white',fontSize:18}}>Combien de Qr-codes voulez-vous?:</span>
                 <input class="form-control py-4"  type='number' aria-describedby="emailHelp" placeholder="Combien de QR codes souhaitez-vous" value={this.state.value} onChange={this.changement}/>
+                <input type="button" class="btn btn-secondary btn-block" style={{width:'80%'}} onClick={this.downloadQR} value="Télécharger les QR-codes"/>
             </div>
-            <input type="button" class="btn btn-secondary btn-block"  onClick={this.downloadQR} value="Télécharger les QR-codes"/>
+            <div class="form-group" style={{marginLeft:'1%',width:'45%',display:'flex',justifyContent:'center',flexDirection:'column',alignItems:'center'}}>
+                    <label class="small mb-1" for="inputEmailAddress" style={{color:'white',fontSize:18}}>Choisissez l'image de votre restaurant:</label>
+                    <input class="form-control py-4"  type="file" id='containerImageRestaurant' aria-describedby="emailHelp" placeholder="Indication supplémentaire sur votre plat" />
+                    <input type="button" class="btn btn-secondary btn-block" style={{width:'80%'}} onClick={this.downloadImage} value="Confirmer"/>
+                </div>
           
             </div>
             <div>
