@@ -240,15 +240,15 @@ contacts=()=>{
                   }else{
                     for(let j = 0 ; j < prix.length;j++){
                       if(prix[j].id == json[i].id){
-                        let prixCompte = prix[j].prix + json[i].prix;
-                        prixCompte = parseFloat(prixCompte).toFixed(2);
+                        let prixCompte = Number.parseFloat(prix[j].prix) + Number.parseFloat(json[i].prix);
+                        prixCompte = Number.parseFloat(prixCompte).toFixed(2);
                         prix[j].prix = prixCompte;
                       }
                     }
                     
                   }
                 }else if(json[i].contact=='Table'){
-                  prixTable= (prixTable+json[i].prix).toFixed(2);
+                  prixTable= (prixTable+json[i].prix);
                   this.setState({prixTable:prixTable});
                 }else{
                   if(!nombrePersonne.includes(json[i].contact)){
@@ -257,7 +257,9 @@ contacts=()=>{
                   }else{
                     for(let j = 0 ; j < prix.length;j++){
                       if(prix[j].id == -1 && prix[j].nom=='' && prix[j].prenom ==json[i].contact){
-                        prix[j].prix = (prix[j].prix + json[i].prix).toFixed(2);
+                        prix[j].prix = Number.parseFloat(prix[j].prix)
+                        prix[j].prix = (prix[j].prix + json[i].prix);
+                        prix[j].prix = Number.parseFloat(prix[j].prix).toFixed(2)
                       }
                     }
                   }
@@ -300,13 +302,13 @@ contacts=()=>{
                     prix.push({id :json[i].id , nom : json[i].nom , prenom : json[i].prenom , prix : 0});
                   }
                 }
-              let prixCompte = prixTotal + json[i].prix;
-              prixCompte = parseFloat(prixCompte).toFixed(2);
+              let prixCompte = prixTotal + parseFloat(json[i].prix);
+              prixCompte = prixCompte;
               prixTotal = prixCompte;
             
             }
             console.log(prix);
-            prix[0].prix=prixTotal;
+            prix[0].prix=prixTotal.toFixed(2);
           
         }
 
@@ -448,8 +450,8 @@ addition=()=>{
               let prixC=0
               for(let j = 0 ; j<json.length;j++){
                 if(listeContact[i]==json[j].contact && json[j].contact!==null){
-                  let prixCompte=prixC+json[j].prix;
-                  prixCompte = parseFloat(prixCompte).toFixed(2);
+                  let prixCompte=prixC+parseFloat(json[j].prix);
+                  prixCompte = prixCompte;
                   prixC = prixCompte;
 
                   if(!platsC.includes(json[j].nomPlat)){
@@ -520,10 +522,9 @@ addition=()=>{
           let contacts=[];
           let plats=[];
           for(let i = 0 ; i<json.length;i++){
-              let prixCompte = prix+json[i]['prix'];
-              prixCompte = parseFloat(prixCompte).toFixed(2);
+              let prixCompte = prix+parseFloat(json[i]['prix']);
+              prixCompte = prixCompte;
               prix = prixCompte;
-
               if(!plats.includes(json[i].nomPlat)){
                 arr.push({nomPlat:json[i].nomPlat,prix:json[i].prix,nombre:1});
                 plats.push(json[i].nomPlat);
@@ -555,8 +556,8 @@ addition=()=>{
           let bigArr=[];
           let plats=[];
           for(let i = 0 ; i<json.length;i++){
-              let prixCompte = prix+json[i]['prix'];
-              prixCompte = parseFloat(prixCompte).toFixed(2);
+              let prixCompte = prix+parseFloat(json[i]['prix']);
+              prixCompte = prixCompte;
               prix = prixCompte;
               if(!plats.includes(json[i].nomPlat)){
                 arr.push({nomPlat:json[i].nomPlat,prix:json[i].prix,nombre:1});
