@@ -4,8 +4,6 @@ import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommun
 import { Overlay,ListItem, Avatar } from 'react-native-elements';
 import Geolocation from '@react-native-community/geolocation';
 import MapView ,{PROVIDER_GOOGLE,Marker}from 'react-native-maps';
-import Geocoder from 'react-native-geocoding';
-//import { FlatList } from "react-native-gesture-handler";
 
 class Carte extends React.Component {
     constructor(props) {
@@ -473,7 +471,7 @@ changeMethod(bool){
 
 
 permissionHandle = async () => {
-  this.setState({loading:true});
+  //this.setState({loading:true});
   this.setState({location:true});
   Geolocation.getCurrentPosition(
     (position) => {
@@ -488,7 +486,7 @@ permissionHandle = async () => {
    },
    (error) => {
     console.log('error :'+error);
-    this.setState({loading:false});
+    //this.setState({loading:false});
     this.setState({error:true});
    },
    {enableHighAccuracy: true, timeout: 20000})
@@ -902,10 +900,12 @@ mapStyle = [
   
   </ScrollView>
   }
-{this.state.error &&
+{/*this.state.error &&
+  
   <View style={{backgroundColor:"#142B7F",height:'92%'}}>
     <Text style={styles.specialite} >Veuillez activer la localisation</Text>
     </View>
+    */
 }
 {this.state.location &&
 <View style={{backgroundColor:"#142B7F",height:'92%'}}>
@@ -915,15 +915,23 @@ mapStyle = [
     region={{
       latitude: this.state.regionLat,
       longitude: this.state.regionLong,
-      latitudeDelta: 0.1,
-      longitudeDelta: 0.1,
+      latitudeDelta: this.state.error? 2: 0.9,
+      longitudeDelta: this.state.error? 2: 0.9,
     }}
     customMapStyle={this.mapStyle}>
     <Marker
     coordinate={{ latitude :  this.state.lat , longitude :  this.state.long }}
     title='You are here'
         description='vous vous situez ici'
-  />
+  >
+    {!this.state.error &&
+  <Image source={{uri: 'https://bluespoon-app.herokuapp.com/image/point.png'}} style={{ width: 40, height: 50 }} />
+}
+{this.state.error &&
+  <Image source={{uri: 'https://bluespoon-app.herokuapp.com/image/pointBleu.png'}} style={{ width: 20, height: 25 }} />
+}
+
+    </Marker>
 {this.state.markersShow.map((marker, index) => (
     <Marker
       key={index}
@@ -999,7 +1007,7 @@ const styles = StyleSheet.create({
   },
   quick: {
     color: "#fff",
-    fontSize: 25,
+    fontSize: 23,
     marginTop: '1%'
   },
   quickPetit: {
@@ -1132,7 +1140,7 @@ const styles = StyleSheet.create({
   },
   voirLaCarte: {
     color: "#fff",
-    fontSize: 23
+    fontSize: 20
   },
   specialite: {
     color: "#fff",

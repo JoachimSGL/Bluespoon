@@ -248,7 +248,7 @@ contacts=()=>{
                     
                   }
                 }else if(json[i].contact=='Table'){
-                  prixTable= (prixTable+json[i].prix);
+                  prixTable= (Number.parseFloat(prixTable)+Number.parseFloat(json[i].prix)).toFixed(2);
                   this.setState({prixTable:prixTable});
                 }else{
                   if(!nombrePersonne.includes(json[i].contact)){
@@ -450,7 +450,7 @@ addition=()=>{
               let prixC=0
               for(let j = 0 ; j<json.length;j++){
                 if(listeContact[i]==json[j].contact && json[j].contact!==null){
-                  let prixCompte=prixC+parseFloat(json[j].prix);
+                  let prixCompte=prixC+Number.parseFloat(json[j].prix);
                   prixCompte = prixCompte;
                   prixC = prixCompte;
 
@@ -503,9 +503,10 @@ addition=()=>{
             let prixPlat=(detailTable[i].prix*detailTable[i].nombre)/(listeContact.length);
             for(let j = 0; j<test.length;j++){
               test[j].plats.push({nomPlat:'Commande groupée : '+detailTable[i].nombre +' '+detailTable[i].nomPlat,prix:prixPlat.toFixed(2),nombre:1});
-              let prixTest =(test[j].prix+prixPlat);
-              prixTest = parseFloat(prixTest)
+              let prixTest =(Number.parseFloat(test[j].prix)+Number.parseFloat(prixPlat));
+              prixTest = Number.parseFloat(prixTest)
               prixTest = prixTest.toFixed(2);
+              console.log(prixTest);
               test[j].prix = prixTest;
             }
           }
