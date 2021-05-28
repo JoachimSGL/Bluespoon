@@ -81,8 +81,8 @@ let table = this.props.active ? require('./Table.png') : require('./Table2.png')
     return (
       <SafeAreaView style={{width:'100%', height:'100%'}} >
         <View style={styles.containerBig}>
-      <Text style={styles.bluespoon} >Table numéro: {this.state.numTable}</Text>
-      <View style={[styles.container, this.props.style]}>
+      <Text style={styles.bluespoon} >Table numéro {this.state.numTable}</Text>
+      <View style={styles.container}>
                         
                         <TextInput
                             placeholder="Veuillez indiquer votre nom"
@@ -91,8 +91,12 @@ let table = this.props.active ? require('./Table.png') : require('./Table2.png')
                         >{this.state.nom}</TextInput>
                     </View>
                     
-        <TouchableOpacity style={[styles.containerMauve, this.props.style]} onPress={() => { this.Carte(); }} >
+        <TouchableOpacity style={styles.containerMauve} onPress={() => { this.Carte(); }} >
         <Text style={styles.confirmer}>Continuer</Text>
+        <MaterialCommunityIconsIcon
+          name="page-next-outline"
+          style={styles.leftIcon}
+        ></MaterialCommunityIconsIcon>
       </TouchableOpacity>
       </View>
       </SafeAreaView>
@@ -104,7 +108,10 @@ let table = this.props.active ? require('./Table.png') : require('./Table2.png')
 const styles = StyleSheet.create({
     
     containerBig: {
-        flex: 1,
+      flex:1,
+      flexDirection:'column',
+      alignItems:'center',
+      justifyContent:'center',
         backgroundColor: "rgba(191,209,249,1)"
       },
       bluespoon: {
@@ -114,7 +121,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         fontSize: 30,
         
-        marginTop: '3%',
+        marginTop: '0%',
         marginBottom: '2%',
       },
       numero: {
@@ -134,7 +141,7 @@ const styles = StyleSheet.create({
         width: '100%',
         marginTop:'10%',
         marginBottom:'10%',
-        borderRadius:50,
+        //borderRadius:50,
         backgroundColor: "rgba(169,187,216,1)",
         overflow: "visible"
       },
@@ -168,18 +175,19 @@ const styles = StyleSheet.create({
       },
       containerMauve: {
         backgroundColor: "rgba(34,50,132,1)",
+        
+        flexDirection:'row',
         justifyContent: "center",
         alignItems: "center",
-        flexDirection: "column",
         borderRadius: 50,
         paddingLeft: 16,
         paddingRight: 16,
         height: '10%',
-        width: '100%'
+        width: '50%'
       },
       confirmer: {
         color: "#fff",
-        fontSize: 17
+        fontSize: 20
       },
       cardItemImagePlace: {
         flex:1,
@@ -188,6 +196,11 @@ const styles = StyleSheet.create({
         width: 150,
         flexDirection: "row",
         alignItems: "flex-start",
+      },
+      leftIcon: {
+        fontSize: 30,
+        color: "#fff",
+        marginLeft:'5%'
       },
   });
 

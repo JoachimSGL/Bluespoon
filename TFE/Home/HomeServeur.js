@@ -24,6 +24,7 @@ class HomeServeur extends React.Component {
             textDelete:"Commande Servie",
             textAddition:"Addition envoyée",
             prixAddition:0,
+            listCheck:[]
             
           };
     }
@@ -73,13 +74,21 @@ fetched(){
             if(true){
                 let arrComplet=[];
                 let numTable=[];
+                let arrCheck=[];
                 for(let i = 0 ; i<json.length;i++){
                     if(!numTable.includes(json[i].idTable)){
                         numTable.push(json[i].idTable);
-                        arrComplet.push({idTable:json[i].idTable,active:true});
+                        arrComplet.push({idTable:json[i].idTable,active:true,check:this.getCheck(json[i].idTable)});
+                        arrCheck.push({id:json[i].idTable,check:1});
+                    }else{
+                        arrCheck = this.fixCheck(arrCheck,json[i].idTable);
                     }
                 }
                 this.setState({listFull : arrComplet});
+                if(this.state.listCheck.length!==0 && arrCheck.length!==0 && arrComplet.length!==0){
+                    this.check(arrCheck);
+                }
+                this.setState({listCheck : arrCheck});
             }else{
                 let arr = [];
                 let arrComplet=[];
@@ -123,6 +132,67 @@ fetched(){
            }, 5000)
            //this.setState({makeRequest:false})
         
+    }
+    getCheck(idTable){
+        let listFull = this.state.listFull;
+        for(let i = 0 ; i<listFull.length;i++){
+            if(idTable==listFull[i].idTable){
+                return listFull[i].check
+            }
+        }
+        return true
+    }
+    fixCheck(arr,idTable){
+        for(let i = 0 ; i<arr.length;i++){
+            
+            if(arr[i].id == idTable){
+               arr[i].check = arr[i].check+1;
+            }
+        }
+        return arr
+    }
+    changeCheck(unit){
+        let arr = this.state.listFull;
+        for(let i = 0 ; i<arr.length;i++){
+            if(arr[i].idTable==unit.idTable){
+                arr[i].check=false;
+            }
+        }
+        return arr;
+    }
+    check(arr){
+        /*
+        let arrComplet = this.state.arrComplet;
+        if(arr.length==this.state.arrCheck.length){
+            for(let i = 0 ; i <arr.length;i++){
+                if(arr[i].check!==this.state.arrCheck[i].check){
+                    for(let j = 0 ; j <arrComplet.length;j++){
+                        if(arrComplet[j].idTable==arr[i].id){
+                            arrComplet[j].check=true;
+                        }
+                    }
+                }
+            }
+        }else{
+            */
+        let arrComplet = this.state.listFull;
+        let arrCheck = this.state.listCheck;
+            for(let i = 0 ; i <arr.length;i++){
+                for(let j = 0 ; j <arrCheck.length;j++){
+                    if(arr[i].id==arrCheck[j].id ){
+                        if(arr[i].check!==arrCheck[j].check){
+                            for(let k = 0 ; k <arrComplet.length;k++){
+                                if(arrComplet[k].idTable==arr[i].id){
+                                    arrComplet[k].check=true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+           // }
+        }
     }
     findValue(arr,num,id){//A FAIRE: boucle pour trouver si la com est dedans(en fct de la numcom et de  l id)
         for(let i = 0 ; i<arr.length;i++){
@@ -287,6 +357,8 @@ fetched(){
     changeBackground(m){
         //console.log(m);
         //this.setState({makeRequest:false})
+        let arr = this.changeCheck(m);
+        this.setState({listFull : arr})
         this.props.navigation.navigate('TableServeur',{idTable:m.idTable,idRestaurant:this.state.idRestaurant})
     }
     rectStyle(val,id,addition){
@@ -329,6 +401,13 @@ fetched(){
             return this.state.textAddition
         }
     }
+    afficherCheck(bool){
+        if(bool){
+            return {uri: "https://bluespoon-app.herokuapp.com/image/Table3.png"}
+        }else{
+            return {uri: "https://bluespoon-app.herokuapp.com/image/Table.png"}
+        }
+    }
   render() {
     
 
@@ -367,7 +446,7 @@ fetched(){
         
 {this.state.listFull.map((m, i) => (
     <ImageBackground
-    source={m.active?{uri: "https://bluespoon-app.herokuapp.com/image/Table2.png"}:{uri: "https://bluespoon-app.herokuapp.com/image/Table.png"}}
+    source={this.afficherCheck(m.check)}
         style={styles.cardItemImagePlace}
         key={i}
         

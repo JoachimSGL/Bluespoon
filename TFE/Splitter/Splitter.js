@@ -451,7 +451,7 @@ addition=()=>{
               for(let j = 0 ; j<json.length;j++){
                 if(listeContact[i]==json[j].contact && json[j].contact!==null){
                   let prixCompte=prixC+Number.parseFloat(json[j].prix);
-                  prixCompte = prixCompte;
+                  prixCompte = Number.parseFloat(prixCompte).toFixed(2);//SI CA PLANTE VENIR ICI
                   prixC = prixCompte;
 
                   if(!platsC.includes(json[j].nomPlat)){
@@ -681,7 +681,7 @@ changeMethod(bool){
   render() {
     return (
       
-      <SafeAreaView style={{flex: 1,paddingTop: StatusBar.currentHeight}} >
+      <SafeAreaView style={{flex: 1}} >
         {(this.state.channel=='addition' && this.state.split==0) && 
         <View style={[styles.containerPicker, this.props.style]}>
           <View style={styles.textWrapper}>
@@ -826,7 +826,9 @@ changeMethod(bool){
 
   {this.state.type == 1 &&
   <View style={{width:'100%', height:'90%'}}>
+    
     <View style={styles.boxButton}>
+    <Text style={styles.PayementTexte}>Choisissez votre mode de payement</Text>
     <Text style={styles.infoPayement}>Les plats sont séparés en fonction des commandes.</Text>
     <TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.toggleSplit(0)}>
     <MaterialCommunityIconsIcon
@@ -849,7 +851,7 @@ changeMethod(bool){
     </TouchableOpacity>
     </View>
     <View style={styles.boxButton}>
-    <Text style={styles.infoPayement}>Vous payer l'addition de toute la table.</Text>
+    <Text style={styles.infoPayement}>Vous payez l'addition de toute la table.</Text>
     <TouchableOpacity style={[styles.typePayement, this.props.style]} onPress={()=>this.toggleSplit(2)} >
     <MaterialCommunityIconsIcon
             name="account-hard-hat"
@@ -1225,6 +1227,14 @@ const styles = StyleSheet.create({
         height:'30%',
         backgroundColor:"rgba(156,175,227,1)"
 
+      },
+      PayementTexte:{
+        fontSize:25,
+        color:'#000',
+        paddingBottom:'2.5%',
+        marginBottom:'2.5%',
+        borderColor:'#fff',
+        borderBottomWidth:2
       }
   });
  

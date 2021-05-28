@@ -1,17 +1,19 @@
-import { StyleSheet, View, TouchableOpacity, Text,TextInput } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Text,TextInput, FlatList } from "react-native";
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import React from 'react';
 import { Overlay,ListItem } from 'react-native-elements';
 import { Rating, AirbnbRating } from 'react-native-ratings';
-
+import { ImageBackground } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 class Notation extends React.Component {
     constructor(props) {
         super(props);
+        this.getToken();
         this.state = {
             id: (this.props.route.params==undefined ? 1 : this.props.route.params.id),
             idRestaurant:(this.props.route.params==undefined ? 1 : this.props.route.params.idRestaurant),
             numTable:(this.props.route.params==undefined ? 1 : this.props.route.params.numTable),
-
+            photo:'https://bluespoon-app.herokuapp.com/image/accueil.jpg',
             nom:'Notez le restaurant',
             note:4,
             idPlat:0,
@@ -21,11 +23,29 @@ class Notation extends React.Component {
             visible:false,
             list:[{name:'Notez le restaurant',subtitle:'', idRestaurant:0}],
             listPlat:[[{name:'Pas de plats diponible',subtitle:'',idPlat:0 }]],
-            showPlat:1
+            showPlat:1,
+            listFull:[]
           };
           this.ratingCompleted =this.ratingCompleted.bind(this); 
           this.commentaires =this.commentaires.bind(this); 
     }
+    async getToken() {
+      try {
+        
+        let userData = await AsyncStorage.getItem("id");
+        let data = JSON.parse(userData);
+        
+        if(data!=null){
+          this.setState({id:data});
+          
+        }else{
+          this.props.navigation.replace('Home')
+        }
+        } catch (error) {
+        console.log("Something went wrong", error);
+      }
+    }
+
     componentDidMount(){
       fetch('https://bluespoon-app.herokuapp.com/commande?idTable='+this.state.numTable+'&&idRestaurant='+this.state.idRestaurant, {
         method: 'GET',
@@ -37,12 +57,35 @@ class Notation extends React.Component {
         }
       }).then(response => response.json())
       .then((json) => {
+        let imageResto = '';
+        let nomResto = '';
+
+        fetch('https://bluespoon-app.herokuapp.com/restaurant', {
+            method: 'GET',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': 'true'
+            }
+          }).then(response => response.json())
+          .then((jsons) => {
+          for(let i = 0 ; i<jsons.length;i++){
+            if(jsons[i].idRestaurant==this.state.idRestaurant){
+              imageResto = jsons[i].imageRestaurant;
+              nomResto = jsons[i].nomRestaurant;
+              break;
+            }
+          }
+          
+          }).then(()=>{
         let arr = [];        
         let arrTrois = [];
         let compteur=0;
         let bool = true;
         let idVerif=[];
-        console.log(json);
+        let arrComplet=[];
+        arrComplet.push({name:nomResto,subtitle:'', idRestaurant:this.state.idRestaurant,photo:imageResto})
+        
         for(let i = 0; i<json.length;i++){
 
           let verif = true;
@@ -66,6 +109,7 @@ class Notation extends React.Component {
               arrTrois=[];
               bool = false;
             }
+            arrComplet.push({name:json[i].nomPlat,subtitle:json[i].commentaires, id:json[i].idPlat,photo:json[i].imagePlat})
             compteur++;
           }
         }
@@ -74,17 +118,19 @@ class Notation extends React.Component {
           arr.push(arrTrois);
         }
         
-        
+          this.setState({listFull:arrComplet});
           this.setState({listPlat:arr});
-          this.setState({nom:this.state.list[0].name});
+          this.setState({nom:this.state.listFull[0].name});
+          this.setState({photo:imageResto});
           this.setState({idRestaurant:this.state.idRestaurant});
-          this.setState({list:[{name:'Notez le restaurant',subtitle:'', idRestaurant:this.state.idRestaurant}]});
-      
+          this.setState({list:[{name:nomResto,subtitle:'', idRestaurant:this.state.idRestaurant,photo:imageResto}]});
+        })
       })
     }
 
     valider(){
-      if(this.state.nom==this.state.list[0].name){
+      if(this.state.nom==this.state.listFull[0].name){
+        
         fetch('https://bluespoon-app.herokuapp.com/ajoutNotation', {
           method: 'POST',
         
@@ -105,12 +151,13 @@ class Notation extends React.Component {
           if(json=='done'){
             this.setState({type:0});
             this.setState({note:4});
-            this.setState({nom:this.state.list[0].name});
+            this.setState({nom:this.state.listFull[0].name});
             this.setState({commentairesNotation:''});
             this.toggleOverlay();
           }
         });
       }else{
+        
         fetch('https://bluespoon-app.herokuapp.com/ajoutNotationPlat', {
           method: 'POST',
         
@@ -132,7 +179,7 @@ class Notation extends React.Component {
           if(json=='done'){
             this.setState({type:0});
             this.setState({note:4});
-            this.setState({nom:this.state.list[0].name});
+            this.setState({nom:this.state.listFull[0].name});
             this.setState({commentairesNotation:''});
             this.toggleOverlay();
           }
@@ -150,13 +197,14 @@ class Notation extends React.Component {
     }
     changerPlat(val){
 
-      this.setState({nom:this.state.listPlat[this.state.place][val].name});
-      this.setState({idPlat:this.state.listPlat[this.state.place][val].id});
-      this.toggleOverlay();
+      this.setState({nom:this.state.listFull[val].name});
+      this.setState({idPlat:this.state.listFull[val].id});
+      this.setState({photo:this.state.listFull[val].photo});
+      //this.toggleOverlay();
     }
     changerRestaurant(){
       this.setState({nom:this.state.list[0].name});
-      this.toggleOverlay();
+      //this.toggleOverlay();
     }
     changePlace=(bool)=>{
       if(bool){
@@ -176,15 +224,35 @@ class Notation extends React.Component {
       this.setState({commentairesNotation:''});
       this.setState({nom:this.state.list[0].name});
     }
+    changeStyle(){
+      return{
+        backgroundColor: 'rgb(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ')',
+        
+       
+        width: 200,
+        borderRadius:20,
+        paddingLeft: 16,
+        paddingRight: 16,
+        marginTop:'5%',
+        marginRight:5,
+        marginLeft:5,
+        marginBottom:0,
+        height:'80%',
+        flex:1,
+        flexDirection:'row',
+        alignItems: 'flex-end'
+      }
+    }
     
   render() { 
     
 
     return (
+      <ImageBackground style={styles.container} source={{uri:this.state.photo}} > 
         <View style={styles.container}>
 
 
-{this.state.type == 0 &&
+{/*this.state.type == 0 &&
 <Overlay isVisible={this.state.visible} onBackdropPress={this.toggleOverlay}  >
                 <Text>  Noter le restaurant:                                                      </Text>
                
@@ -245,8 +313,8 @@ class Notation extends React.Component {
                   </View>
             </Overlay>
 
-                    }
-{this.state.type == 1 &&
+                    */}
+
   <Overlay isVisible={this.state.visible} onBackdropPress={this.toggleOverlay}  >
                 <Text>  Votre note a bien étée enregistrée:               </Text>
                
@@ -260,22 +328,24 @@ class Notation extends React.Component {
                 </TouchableOpacity>
                 </View>
             </Overlay>
-  }
+  
 
-      <View style={styles.rect}>
+      
         <Text style={styles.nomRestaurant}>{this.state.nom}</Text>
-        
+        <View style={[styles.containerRating, this.props.style]}>
         <AirbnbRating
-                count={7}
-                reviews={["Ne pas recommander", "pas terrible", "Ok",'Bon', "Très bien", "Incroyable", "Dingue"]}
+                count={5}
+                reviews={["Ne pas recommander", "pas terrible", "Ok",'Bon', "Très bien"]}
                 defaultRating={this.state.note}
                 size={20}
                 onFinishRating={this.ratingCompleted}
                 />
+                </View>
         <View style={[styles.containerInput, this.props.style]}>
         
             <TextInput
                 placeholder="Commentaires"
+                placeholderTextColor="#fff" 
                 style={styles.inputStyle}
                 multiline={true}
                 onChange={this.commentaires}
@@ -284,21 +354,56 @@ class Notation extends React.Component {
         </View>
         <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>this.valider()}>
         <Text style={styles.caption}>Valider</Text>
+        <MaterialCommunityIconsIcon
+                        name="check-circle-outline"
+                        style={styles.leftIcon}
+                      ></MaterialCommunityIconsIcon>
         </TouchableOpacity>
+
+
+        <FlatList 
+          horizontal
+          pagingEnabled
+          bounces={true}
+          data={this.state.listFull}
+          renderItem={({item,index})=>{return(
+            <ImageBackground style={this.changeStyle()} source={{uri:item.photo}} key={index} id={index}> 
+            <TouchableOpacity style={{height:'100%',flex:1,flexDirection:'row',alignItems:'flex-end',justifyContent:'center'}}  onPress={()=>{this.changerPlat(index)}}>
+              
+                    <Text style={styles.PlatImageFont} >{item.name}</Text>
+                    
+                  </TouchableOpacity>
+                  </ImageBackground>
+          )}}
+          keyExtractor={item => item.id}
+          style={{flexGrow:0,height:'100%'}}
+          contentContainerStyle={{height:'100%'}}
+          showsHorizontalScrollIndicator={false}
+        ></FlatList>
+
+{/*
         <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>{this.toggleOverlay()}}>
         <Text style={styles.caption}>Noter un plat</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>this.props.navigation.replace('Home')}>
-        <Text style={styles.caption}>Retourner à l'acceuil</Text>
-        </TouchableOpacity>
-      </View>
 
+*/}
+
+        <TouchableOpacity style={[styles.containerButton, this.props.style]} onPress={()=>this.props.navigation.replace('Home')}>
+        
+        <MaterialCommunityIconsIcon
+                        name="home"
+                        style={styles.leftIcon}
+                      ></MaterialCommunityIconsIcon>
+        </TouchableOpacity>
+      
+      
      
       
 
       
       
     </View>
+    </ImageBackground>
     );
 }
 
@@ -307,21 +412,25 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
         height: '100%',
-        backgroundColor: "rgba(159,201,233,1)"
+        backgroundColor: "rgba(0,0,0,0.1)",
+        flex:1,
+        flexDirection:'column',
+        alignItems:'center',
+        justifyContent:'center'
       },
       rect: {
         width: '100%',
         height: '100%',
-        backgroundColor: "rgba(159,201,233,1)"
+        //backgroundColor: "rgba(159,201,233,1)"
       },
       nomRestaurant: {
-        backgroundColor : "rgba(70,94,138,1)",
+        backgroundColor : "rgba(70,94,138,0.5)",
         color: "#fff",
-        fontSize: 20,
+        fontSize: 30,
         textAlign: "center",
         width: '100%',
         height: '5%',
-        marginTop: '3%',
+        marginTop: '8%',
         marginBottom: '0%',
       },
       rect2: {
@@ -336,10 +445,11 @@ const styles = StyleSheet.create({
         backgroundColor: "transparent",
         //flexDirection: "row",
         //alignItems: "center",
-        height:'35%'
+        height:'20%',
+        width:'100%'
       },
       inputStyle: {
-        color: "#000",
+        color: "#fff",
         paddingRight: 5,
         fontSize: 16,
         alignSelf: "stretch",
@@ -348,9 +458,9 @@ const styles = StyleSheet.create({
         paddingTop: 16,
         paddingBottom: 8,
         //marginLeft:'2%',
-        backgroundColor: "rgba(32,115,210,0.36)",
+        backgroundColor: "rgba(32,115,210,0.8)",
         borderRadius: 15,
-        height:'100%'
+        height:'50%'
       },
       containerButton: {
         backgroundColor: "rgba(70,94,138,1)",
@@ -370,7 +480,7 @@ const styles = StyleSheet.create({
         minWidth: 88,
         paddingLeft: 16,
         paddingRight: 16,
-        width:'100%',
+        width:'50%',
         height:'8%',
         marginTop:'2%'
       },
@@ -398,7 +508,8 @@ const styles = StyleSheet.create({
       },
       caption: {
         color: "#fff",
-        fontSize: 20
+        fontSize: 20,
+        marginRight:'5%'
       },
       containerStepper: {
         flexDirection: "row",
@@ -414,10 +525,7 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 3,
         borderRightWidth: 0
       },
-      leftIcon: {
-        fontSize: 30,
-        color: "#007AFF"
-      },
+      
       rightStepper: {
         flex: 1,
         alignItems: "center",
@@ -429,6 +537,26 @@ const styles = StyleSheet.create({
       rightIcon: {
         fontSize: 30,
         color: "#007AFF"
+      },
+      PlatImageFont:{
+        fontSize:25,
+        color:'#fff',
+
+      },
+      containerRating:{
+        height:'15%',
+        marginTop:'5%',
+        width:'50%',
+        borderRadius:20,
+        backgroundColor:"rgba(70,94,138,0.5)",
+        /*flex:1,
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'center'*/
+      },
+      leftIcon: {
+        fontSize: 30,
+        color: "#fff",
       },
   });
   

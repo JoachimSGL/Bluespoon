@@ -124,7 +124,16 @@ ack(plat,servi,addition,bool=false){
 }
 }
     componentDidMount(){
-        fetch('https://bluespoon-app.herokuapp.com/commande?idTable='+this.state.idTable+'&&idRestaurant='+this.state.idRestaurant, {
+      this.fetched();
+      setInterval(() => {
+        this.fetched();
+
+      }, 5000)
+
+
+    }
+    fetched(){
+      fetch('https://bluespoon-app.herokuapp.com/commande?idTable='+this.state.idTable+'&&idRestaurant='+this.state.idRestaurant, {
             method: 'GET',
            
             headers: {

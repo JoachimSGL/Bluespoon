@@ -734,7 +734,7 @@ class CarteRestaurant extends React.Component {
                       
                     <ListItem key={i} bottomDivider onPress={() => this.changerNote(i)} >
                         <ListItem.Content>
-                        <ListItem.Title>note : {l.note}/7</ListItem.Title>
+                        <ListItem.Title>note : {l.note}/5</ListItem.Title>
                         <ListItem.Subtitle>{l.name}</ListItem.Subtitle>
                         <ListItem.Subtitle>Commentaire : {l.subtitle}</ListItem.Subtitle>
                         </ListItem.Content>

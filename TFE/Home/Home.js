@@ -34,6 +34,8 @@ class Home extends React.Component {
         let data = JSON.parse(userData);
         let serveurData = await AsyncStorage.getItem("serveur");
         let dataS = JSON.parse(serveurData);
+        let idRest = await AsyncStorage.getItem("idRestaurant");
+        let idResto = JSON.parse(idRest);
         console.log(dataS);
         if(data!=null && data!=0){
           if(dataS==null || dataS==false){
@@ -65,10 +67,11 @@ class Home extends React.Component {
                     this.setState({commande:false});
                     this.setState({addition:true});
                   }
+                  
                 }
               });
           }else{
-            this.props.navigation.navigate('HomeServeur');
+            this.props.navigation.navigate('HomeServeur',{serveur:dataS,numTable:idResto});
           }
         }else{
           this.setState({commande:false});
@@ -83,7 +86,7 @@ class Home extends React.Component {
 
 QR(){
   if(!this.state.addition){
-  if(true){
+  if(false){
     fetch('https://bluespoon-app.herokuapp.com/commandeHome?id='+this.state.id, {
               method: 'GET',
               headers: {
@@ -121,9 +124,10 @@ QR(){
     
   }else{
   //this.props.navigation.navigate('QR');
-  this.storeToken(11,'id');
+  this.storeToken(13,'id');
   this.storeToken(null,'serveur')
-  this.props.navigation.navigate('Splitter',{numTable:34, idRestaurant:6});
+  //this.props.navigation.navigate('Notation',{numTable:2, idRestaurant:6});
+  this.props.navigation.navigate('Splitter',{numTable:6, idRestaurant:6});
   }
 }else{
   fetch('https://bluespoon-app.herokuapp.com/commandeHome?id='+this.state.id, {
@@ -243,7 +247,7 @@ QR(){
         }
       </View>
 
-<View style={{flex:1,flexDirection: "row",width:'100%',height:'80%',alignItems:'center',justifyContent:'center'}}> 
+<View style={{flex:1,flexDirection: "row",width:'100%',height:'100%',alignItems:'center',justifyContent:'center'}}> 
       
         
 
@@ -286,7 +290,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         flexDirection: "row",
         borderRadius: Dimensions.get('window').width*10,
-        height: '35%',
+        height: '38%',
         width: '24%',//ou ici
         borderWidth:0,
       },
@@ -358,7 +362,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-around",
         alignItems: "center",
         backgroundColor: "rgba(191,209,249,0)",
-        marginTop:'20%'
+        marginTop:'10%'
       },
       bluespoon: {
         fontFamily: "Font Awesome",
@@ -373,13 +377,13 @@ const styles = StyleSheet.create({
       },
       additionTxt: {
         //fontFamily: "Georgian",
-        color: "#fff",
+        color: "#000",
         textDecorationLine: "underline",
         textAlign: "center",
         justifyContent: "center",
         alignItems: "center",
-        fontSize: 16,
-        marginTop: 2,
+        fontSize: 20,
+        marginTop: '30%',
         //marginLeft: 93
       },
       deco: {

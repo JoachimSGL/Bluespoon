@@ -26,7 +26,7 @@ class Carte extends React.Component {
             specialite:'',
             idRestaurant:0,
             nomRestaurant:'',
-            type:['Tous les restos','Jap','Chinois','Fast Food','Gastronomique','Italien','Grec','Haut de gamme','fruit de mer'],
+            type:[{id:1,nom:'Tous les restos'},{id:2,nom:'Jap'},{id:3,nom:'Chinois'},{id:4,nom:'Fast Food'},{id:5,nom:'Gastronomique'},{id:6,nom:'Italien'},{id:7,nom:'Grec'},{id:8,nom:'Haut de gamme'},{id:9,nom:'fruit de mer'}],
             markersShow:[{latlng:{ latitude :  38 , longitude :  -123 },title:'Quick',description:'Nous c est le gout'},{latlng:{ latitude :  36 , longitude :  -121 },title:'MC DO',description:'Nous c est PAS le gout'}],
             markers:[],
             regionLat:0,
@@ -471,7 +471,6 @@ changeMethod(bool){
 
 
 permissionHandle = async () => {
-  //this.setState({loading:true});
   this.setState({location:true});
   Geolocation.getCurrentPosition(
     (position) => {
@@ -480,16 +479,14 @@ permissionHandle = async () => {
     this.setState({lat: position.coords.latitude});
     this.setState({regionLat:position.coords.latitude});
     this.setState({regionLong:position.coords.longitude});
-    
+    //commanter si jamais
     this.setState({error:false});
-    this.setState({loading:false});
    },
    (error) => {
     console.log('error :'+error);
-    //this.setState({loading:false});
     this.setState({error:true});
    },
-   {enableHighAccuracy: true, timeout: 20000})
+   {enableHighAccuracy: true, timeout: 2000})
 /*
    Geocoder.init("AIzaSyA3YVpK0yL9NyQMUB6iYFbsBmvEwGngn_Q");
    Geocoder.from(this.state.lat, this.state.long)
@@ -520,7 +517,7 @@ findNote(id){
   for(let i = 0 ; i <arr.length;i++){
     if(id==arr[i].idRestaurant){
       if(!isNaN(arr[i].note)){
-        return ' noté : '+arr[i].note+' /7'
+        return ' noté : '+arr[i].note+' /5'
       }else{
         return ' '
       }
@@ -919,19 +916,14 @@ mapStyle = [
       longitudeDelta: this.state.error? 2: 0.9,
     }}
     customMapStyle={this.mapStyle}>
+      {!this.state.error &&
     <Marker
     coordinate={{ latitude :  this.state.lat , longitude :  this.state.long }}
     title='You are here'
         description='vous vous situez ici'
-  >
-    {!this.state.error &&
-  <Image source={{uri: 'https://bluespoon-app.herokuapp.com/image/point.png'}} style={{ width: 40, height: 50 }} />
-}
-{this.state.error &&
-  <Image source={{uri: 'https://bluespoon-app.herokuapp.com/image/pointBleu.png'}} style={{ width: 20, height: 25 }} />
-}
-
-    </Marker>
+  />
+      }
+    
 {this.state.markersShow.map((marker, index) => (
     <Marker
       key={index}
@@ -954,8 +946,8 @@ pagingEnabled
 bounces={true}
 data={this.state.type}
 renderItem={({item,index})=>{return(
-  <TouchableOpacity style={this.changeStyle()} key={index} id={index} onPress={()=>{this.rechercheSpec(item)}}>
-          <Text style={styles.voirLaCarte} >{item}</Text>
+  <TouchableOpacity style={this.changeStyle()} key={index} id={index} onPress={()=>{this.rechercheSpec(item.nom)}}>
+          <Text style={styles.voirLaCarte} >{item.nom}</Text>
         </TouchableOpacity>
 )}}
 keyExtractor={item => item.id}
@@ -965,17 +957,22 @@ showsHorizontalScrollIndicator={false}
 ></FlatList>
         
       </View>
-      <TouchableOpacity style={this.containerButtonCarte} onPress={()=>{this.props.navigation.navigate('CarteRestaurant',{idRestaurant:this.state.idRestaurant});}}>
+      <View style={{flex:1,flexDirection:'row', alignItems:'center',justifyContent:'center'}}>
+        {this.state.nomRestaurant !== ''&&
+      <TouchableOpacity style={styles.containerButtonCarte} onPress={()=>{this.props.navigation.navigate('CarteRestaurant',{idRestaurant:this.state.idRestaurant});}}>
       <Text style={styles.specialite} > Voir la carte : {this.state.nomRestaurant} </Text>
+      {this.state.error &&
+          <Image source={{uri: 'https://bluespoon-app.herokuapp.com/image/loading2.gif'}} style={{ width: '15%', height: '100%' }} />
+        }
       </TouchableOpacity>
+  }
+      
+        </View>
    </View>
   
   }
   </SafeAreaView>
-{this.state.loading &&
-<Image source={{uri:'https://bluespoon-app.herokuapp.com/image/loading.gif'}} style={{height:100,width:100}}></Image>
 
-}
 
     </View>
 
@@ -1101,11 +1098,11 @@ const styles = StyleSheet.create({
     color:'#fff',
   },
   containerButtonCarte:{
-    backgroundColor:'#000',
+    backgroundColor:'#5C86D5',
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    borderRadius: 2,
+    borderRadius: 20,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -1114,10 +1111,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.35,
     shadowRadius: 5,
     elevation: 2,
-    minWidth: 88,
-    paddingLeft: 16,
-    paddingRight: 16,
-    marginLeft:'5%'
+    height:'100%',
+    width:'100%'
   },
   containerButtonPlat: {
     backgroundColor: "#405495",
